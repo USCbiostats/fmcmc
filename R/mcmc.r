@@ -185,7 +185,7 @@
 MCMC <- function(
   fun,
   initial, 
-  nbatch  = 2e4L,
+  nbatch,
   nchains = 1L,
   thin    = 1L,
   scale   = rep(1, length(initial)),
@@ -218,10 +218,11 @@ MCMC <- function(
     # Running the cluster
     ans <- parallel::clusterApply(
       cl, 1:nchains, fun=
-        function(i, Fun, initial, thin, scale, burnin, ub, lb, useCpp, ...) {
+        function(i, Fun, initial, nbatch, thin, scale, burnin, ub, lb, useCpp, ...) {
           MCMC(
             fun     = Fun,
             initial = initial,
+            nbatch  = nbatch,
             nchains = 1L,
             thin    = thin,
             scale   = scale,
@@ -231,7 +232,7 @@ MCMC <- function(
             useCpp  = useCpp,
             ...
             )
-          }, Fun = fun, initial = initial, thin = thin, scale = scale,
+          }, Fun = fun, nbatch=nbatch, initial = initial, thin = thin, scale = scale,
       burnin = burnin, ub = ub, lb = lb, useCpp = useCpp, ...)
     
     return(coda::mcmc.list(ans))

@@ -5,11 +5,10 @@
 \alias{Metropolis-Hastings}
 \title{Markov Chain Monte Carlo}
 \usage{
-MCMC(fun, initial, nbatch = 20000L, nchains = 1L, thin = 1L,
-  scale = rep(1, length(initial)), burnin = 1000L,
-  ub = rep(.Machine$double.xmax, length(initial)),
-  lb = rep(-.Machine$double.xmax, length(initial)), useCpp = FALSE,
-  cl = NULL, ...)
+MCMC(fun, initial, nbatch, nchains = 1L, thin = 1L, scale = rep(1,
+  length(initial)), burnin = 1000L, ub = rep(.Machine$double.xmax,
+  length(initial)), lb = rep(-.Machine$double.xmax, length(initial)),
+  useCpp = FALSE, cl = NULL, ...)
 }
 \arguments{
 \item{fun}{A function. Returns the log-likelihood}

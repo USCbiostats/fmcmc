@@ -1,2 +1,8 @@
 2017-04-18  George G. Vega Yon <g.vegayon@gmail.com>
+	* R/mcmc.r: No default nbatch, and nbatch now is actually passed to
+	the
+	function.
+
+
+2017-04-18  George G. Vega Yon <g.vegayon@gmail.com>
 	* Initial commit.
