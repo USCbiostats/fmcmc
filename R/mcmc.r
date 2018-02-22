@@ -15,6 +15,8 @@
 #' @param lb Numeric vector of length \code{length(initial)}. Lower bounds
 #' @param ub Numeric vector of length \code{length(initial)}. Upper bounds
 #' @param useCpp Logical scalar. When \code{TRUE}, loops using a Rcpp implementation.
+#' @param fixed Logical vector. If the kth position is \code{TRUE}, then that
+#' value will be fixed.
 #' @param ... Further arguments passed to \code{fun}.
 #' 
 #' @details This function implements MCMC using the Metropolis-Hastings ratio with
@@ -194,6 +196,7 @@ MCMC <- function(
   lb      = rep(-.Machine$double.xmax, length(initial)),
   useCpp  = FALSE,
   cl      = NULL,
+  fixed   = rep(FALSE, length(initial)),
   ...
   ) {
   
@@ -218,7 +221,7 @@ MCMC <- function(
     # Running the cluster
     ans <- parallel::clusterApply(
       cl, 1:nchains, fun=
-        function(i, Fun, initial, nbatch, thin, scale, burnin, ub, lb, useCpp, ...) {
+        function(i, Fun, initial, nbatch, thin, scale, burnin, ub, lb, useCpp, fixed, ...) {
           MCMC(
             fun     = Fun,
             initial = initial,
@@ -230,10 +233,11 @@ MCMC <- function(
             ub      = ub,
             lb      = lb,
             useCpp  = useCpp,
+            fixed   = fixed,
             ...
             )
           }, Fun = fun, nbatch=nbatch, initial = initial, thin = thin, scale = scale,
-      burnin = burnin, ub = ub, lb = lb, useCpp = useCpp, ...)
+      burnin = burnin, ub = ub, lb = lb, useCpp = useCpp, fixed = fixed, ...)
     
     return(coda::mcmc.list(ans))
     
@@ -312,7 +316,7 @@ MCMC <- function(
       stop("-thin- should be >= 1.")
     
     if (useCpp) {
-      ans <- MCMCcpp(f, initial, nbatch, lb, ub, scale)
+      ans <- MCMCcpp(f, initial, nbatch, lb, ub, scale, fixed)
       dimnames(ans) <- list(1:nbatch, cnames)
       
     } else {
@@ -325,7 +329,7 @@ MCMC <- function(
       f0     <- f(theta0)
       for (i in 1:nbatch) {
         # Step 1. Propose
-        theta1 <- normal_prop(theta0, lb, ub, scale)
+        theta1 <- normal_prop(theta0, lb, ub, scale, fixed)
         f1     <- f(theta1)
         
         # Checking f(theta1) (it must be a number, can be Inf)

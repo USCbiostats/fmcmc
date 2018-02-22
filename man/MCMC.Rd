@@ -8,7 +8,7 @@
 MCMC(fun, initial, nbatch, nchains = 1L, thin = 1L, scale = rep(1,
   length(initial)), burnin = 1000L, ub = rep(.Machine$double.xmax,
   length(initial)), lb = rep(-.Machine$double.xmax, length(initial)),
-  useCpp = FALSE, cl = NULL, ...)
+  useCpp = FALSE, cl = NULL, fixed = rep(FALSE, length(initial)), ...)
 }
 \arguments{
 \item{fun}{A function. Returns the log-likelihood}
@@ -34,6 +34,9 @@ scalar. Step size for the transition kernel (see details).}
 \item{useCpp}{Logical scalar. When \code{TRUE}, loops using a Rcpp implementation.}
 
 \item{cl}{A cluster object passed to \code{\link[parallel:clusterApply]{clusterApply}}.}
+
+\item{fixed}{Logical vector. If the kth position is \code{TRUE}, then that
+value will be fixed.}
 
 \item{...}{Further arguments passed to \code{fun}.}
 }

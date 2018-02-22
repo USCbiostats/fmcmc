@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // normal_prop
-NumericVector normal_prop(const NumericVector& x, const NumericVector& lb, const NumericVector& ub, const NumericVector& scale);
-RcppExport SEXP amcmc_normal_prop(SEXP xSEXP, SEXP lbSEXP, SEXP ubSEXP, SEXP scaleSEXP) {
+NumericVector normal_prop(const NumericVector& x, const NumericVector& lb, const NumericVector& ub, const NumericVector& scale, const LogicalVector& fixed);
+RcppExport SEXP _amcmc_normal_prop(SEXP xSEXP, SEXP lbSEXP, SEXP ubSEXP, SEXP scaleSEXP, SEXP fixedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -15,13 +15,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const NumericVector& >::type lb(lbSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type ub(ubSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type scale(scaleSEXP);
-    rcpp_result_gen = Rcpp::wrap(normal_prop(x, lb, ub, scale));
+    Rcpp::traits::input_parameter< const LogicalVector& >::type fixed(fixedSEXP);
+    rcpp_result_gen = Rcpp::wrap(normal_prop(x, lb, ub, scale, fixed));
     return rcpp_result_gen;
 END_RCPP
 }
 // MCMCcpp
-NumericMatrix MCMCcpp(Function& fun, NumericVector theta0, int nbatch, const NumericVector& lb, const NumericVector& ub, const NumericVector& scale);
-RcppExport SEXP amcmc_MCMCcpp(SEXP funSEXP, SEXP theta0SEXP, SEXP nbatchSEXP, SEXP lbSEXP, SEXP ubSEXP, SEXP scaleSEXP) {
+NumericMatrix MCMCcpp(Function& fun, NumericVector theta0, int nbatch, const NumericVector& lb, const NumericVector& ub, const NumericVector& scale, const LogicalVector& fixed);
+RcppExport SEXP _amcmc_MCMCcpp(SEXP funSEXP, SEXP theta0SEXP, SEXP nbatchSEXP, SEXP lbSEXP, SEXP ubSEXP, SEXP scaleSEXP, SEXP fixedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -31,7 +32,19 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const NumericVector& >::type lb(lbSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type ub(ubSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type scale(scaleSEXP);
-    rcpp_result_gen = Rcpp::wrap(MCMCcpp(fun, theta0, nbatch, lb, ub, scale));
+    Rcpp::traits::input_parameter< const LogicalVector& >::type fixed(fixedSEXP);
+    rcpp_result_gen = Rcpp::wrap(MCMCcpp(fun, theta0, nbatch, lb, ub, scale, fixed));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_amcmc_normal_prop", (DL_FUNC) &_amcmc_normal_prop, 5},
+    {"_amcmc_MCMCcpp", (DL_FUNC) &_amcmc_MCMCcpp, 7},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_amcmc(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

@@ -7,17 +7,28 @@ NumericVector normal_prop(
     const NumericVector & x,
     const NumericVector & lb,
     const NumericVector & ub,
-    const NumericVector & scale
+    const NumericVector & scale,
+    const LogicalVector & fixed
 ) {
   
   int K = x.size();
   
   // Proposal
-  NumericVector ans = x + rnorm(K, 0, 1)*scale;
+  NumericVector ans(K); // = x + rnorm(K, 0, 1)*scale;
   
-  // Reflexion adjustment
   for (int k=0; k<K; k++) {
     
+    // Is it fixed?
+    if (fixed.at(k)) {
+      ans.at(k) = x.at(k);
+      continue;
+    }
+      
+    // Proposal
+    ans.at(k) = x.at(k) + norm_rand()*scale.at(k);
+    
+    
+    // Reflection adjustment
     while( (ans[k] > ub[k]) | (ans[k] < lb[k]) ) {
       
       if (ans[k] > ub[k]) {
@@ -41,7 +52,8 @@ NumericMatrix MCMCcpp(
     int nbatch,
     const NumericVector & lb,
     const NumericVector & ub,
-    const NumericVector & scale
+    const NumericVector & scale,
+    const LogicalVector & fixed
 ) {
   
   int K = lb.size();
@@ -60,7 +72,7 @@ NumericMatrix MCMCcpp(
   for (int i = 0; i < nbatch; i++) {
   
     // Generating proposal
-    theta1 = normal_prop(theta0, lb, ub, scale);
+    theta1 = normal_prop(theta0, lb, ub, scale, fixed);
     f1     = fun(theta1);
   
     // Checking values
