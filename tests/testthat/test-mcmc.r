@@ -86,3 +86,28 @@ test_that("Repeating the chains in parallel", {
   
 })
 
+
+# ------------------------------------------------------------------------------
+test_that("Fixed parameters", {
+  
+  # Simulating data
+  set.seed(981)
+  
+  D <- rnorm(1000, 0, 2)
+  
+  # Preparing function
+  fun <- function(x) {
+    res <- log(dnorm(D, x[1], x[2]))
+    if (any(is.infinite(res) | is.nan(res)))
+      return(.Machine$double.xmin)
+    sum(res)
+  }
+  
+  # Running the algorithm and checking expectation
+  ans <- suppressWarnings(
+    MCMC(fun, c(1, 2), 5e3, burnin = 500, ub = 3, lb = -3, scale = 1, fixed = c(FALSE, TRUE))
+  )
+  expect_true(all(ans[,2] == 2))
+  expect_equivalent(colMeans(ans), c(0, 2), tolerance = 0.1, scale = 1)
+  
+})

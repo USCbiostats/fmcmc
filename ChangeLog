@@ -1,13 +1,20 @@
 2018-02-22  George G. Vega Yon <g.vegayon@gmail.com>
 
+	* tests: Adding new tests for the `fixed` parameter.
+
+
+2018-02-22  George G. Vega Yon <g.vegayon@gmail.com>
+
 	* : Added new option fixed (logical vector).
 
 
 2017-04-18  George G. Vega Yon <g.vegayon@gmail.com>
+
 	* R/mcmc.r: No default nbatch, and nbatch now is actually passed to
 	the
 	function.
 
 
 2017-04-18  George G. Vega Yon <g.vegayon@gmail.com>
+
 	* Initial commit.
