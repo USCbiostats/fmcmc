@@ -1,7 +1,7 @@
 Package: amcmc
 Title: Adaptive and other Markov Chain Monte Carlo methods
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Authors@R: person("George", "Vega Yon", email = "g.vegayon@gmail.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 Depends: R (>= 3.3.3)
 License: MIT + file LICENSE
