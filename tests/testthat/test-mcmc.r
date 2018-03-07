@@ -17,10 +17,18 @@ test_that("Reasonable values", {
   }
   
   # Running the algorithm and checking expectation
-  ans <- suppressWarnings(
-    MCMC(fun, 1, 5e3, burnin = 500, ub = 3, lb = -3, scale = 1)
+  set.seed(111)
+  ans0 <- suppressWarnings(
+    MCMC(fun, 1, 5e3, burnin = 500, ub = 3, lb = -3, scale = 1, useCpp = FALSE)
   )
-  expect_equal(mean(ans), mean(D), tolerance = 0.1, scale = 1)
+  expect_equal(mean(ans0), mean(D), tolerance = 0.05, scale = 1)
+  
+  set.seed(111)
+  ans1 <- suppressWarnings(
+    MCMC(fun, 1, 5e3, burnin = 500, ub = 3, lb = -3, scale = 1, useCpp = TRUE)
+  )
+  
+  expect_equal(mean(ans0), mean(ans1), tolerance = 0.0000001, scale = 1)
 })
 
 # ------------------------------------------------------------------------------

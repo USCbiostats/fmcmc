@@ -253,6 +253,9 @@ MCMC <- function(
     passedargs <- names(list(...))
     funargs    <- methods::formalArgs(fun)
     
+    # Compiling
+    cfun <- compiler::cmpfun(fun)
+    
     # ... has extra args
     if (length(passedargs)) {
       # ... has stuff that fun doesnt
@@ -267,9 +270,11 @@ MCMC <- function(
       
       # Everything OK
       } else {
+        
         f <- function(z) {
-          fun(z, ...)
+          cfun(z, ...)
         }
+        
       }
     # ... doesnt have extra args, but funargs does!
     } else if (length(funargs) > 1) {
@@ -279,9 +284,11 @@ MCMC <- function(
     # Everything OK
     } else {
       
-      f <- function(z) fun(z)
+      f <- function(z) cfun(z)
       
     }
+    
+    f <- compiler::cmpfun(f)
      
     # Checking boundaries
     if (length(ub) > 1 && (length(initial) != length(ub)))
@@ -345,7 +352,7 @@ MCMC <- function(
         # Updating the value
         if (R[i] < r) {
           theta0 <- theta1
-          f0     <- f(theta0)
+          f0     <- f1
         }
         
         # Storing

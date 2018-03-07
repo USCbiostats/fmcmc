@@ -1,0 +1,55 @@
+---
+title: "MCMC benchmark"
+author: "George G. Vega Yon"
+date: "3/7/2018"
+output: html_document
+---
+
+```{r}
+library(amcmc)
+library(mcmc)
+data(logit)
+out <- glm(y ~ x1 + x2 + x3 + x4, data = logit,
+    family = binomial(), x = TRUE)
+set.seed(1)
+
+###################################################
+### code chunk number 3: log.unnormalized.posterior
+###################################################
+x <- out$x
+y <- out$y
+
+lupost <- function(beta, x, y) {
+    eta <- as.numeric(x %*% beta)
+    logp <- ifelse(eta < 0, eta - log1p(exp(eta)), - log1p(exp(- eta)))
+    logq <- ifelse(eta < 0, - log1p(exp(eta)), - eta - log1p(exp(- eta)))
+    logl <- sum(logp[y == 1]) + sum(logq[y == 0])
+    return(logl - sum(beta^2) / 8)
+}
+
+
+###################################################
+### code chunk number 4: metropolis-try-1
+###################################################
+set.seed(42)    # to get reproducible results
+beta.init <- as.numeric(coefficients(out))
+t0 <- system.time(
+  out <- metrop(lupost, beta.init, 1e5, x = x, y = y)
+)
+
+t1 <- system.time(
+  out1 <- MCMC(lupost, beta.init, 1e5, burnin = 0L, x = x, y = y, useCpp = FALSE)
+)
+
+t2 <- system.time(
+  out1 <- MCMC(lupost, beta.init, 1e5, burnin = 0L, x = x, y = y, useCpp = TRUE)
+)
+t0-t1
+t0-t2
+
+summary(out1)
+
+
+
+```
+

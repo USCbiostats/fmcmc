@@ -9,3 +9,7 @@ MCMCcpp <- function(fun, theta0, nbatch, lb, ub, scale, fixed) {
     .Call('_amcmc_MCMCcpp', PACKAGE = 'amcmc', fun, theta0, nbatch, lb, ub, scale, fixed)
 }
 
+update_equal <- function(par, ids) {
+    .Call('_amcmc_update_equal', PACKAGE = 'amcmc', par, ids)
+}
+
