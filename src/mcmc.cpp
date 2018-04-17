@@ -1,7 +1,7 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-void normal_prop(
+void normal_prop_void(
     NumericVector & ans,
     const NumericVector & x,
     const NumericVector & lb,
@@ -51,15 +51,15 @@ NumericVector normal_prop(
   
   // Proposal
   NumericVector ans(x.length());
-  normal_prop(ans, x, lb, ub, scale, fixed);
+  normal_prop_void(ans, x, lb, ub, scale, fixed);
   
   return ans;
 }
 
-// [[Rcpp::export]]
-NumericMatrix MCMCcpp(
+// [[Rcpp::export(name = ".MCMC")]]
+NumericMatrix MCMC(
     Function & fun,
-    NumericVector theta0,
+    const NumericVector & theta,
     int nbatch,
     const NumericVector & lb,
     const NumericVector & ub,
@@ -70,6 +70,7 @@ NumericMatrix MCMCcpp(
   int K = lb.size();
   
   NumericMatrix ans(nbatch, K);
+  NumericVector theta0(clone(theta));
   NumericVector theta1(K);
   NumericVector f0 = fun(theta0), f1;
   
@@ -84,12 +85,12 @@ NumericMatrix MCMCcpp(
   for (int i = 0; i < nbatch; i++) {
   
     // Generating proposal
-    normal_prop(theta1, theta0, lb, ub, scale, fixed);
+    normal_prop_void(theta1, theta0, lb, ub, scale, fixed);
     // Take a look at https://github.com/cran/mcmc/blob/c0644b84416a75293e1d31b87d4f2af47c0784f5/src/metrop.c#L230-L250
     f1 = fun(theta1);
   
     // Checking values
-    if (is_na(f1)[0] || is_nan(f1)[0])
+    if (is_na(f1)[0u] || is_nan(f1)[0u])
       stop("fun(par) is undefined. Check either -fun- or the -lb- and -ub- parameters.");
     
     // Metropolis-Hastings ratio

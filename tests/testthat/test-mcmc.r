@@ -32,6 +32,37 @@ test_that("Reasonable values", {
 })
 
 # ------------------------------------------------------------------------------
+test_that("Reasonable values after changing the scale", {
+  
+  # Simulating data
+  set.seed(981)
+  
+  D <- rnorm(1000, 0)
+  
+  # Preparing function
+  fun <- function(x) {
+    res <- log(dnorm(D, x))
+    if (any(is.infinite(res) | is.nan(res)))
+      return(.Machine$double.xmin)
+    sum(res)
+  }
+  
+  # Running the algorithm and checking expectation
+  set.seed(111)
+  ans0 <- suppressWarnings(
+    MCMC(fun, 1, 5e3, burnin = 500, ub = 3, lb = -3, scale = 2, useCpp = FALSE)
+  )
+  expect_equal(mean(ans0), mean(D), tolerance = 0.05, scale = 1)
+  
+  set.seed(111)
+  ans1 <- suppressWarnings(
+    MCMC(fun, 1, 5e3, burnin = 500, ub = 3, lb = -3, scale = 2, useCpp = TRUE)
+  )
+  
+  expect_equal(mean(ans0), mean(ans1), tolerance = 0.0000001, scale = 1)
+})
+
+# ------------------------------------------------------------------------------
 test_that("Multiple chains", {
   # Simulating data
   set.seed(981)

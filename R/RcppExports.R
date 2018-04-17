@@ -5,8 +5,8 @@ normal_prop <- function(x, lb, ub, scale, fixed) {
     .Call('_amcmc_normal_prop', PACKAGE = 'amcmc', x, lb, ub, scale, fixed)
 }
 
-MCMCcpp <- function(fun, theta0, nbatch, lb, ub, scale, fixed) {
-    .Call('_amcmc_MCMCcpp', PACKAGE = 'amcmc', fun, theta0, nbatch, lb, ub, scale, fixed)
+.MCMC <- function(fun, theta, nbatch, lb, ub, scale, fixed) {
+    .Call('_amcmc_MCMC', PACKAGE = 'amcmc', fun, theta, nbatch, lb, ub, scale, fixed)
 }
 
 update_equal <- function(par, ids) {

@@ -254,7 +254,7 @@ MCMC <- function(
     funargs    <- methods::formalArgs(fun)
     
     # Compiling
-    cfun <- compiler::cmpfun(fun)
+    # cfun <- compiler::cmpfun(fun)
     
     # ... has extra args
     if (length(passedargs)) {
@@ -272,7 +272,7 @@ MCMC <- function(
       } else {
         
         f <- function(z) {
-          cfun(z, ...)
+          fun(z, ...)
         }
         
       }
@@ -284,12 +284,10 @@ MCMC <- function(
     # Everything OK
     } else {
       
-      f <- function(z) cfun(z)
+      f <- function(z) fun(z)
       
     }
     
-    f <- compiler::cmpfun(f)
-     
     # Checking boundaries
     if (length(ub) > 1 && (length(initial) != length(ub)))
       stop("Incorrect length of -ub-")
@@ -323,7 +321,7 @@ MCMC <- function(
       stop("-thin- should be >= 1.")
     
     if (useCpp) {
-      ans <- MCMCcpp(f, initial, nbatch, lb, ub, scale, fixed)
+      ans <- .MCMC(f, initial, nbatch, lb, ub, scale, fixed)
       dimnames(ans) <- list(1:nbatch, cnames)
       
     } else {
@@ -347,10 +345,9 @@ MCMC <- function(
           )
         
         # Step 2. Hastings ratio
-        r <- min(1, exp(f1 - f0))
         
         # Updating the value
-        if (R[i] < r) {
+        if (R[i] < exp(f1 - f0)) {
           theta0 <- theta1
           f0     <- f1
         }
