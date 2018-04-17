@@ -345,6 +345,7 @@ MCMC <- function(
           )
         
         # Step 2. Hastings ratio
+        cat(sprintf("f0: %.4f, f1: %.4f\n", f0, f1))
         
         # Updating the value
         if (R[i] < exp(f1 - f0)) {
