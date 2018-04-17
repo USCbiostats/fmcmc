@@ -72,7 +72,7 @@ NumericMatrix MCMC(
   NumericMatrix ans(nbatch, K);
   NumericVector theta0(clone(theta));
   NumericVector theta1(K);
-  NumericVector f0 = fun(theta0), f1;
+  NumericVector f0 = fun(theta0), f1(1);
   
   // Checking values
   if (is_na(f0)[0u] || is_nan(f0)[0u])
@@ -87,20 +87,21 @@ NumericMatrix MCMC(
     // Generating proposal
     normal_prop_void(theta1, theta0, lb, ub, scale, fixed);
     // Take a look at https://github.com/cran/mcmc/blob/c0644b84416a75293e1d31b87d4f2af47c0784f5/src/metrop.c#L230-L250
-    f1 = fun(theta1);
+    f1[0] = as<double>(fun(theta1));
   
     // Checking values
     if (is_na(f1)[0u] || is_nan(f1)[0u])
       stop("fun(par) is undefined. Check either -fun- or the -lb- and -ub- parameters.");
     
-    Rprintf("f0: %.4f, f1: %.4f\n", f0[0], f1[0]);
+    // Rprintf("f0: %.4f, f1: %.4f\n", f0[0], f1[0]);
     
     // Metropolis-Hastings ratio
-    if (R.at(i) < exp( f1.at(0) - f0.at(0) )) {
+    if (R.at(i) < exp( f1[0] - f0[0] )) {
       
       // theta0 = theta1;
+      // Rprintf("Iteration i:%i\n", i);
       std::copy(theta1.begin(), theta1.end(), theta0.begin());
-      f0.at(0) = f1.at(0);
+      f0[0] = f1[0];
       
     }
     
