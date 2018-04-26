@@ -1,0 +1,35 @@
+---
+title: "Kernels"
+author: "George G. Vega Yon"
+date: "9/26/2017"
+output: html_document
+---
+
+To generate kernels efficiently, we can make use of the following:
+
+1.  Avoid creating/destructing vectors: It is wiser to pass an already built vector, so handles pointers and returns void, instead of actually creating a vector within the function and assigning that to an outcome, and later destroying the value.
+
+2.  Potentially, computing the acceptance within the kernel function, which implies that we need to pass the loglikelihood function as well. This could be better in terms of reading the code.
+
+3.  The functions should receive an object of class `NumericVector` and return double, no other arguments. This can be done easily by creating wrappers before passing the function when calling C++. A problem arises if we want to call the amcmc from within C++ and we need to pass more arguments.
+
+4.  Because of the previous it makes sense to make the function more modular, or more over, more flexible. Instead of working with vectors, a function can be written such that it receives a list of arguments instead in which the first is assumed to be the parameters over which we are working on, for example:
+    
+    
+    
+    ```{r, eval=FALSE}
+    # The actual function
+    fun <- function(arg0, arg1) {
+      dnorm(arg0, mean=arg1)
+    }
+    
+    # The function that we call
+    myfun <- function(args) {
+      do.call(fun, args)
+    }
+    
+    # How the kernel can look
+    kern <- function(args) {
+      update(args[[1]])
+    }
+    ```

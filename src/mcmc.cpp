@@ -93,7 +93,7 @@ NumericMatrix MCMC(
     if (is_na(f1)[0u] || is_nan(f1)[0u])
       stop("fun(par) is undefined. Check either -fun- or the -lb- and -ub- parameters.");
     
-    Rprintf("f0: %.4f, f1: %.4f\n", f0[0], f1[0]);
+    
     
     // Metropolis-Hastings ratio
     if (R.at(i) < exp( f1.at(0) - f0.at(0) )) {
