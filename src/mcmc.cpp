@@ -2,35 +2,36 @@
 using namespace Rcpp;
 
 void normal_prop_void(
-    NumericVector & ans,
+    NumericVector* ans,
     const NumericVector & x,
     const NumericVector & lb,
     const NumericVector & ub,
     const NumericVector & scale,
-    const LogicalVector & fixed
+    const IntegerVector & fixed
 ) {
   
   int K = x.size();
   
+  // Proposal
+  GetRNGstate();
+  (*ans) = x + rnorm(x.size())*scale;
+  PutRNGstate();
+  
   for (int k=0; k<K; k++) {
     
     // Is it fixed?
-    if (fixed.at(k)) {
-      ans.at(k) = x.at(k);
+    if (fixed.at(k)==1) {
+      (*ans).at(k) = x.at(k);
       continue;
     }
     
-    // Proposal
-    ans.at(k) = x.at(k) + norm_rand()*scale.at(k);
-    
-    
     // Reflection adjustment
-    while( (ans[k] > ub[k]) | (ans[k] < lb[k]) ) {
+    while( ((*ans)[k] > ub[k]) | ((*ans)[k] < lb[k]) ) {
       
-      if (ans[k] > ub[k]) {
-        ans[k] = 2.0*ub[k] - ans[k];
+      if ((*ans)[k] > ub[k]) {
+        (*ans)[k] = 2.0*ub[k] - (*ans)[k];
       } else {
-        ans[k] = 2.0*lb[k] - ans[k];
+        (*ans)[k] = 2.0*lb[k] - (*ans)[k];
       }  
       
     }
@@ -40,37 +41,37 @@ void normal_prop_void(
   return;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng=false)]]
 NumericVector normal_prop(
     const NumericVector & x,
     const NumericVector & lb,
     const NumericVector & ub,
     const NumericVector & scale,
-    const LogicalVector & fixed
+    const IntegerVector & fixed
 ) {
   
   // Proposal
   NumericVector ans(x.length());
-  normal_prop_void(ans, x, lb, ub, scale, fixed);
+  normal_prop_void(&ans, x, lb, ub, scale, fixed);
   
   return ans;
 }
 
-// [[Rcpp::export(name = ".MCMC")]]
+// [[Rcpp::export(name = ".MCMC", rng=false)]]
 NumericMatrix MCMC(
-    Function & fun,
+    Function fun,
     const NumericVector & theta,
     int nbatch,
     const NumericVector & lb,
     const NumericVector & ub,
     const NumericVector & scale,
-    const LogicalVector & fixed
+    const IntegerVector & fixed
 ) {
   
   int K = lb.size();
   
   NumericMatrix ans(nbatch, K);
-  NumericVector theta0(clone(theta));
+  NumericVector theta0 = clone(theta);
   NumericVector theta1(K);
   NumericVector f0 = fun(theta0), f1(1);
   
@@ -79,36 +80,31 @@ NumericMatrix MCMC(
     stop("fun(par) is undefined. Check either -fun- or the -lb- and -ub- parameters.");
   
   // Using sugar to generate the random values for the hastings ratio.
+  GetRNGstate();
   NumericVector R = runif(nbatch);
-
+  PutRNGstate();
+  
   int k;
   for (int i = 0; i < nbatch; i++) {
   
     // Generating proposal
-    normal_prop_void(theta1, theta0, lb, ub, scale, fixed);
+    normal_prop_void(&theta1, theta0, lb, ub, scale, fixed);
     // Take a look at https://github.com/cran/mcmc/blob/c0644b84416a75293e1d31b87d4f2af47c0784f5/src/metrop.c#L230-L250
-    f1[0] = as<double>(fun(theta1));
+    f1 = fun(theta1);
   
     // Checking values
     if (is_na(f1)[0u] || is_nan(f1)[0u])
       stop("fun(par) is undefined. Check either -fun- or the -lb- and -ub- parameters.");
     
-    // Rprintf("f0: %.4f, f1: %.4f\n", f0[0], f1[0]);
-
-    
     // Metropolis-Hastings ratio
-    if (R.at(i) < exp( f1[0] - f0[0] )) {
-      
-      // theta0 = theta1;
-      // Rprintf("Iteration i:%i\n", i);
-      std::copy(theta1.begin(), theta1.end(), theta0.begin());
+    if (R[i] < exp( f1[0] - f0[0] )) {
+      theta0 = clone(theta1);
       f0[0] = f1[0];
       
     }
     
     // Storing the current state
-    for (k = 0; k < K; k++)
-      ans.at(i, k) = theta0.at(k);
+    ans(i, _) = theta0;
     
   }
   

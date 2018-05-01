@@ -325,13 +325,14 @@ MCMC <- function(
       dimnames(ans) <- list(1:nbatch, cnames)
       
     } else {
+      theta0 <- initial
+      theta1 <- NULL
+      f0     <- f(theta0)
+      
       R <- stats::runif(nbatch)
       ans <- matrix(ncol = length(initial), nrow = nbatch,
                     dimnames = list(1:nbatch, cnames))
       
-      
-      theta0 <- initial
-      f0     <- f(theta0)
       for (i in 1:nbatch) {
         # Step 1. Propose
         theta1 <- normal_prop(theta0, lb, ub, scale, fixed)
@@ -345,11 +346,9 @@ MCMC <- function(
           )
         
         # Step 2. Hastings ratio
-        # cat(sprintf("f0: %.4f, f1: %.4f\n", f0, f1))
         
         # Updating the value
         if (R[i] < exp(f1 - f0)) {
-          # cat(sprintf("Iteration i:%i\n", i))
           theta0 <- theta1
           f0     <- f1
         }

@@ -1,3 +1,7 @@
+2018-05-01  George G. Vega Yon <g.vegayon@gmail.com>
+	* : Making sure RNG works regardless of the objective function.
+
+
 2018-02-22  George G. Vega Yon <g.vegayon@gmail.com>
 
 	* tests: Adding new tests for the `fixed` parameter.
