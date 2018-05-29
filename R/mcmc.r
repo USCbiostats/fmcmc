@@ -326,7 +326,7 @@ MCMC <- function(
       
     } else {
       theta0 <- initial
-      theta1 <- NULL
+      theta1 <- theta0
       f0     <- f(theta0)
       
       R <- stats::runif(nbatch)
@@ -335,7 +335,7 @@ MCMC <- function(
       
       for (i in 1:nbatch) {
         # Step 1. Propose
-        theta1 <- normal_prop(theta0, lb, ub, scale, fixed)
+        theta1[] <- normal_prop(theta0, lb, ub, scale, fixed)
         f1     <- f(theta1)
         
         # Checking f(theta1) (it must be a number, can be Inf)

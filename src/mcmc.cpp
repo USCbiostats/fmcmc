@@ -72,7 +72,7 @@ NumericMatrix MCMC(
   
   NumericMatrix ans(nbatch, K);
   NumericVector theta0 = clone(theta);
-  NumericVector theta1(K);
+  NumericVector theta1 = clone(theta);
   NumericVector f0 = fun(theta0), f1(1);
   
   // Checking values
