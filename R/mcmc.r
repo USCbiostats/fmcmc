@@ -17,7 +17,7 @@
 #' @param useCpp Logical scalar. When \code{TRUE}, loops using a Rcpp implementation.
 #' @param fixed Logical vector. If the kth position is \code{TRUE}, then that
 #' value will be fixed.
-#' @param parallel Logical. If `FALSE` then it will execute the chains in a serial
+#' @param multicore Logical. If `FALSE` then it will execute the chains in a serial
 #' fashion.
 #' @param ... Further arguments passed to \code{fun}.
 #' 
@@ -190,21 +190,21 @@ MCMC <- function(
   fun,
   initial, 
   nbatch,
-  nchains = 1L,
-  thin    = 1L,
-  scale   = rep(1, length(initial)),
-  burnin  = 1e3L,
-  ub      = rep(.Machine$double.xmax, length(initial)),
-  lb      = rep(-.Machine$double.xmax, length(initial)),
-  useCpp  = FALSE,
-  cl      = NULL,
-  fixed   = rep(FALSE, length(initial)),
-  parallel = TRUE,
+  nchains   = 1L,
+  thin      = 1L,
+  scale     = rep(1, length(initial)),
+  burnin    = 1e3L,
+  ub        = rep(.Machine$double.xmax, length(initial)),
+  lb        = rep(-.Machine$double.xmax, length(initial)),
+  useCpp    = FALSE,
+  cl        = NULL,
+  fixed     = rep(FALSE, length(initial)),
+  multicore = TRUE,
   ...
   ) {
   
   # Filling the gap on parallel
-  if (parallel && (nchains > 1L) && !length(cl)) {
+  if (multicore && (nchains > 1L) && !length(cl)) {
     
     # Creating the cluster
     ncores <- parallel::detectCores()
@@ -219,28 +219,31 @@ MCMC <- function(
     
   }
   
-  if (parallel && nchains > 1L) {
+  if (multicore && nchains > 1L) {
 
     # Running the cluster
     ans <- parallel::clusterApply(
       cl, 1:nchains, fun=
-        function(i, Fun, initial, nbatch, thin, scale, burnin, ub, lb, useCpp, fixed, ...) {
+        function(i, Fun, initial, nbatch, thin, scale, burnin, ub, lb, useCpp,
+                 fixed, multicore, ...) {
           MCMC(
-            fun     = Fun,
-            initial = initial,
-            nbatch  = nbatch,
-            nchains = 1L,
-            thin    = thin,
-            scale   = scale,
-            burnin  = burnin,
-            ub      = ub,
-            lb      = lb,
-            useCpp  = useCpp,
-            fixed   = fixed,
+            fun       = Fun,
+            initial   = initial,
+            nbatch    = nbatch,
+            nchains   = 1L,
+            thin      = thin,
+            scale     = scale,
+            burnin    = burnin,
+            ub        = ub,
+            lb        = lb,
+            useCpp    = useCpp,
+            fixed     = fixed,
+            multicore = multicore,
             ...
             )
           }, Fun = fun, nbatch=nbatch, initial = initial, thin = thin, scale = scale,
-      burnin = burnin, ub = ub, lb = lb, useCpp = useCpp, fixed = fixed, ...)
+      burnin = burnin, ub = ub, lb = lb, useCpp = useCpp, fixed = fixed, 
+      multicore = multicore, ...)
     
     return(coda::mcmc.list(ans))
     
@@ -248,7 +251,8 @@ MCMC <- function(
     # Running the cluster
     ans <- lapply(
       1:nchains, fun=
-        function(i, Fun, initial, nbatch, thin, scale, burnin, ub, lb, useCpp, fixed, ...) {
+        function(i, Fun, initial, nbatch, thin, scale, burnin, ub, lb, useCpp,
+                 fixed, multicore, ...) {
           MCMC(
             fun     = Fun,
             initial = initial,
@@ -261,10 +265,12 @@ MCMC <- function(
             lb      = lb,
             useCpp  = useCpp,
             fixed   = fixed,
+            multicore = multicore,
             ...
           )
         }, Fun = fun, nbatch=nbatch, initial = initial, thin = thin, scale = scale,
-      burnin = burnin, ub = ub, lb = lb, useCpp = useCpp, fixed = fixed, ...)
+      burnin = burnin, ub = ub, lb = lb, useCpp = useCpp, fixed = fixed, 
+      multicore = multicore, ...)
     
     return(coda::mcmc.list(ans))
   } else {
