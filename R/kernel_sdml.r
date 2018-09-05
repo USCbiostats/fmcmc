@@ -38,7 +38,7 @@ sdml_adaptive_kernel <- function(
   
   
   # Proposal
-  beta_x <- 1 - plogis(gx)*alpha
+  beta_x <- 1 - stats::plogis(gx)*alpha
   x_new  <- x + do.call(rz, c(list(k), rz.args))*beta_x
   fx_new <- f(x_new, ...)
   
@@ -50,7 +50,7 @@ sdml_adaptive_kernel <- function(
     gr(x_new, ...)
   
   # Hastings ratio
-  beta_x_new <- 1 - plogis(gx_new)*alpha
+  beta_x_new <- 1 - stats::plogis(gx_new)*alpha
   fz_x_x_new <- do.call(dz, c(list((x_new - x)/beta_x), rz.args))/beta_x
   fz_x_new_x <- do.call(dz, c(list((x - x_new)/beta_x_new), rz.args))/beta_x_new
   

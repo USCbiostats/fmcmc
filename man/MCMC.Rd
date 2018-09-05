@@ -8,7 +8,8 @@
 MCMC(fun, initial, nbatch, nchains = 1L, thin = 1L, scale = rep(1,
   length(initial)), burnin = 1000L, ub = rep(.Machine$double.xmax,
   length(initial)), lb = rep(-.Machine$double.xmax, length(initial)),
-  useCpp = FALSE, cl = NULL, fixed = rep(FALSE, length(initial)), ...)
+  useCpp = FALSE, cl = NULL, fixed = rep(FALSE, length(initial)),
+  parallel = TRUE, ...)
 }
 \arguments{
 \item{fun}{A function. Returns the log-likelihood}
@@ -37,6 +38,9 @@ scalar. Step size for the transition kernel (see details).}
 
 \item{fixed}{Logical vector. If the kth position is \code{TRUE}, then that
 value will be fixed.}
+
+\item{parallel}{Logical. If `FALSE` then it will execute the chains in a serial
+fashion.}
 
 \item{...}{Further arguments passed to \code{fun}.}
 }

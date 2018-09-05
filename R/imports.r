@@ -4,7 +4,7 @@
 #'   clusterApply detectCores clusterSetRNGStream
 #' @useDynLib amcmc
 #' @importFrom methods formalArgs
-#' @importFrom stats runif
+#' @importFrom stats runif plogis
 NULL
 
 #' Adaptative MCMC

@@ -17,6 +17,8 @@
 #' @param useCpp Logical scalar. When \code{TRUE}, loops using a Rcpp implementation.
 #' @param fixed Logical vector. If the kth position is \code{TRUE}, then that
 #' value will be fixed.
+#' @param parallel Logical. If `FALSE` then it will execute the chains in a serial
+#' fashion.
 #' @param ... Further arguments passed to \code{fun}.
 #' 
 #' @details This function implements MCMC using the Metropolis-Hastings ratio with
@@ -197,11 +199,12 @@ MCMC <- function(
   useCpp  = FALSE,
   cl      = NULL,
   fixed   = rep(FALSE, length(initial)),
+  parallel = TRUE,
   ...
   ) {
   
   # Filling the gap on parallel
-  if ((nchains > 1L) && !length(cl)) {
+  if (parallel && (nchains > 1L) && !length(cl)) {
     
     # Creating the cluster
     ncores <- parallel::detectCores()
@@ -216,7 +219,7 @@ MCMC <- function(
     
   }
   
-  if (nchains > 1L) {
+  if (parallel && nchains > 1L) {
 
     # Running the cluster
     ans <- parallel::clusterApply(
@@ -241,6 +244,29 @@ MCMC <- function(
     
     return(coda::mcmc.list(ans))
     
+  } else if (nchains > 1L) {
+    # Running the cluster
+    ans <- lapply(
+      1:nchains, fun=
+        function(i, Fun, initial, nbatch, thin, scale, burnin, ub, lb, useCpp, fixed, ...) {
+          MCMC(
+            fun     = Fun,
+            initial = initial,
+            nbatch  = nbatch,
+            nchains = 1L,
+            thin    = thin,
+            scale   = scale,
+            burnin  = burnin,
+            ub      = ub,
+            lb      = lb,
+            useCpp  = useCpp,
+            fixed   = fixed,
+            ...
+          )
+        }, Fun = fun, nbatch=nbatch, initial = initial, thin = thin, scale = scale,
+      burnin = burnin, ub = ub, lb = lb, useCpp = useCpp, fixed = fixed, ...)
+    
+    return(coda::mcmc.list(ans))
   } else {
   
     # Adding names

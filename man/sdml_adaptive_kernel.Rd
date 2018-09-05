@@ -4,8 +4,9 @@
 \alias{sdml_adaptive_kernel}
 \title{State-Dependent Memory-Less Adaptive Transition Kernel}
 \usage{
-sdml_adaptive_kernel(x, f, gr, rz = stats::rnorm, rz.args = list(mean = 0,
-  sd = 1), ..., alpha = 0.9, eps = rep(1e-05, length(x)))
+sdml_adaptive_kernel(x, f, gr, rz = stats::rnorm, dz = stats::dnorm,
+  rz.args = list(mean = 0, sd = 1), ..., alpha = 0.9,
+  eps = rep(1e-05, length(x)))
 }
 \arguments{
 \item{x}{Current state}
@@ -15,6 +16,8 @@ sdml_adaptive_kernel(x, f, gr, rz = stats::rnorm, rz.args = list(mean = 0,
 \item{gr}{(optional) Gradient of the objective function.}
 
 \item{rz}{Random number function.}
+
+\item{dz}{Fensity function of `z`.}
 
 \item{rz.args}{List of parameters passed to `rz`.}
 
