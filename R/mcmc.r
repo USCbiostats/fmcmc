@@ -250,7 +250,7 @@ MCMC <- function(
   } else if (nchains > 1L) {
     # Running the cluster
     ans <- lapply(
-      1:nchains, fun=
+      1:nchains, FUN=
         function(i, Fun, initial, nbatch, thin, scale, burnin, ub, lb, useCpp,
                  fixed, multicore, ...) {
           MCMC(
