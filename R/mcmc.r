@@ -293,12 +293,14 @@ MCMC <- function(
       # ... has stuff that fun doesnt
       if (any(!(passedargs %in% funargs))) {
         
-        stop("Some arguments passed via -...- are not present in -fun-.")
+        stop("The following arguments passed via -...- are not present in -fun-:\n - ",
+             paste(setdiff(passedargs, funargs), collapse=",\n - "),".\nThe function",
+             "was expecting:\n - ", paste0(funargs, collapse=",\n - "), ".", call. = FALSE)
       
       # fun has stuff that ... doesnt
       } else if (length(funargs) > 1 && any(!(funargs[-1] %in% passedargs))) {
         
-        stop("-fun- requires more arguments to be passed via -...-.")
+        stop("-fun- requires more arguments to be passed via -...-.", call. = FALSE)
       
       # Everything OK
       } else {
@@ -311,7 +313,7 @@ MCMC <- function(
     # ... doesnt have extra args, but funargs does!
     } else if (length(funargs) > 1) {
       
-      stop("-fun- has extra arguments not passed by -...-.")
+      stop("-fun- has extra arguments not passed by -...-.", call. = FALSE)
       
     # Everything OK
     } else {
@@ -322,10 +324,10 @@ MCMC <- function(
     
     # Checking boundaries
     if (length(ub) > 1 && (length(initial) != length(ub)))
-      stop("Incorrect length of -ub-")
+      stop("Incorrect length of -ub-", call. = FALSE)
     
     if (length(lb) > 1 && (length(initial) != length(lb)))
-      stop("Incorrect length of -lb-")
+      stop("Incorrect length of -lb-", call. = FALSE)
     
     # Repeating boundaries
     if (length(ub) == 1)
@@ -335,7 +337,7 @@ MCMC <- function(
       lb <- rep(lb, length(initial))
     
     if (any(ub <= lb))
-      stop("-ub- cannot be <= than -lb-.")
+      stop("-ub- cannot be <= than -lb-.", call. = FALSE)
     
     # Repeating scale
     if (length(scale) == 1)
@@ -343,14 +345,14 @@ MCMC <- function(
     
     # Checkihg burnins
     if (burnin >= nbatch)
-      stop("-burnin- (",burnin,") cannot be >= than -nbatch- (",nbatch,").")
+      stop("-burnin- (",burnin,") cannot be >= than -nbatch- (",nbatch,").", call. = FALSE)
   
     # Checking thin
     if (thin > nbatch)
-      stop("-thin- (",thin,") cannot be > than -nbatch- (",nbatch,").")
+      stop("-thin- (",thin,") cannot be > than -nbatch- (",nbatch,").", call. = FALSE)
     
     if (thin < 1L)
-      stop("-thin- should be >= 1.")
+      stop("-thin- should be >= 1.", call. = FALSE)
     
     if (useCpp) {
       ans <- .MCMC(f, initial, nbatch, lb, ub, scale, fixed)
@@ -374,7 +376,8 @@ MCMC <- function(
         if (is.nan(f1) | is.na(f1) | is.null(f1)) 
           stop(
             "fun(par) is undefined (", f1, ")",
-            "Check either -fun- or the -lb- and -ub- parameters."
+            "Check either -fun- or the -lb- and -ub- parameters.",
+            call. = FALSE
           )
         
         # Step 2. Hastings ratio
@@ -399,7 +402,7 @@ MCMC <- function(
     # Returning an mcmc object from the coda package
     # if the coda package hasn't been loaded, then return a warning
     if (!("package:coda" %in% search()))
-      warning("The -coda- package has not been loaded.")
+      warning("The -coda- package has not been loaded.", call. = FALSE)
     
     return(
       coda::mcmc(
