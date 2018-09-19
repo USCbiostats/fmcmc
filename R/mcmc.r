@@ -1,9 +1,62 @@
+#' Checks the initial values of the MCMC
+#' 
+#' This function is for internal use only.
+#' 
+#' @param initial Either a vector or matrix,.
+#' @param nchains Integer scalar. Number of chains.
+#' @details When `initial` is a vector, the values are recycled to form a matrix of
+#' size `nchains * length(initial)`.
+#' @return
+#'  A named matrix.
+#' @examples
+#' init <- c(.4, .1)
+#' check_initial(init, 1)
+#' check_initial(init, 2)
+#' 
+#' init <- matrix(1:9, ncol=3)
+#' check_initial(init, 3)
+#' \dontrun{
+#' check_initial(init, 2) # Returns an error
+#' }
+#' @export
+check_initial <- function(initial, nchains) {
+  
+  # If function, then return function
+  if (is.vector(initial, mode = "numeric")) {
+    
+    if (nchains > 1)
+      warning("A single initial point has been passed via `initial`: c(",
+              paste(initial, collapse=", "), "). The values will be recycled.",
+              call. = FALSE)
+    
+    initial <- matrix(initial, ncol=length(initial), nrow=nchains,
+                      dimnames = list(NULL, names(initial)))
+    
+  } else if (!is.matrix(initial))
+    stop("When `initial` is not a numeric vector, it should be a matrix. Right now it is ",
+         "an object of class `", class(initial), "`.", call. = FALSE)
+  else if (is.matrix(initial) && nrow(initial) != nchains)
+    stop("The number of rows of `initial` (", nrow(initial),") must coincide with the ",
+         "number of chains (", nchains, ").", call. = FALSE)
+  
+  # Checking parnames
+  if (!length(colnames(initial)))
+    colnames(initial) <- paste0("par", 1:ncol(initial))
+  
+  # Returns the corresponding seed
+  initial
+  
+}
+
+
+
 #' Markov Chain Monte Carlo
 #' 
 #' Metropolis-Hastings algorithm using a random walk kernel with reflecting boundaries.
 #' 
 #' @param fun A function. Returns the log-likelihood
-#' @param initial A numeric vector. Initial values of the parameters.
+#' @param initial A numeric vector or matrix with as many rows as chains with
+#' initial values of the parameters for each chain (See details).
 #' @param nbatch Integer scalar. Number of MCMC runs.
 #' @param nchains Integer scalar. Number of chains to run (in parallel).
 #' @param cl A cluster object passed to \code{\link[parallel:clusterApply]{clusterApply}}.
@@ -65,7 +118,12 @@
 #' used within \code{fun} must be passed throught \code{...}, otherwise the cluster
 #' will return with an error.
 #' 
-#' 
+#' In the case of the initial parameter, when using multiple chains, `nchains > 1`,
+#' the user can specify multiple starting points (which is recommended). In such
+#' case, if `initial` is a vector, the value is recycled (so all chains start from
+#' the same point), otherwise, if `initial` is a matrix with as many rows as
+#' chains, then each row of `initial` is use as a starting point for each of the
+#' chains.
 #' 
 #' @return An object of class \code{\link[coda:mcmc]{mcmc}} from the \CRANpkg{coda}
 #' package. The \code{mcmc} object is a matrix with one column per parameter,
@@ -203,6 +261,9 @@ MCMC <- function(
   ...
   ) {
   
+  # Checking initial argument
+  initial <- check_initial(initial, nchains)
+  
   # Filling the gap on parallel
   if (multicore && (nchains > 1L) && !length(cl)) {
     
@@ -228,7 +289,7 @@ MCMC <- function(
                  fixed, multicore, ...) {
           MCMC(
             fun       = Fun,
-            initial   = initial,
+            initial   = initial[i,,drop=TRUE],
             nbatch    = nbatch,
             nchains   = 1L,
             thin      = thin,
@@ -255,7 +316,7 @@ MCMC <- function(
                  fixed, multicore, ...) {
           MCMC(
             fun     = Fun,
-            initial = initial,
+            initial = initial[i, , drop=TRUE],
             nbatch  = nbatch,
             nchains = 1L,
             thin    = thin,
@@ -276,9 +337,7 @@ MCMC <- function(
   } else {
   
     # Adding names
-    cnames <- names(initial)
-    if (!length(cnames))
-      cnames <- paste0("par",1:length(initial))
+    cnames <- colnames(initial)
     
     # Wrapping function. If ellipsis is there, it will wrap it
     # so that the MCMC call only uses a single argument

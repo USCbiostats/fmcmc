@@ -17,15 +17,15 @@ sdml_adaptive_kernel(x, f, gr, rz = stats::rnorm, dz = stats::dnorm,
 
 \item{rz}{Random number function.}
 
-\item{dz}{Fensity function of `z`.}
+\item{dz}{Fensity function of \code{z}.}
 
-\item{rz.args}{List of parameters passed to `rz`.}
+\item{rz.args}{List of parameters passed to \code{rz}.}
 
-\item{...}{Further arguments passed to `f` and, if specified, `gr`}
+\item{...}{Further arguments passed to \code{f} and, if specified, \code{gr}}
 
-\item{alpha}{Number in `[0, 1)`.}
+\item{alpha}{Number in \code{[0, 1)}.}
 
-\item{eps}{If no `gr` is specified, epsilon used to approximate the gradient.}
+\item{eps}{If no \code{gr} is specified, epsilon used to approximate the gradient.}
 }
 \description{
 State-Dependent Memory-Less Adaptive Transition Kernel

@@ -25,7 +25,7 @@ MCMC(fun, initial, nbatch, nchains = 1L, thin = 1L, scale = rep(1,
 \item{scale}{Either a numeric vector of length \code{length(initial)} or a
 scalar. Step size for the transition kernel (see details).}
 
-\item{burnin}{Integer scalar. Number of burn-in samples. Passed to 
+\item{burnin}{Integer scalar. Number of burn-in samples. Passed to
 \code{\link[coda:mcmc]{coda::mcmc}} as \code{init}.}
 
 \item{ub}{Numeric vector of length \code{length(initial)}. Upper bounds}
@@ -39,7 +39,7 @@ scalar. Step size for the transition kernel (see details).}
 \item{fixed}{Logical vector. If the kth position is \code{TRUE}, then that
 value will be fixed.}
 
-\item{multicore}{Logical. If `FALSE` then it will execute the chains in a serial
+\item{multicore}{Logical. If \code{FALSE} then it will execute the chains in a serial
 fashion.}
 
 \item{...}{Further arguments passed to \code{fun}.}
@@ -55,7 +55,7 @@ Metropolis-Hastings algorithm using a random walk kernel with reflecting boundar
 \details{
 This function implements MCMC using the Metropolis-Hastings ratio with
 scaled standard normal propositions for each parameter. For each parameter
-the transition function is 
+the transition function is
 
 \deqn{
 \theta' = \theta + scale*z
@@ -66,7 +66,7 @@ sampling scheme, i.e. proposed states are either accepted or rejected
 altogether. If \code{length(initial) > 1} and \code{length(scale) == 1},
 the value will be recycled so that \code{length(initial) == length(scale)}.
 
-Lower and upper bounds are treated using reflecting boundaries, this is, 
+Lower and upper bounds are treated using reflecting boundaries, this is,
 if the proposed \eqn{\theta'} is greater than the \code{ub}, then \eqn{\theta' - ub}
 is substracted from \eqn{ub}. At the same time, if it is less than \code{lb}, then
 \eqn{lb - \theta'} is added to \code{lb} iterating until \eqn{\theta} is within
