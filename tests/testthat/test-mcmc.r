@@ -85,17 +85,6 @@ test_that("Multiple chains", {
 })
 
 # ------------------------------------------------------------------------------
-test_that("Error passing arguents", {
-  fun0 <- function(x) {}
-  fun1 <- function(x, a) {}
-  fun2 <- function(x, a, b) {}
-  
-  expect_error(MCMC(fun0, 1, a=1), "not present in -fun")
-  expect_error(MCMC(fun1, 1), "has extra arguments")
-  expect_error(MCMC(fun2, 1, a=1), "requires more arguments")
-})
-
-# ------------------------------------------------------------------------------
 test_that("Repeating the chains in parallel", {
   # Simulating data
   set.seed(981)

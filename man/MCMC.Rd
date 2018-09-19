@@ -14,7 +14,8 @@ MCMC(fun, initial, nbatch, nchains = 1L, thin = 1L, scale = rep(1,
 \arguments{
 \item{fun}{A function. Returns the log-likelihood}
 
-\item{initial}{A numeric vector. Initial values of the parameters.}
+\item{initial}{A numeric vector or matrix with as many rows as chains with
+initial values of the parameters for each chain (See details).}
 
 \item{nbatch}{Integer scalar. Number of MCMC runs.}
 
@@ -96,6 +97,13 @@ the following:
 In such case, when running in parallel, objects that are
 used within \code{fun} must be passed throught \code{...}, otherwise the cluster
 will return with an error.
+
+In the case of the initial parameter, when using multiple chains, \code{nchains > 1},
+the user can specify multiple starting points (which is recommended). In such
+case, if \code{initial} is a vector, the value is recycled (so all chains start from
+the same point), otherwise, if \code{initial} is a matrix with as many rows as
+chains, then each row of \code{initial} is use as a starting point for each of the
+chains.
 }
 \examples{
 # Univariate distributed data with multiple parameters ----------------------
