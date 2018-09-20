@@ -285,7 +285,8 @@ MCMC <- function(
   } else {
   
     # Adding names
-    cnames <- colnames(initial)
+    initial <- initial[1,,drop=TRUE]
+    cnames  <- names(initial)
     
     # Wrapping function. If ellipsis is there, it will wrap it
     # so that the MCMC call only uses a single argument
