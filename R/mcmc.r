@@ -228,6 +228,38 @@ MCMC <- function(
     
   }
   
+  # Checking boundaries
+  if (length(ub) > 1 && (ncol(initial) != length(ub)))
+    stop("Incorrect length of -ub-", call. = FALSE)
+  
+  if (length(lb) > 1 && (ncol(initial) != length(lb)))
+    stop("Incorrect length of -lb-", call. = FALSE)
+  
+  # Repeating boundaries
+  if (length(ub) == 1)
+    ub <- rep(ub, ncol(initial))
+  
+  if (length(lb) == 1)
+    lb <- rep(lb, ncol(initial))
+  
+  if (any(ub <= lb))
+    stop("-ub- cannot be <= than -lb-.", call. = FALSE)
+  
+  # Repeating scale
+  if (length(scale) == 1)
+    scale <- rep(scale, ncol(initial))
+  
+  # Checkihg burnins
+  if (burnin >= nbatch)
+    stop("-burnin- (",burnin,") cannot be >= than -nbatch- (",nbatch,").", call. = FALSE)
+  
+  # Checking thin
+  if (thin > nbatch)
+    stop("-thin- (",thin,") cannot be > than -nbatch- (",nbatch,").", call. = FALSE)
+  
+  if (thin < 1L)
+    stop("-thin- should be >= 1.", call. = FALSE)
+  
   if (multicore && nchains > 1L) {
 
     # Running the cluster
@@ -329,38 +361,6 @@ MCMC <- function(
       f <- function(z) fun(z)
       
     }
-    
-    # Checking boundaries
-    if (length(ub) > 1 && (length(initial) != length(ub)))
-      stop("Incorrect length of -ub-", call. = FALSE)
-    
-    if (length(lb) > 1 && (length(initial) != length(lb)))
-      stop("Incorrect length of -lb-", call. = FALSE)
-    
-    # Repeating boundaries
-    if (length(ub) == 1)
-      ub <- rep(ub, length(initial))
-  
-    if (length(lb) == 1)
-      lb <- rep(lb, length(initial))
-    
-    if (any(ub <= lb))
-      stop("-ub- cannot be <= than -lb-.", call. = FALSE)
-    
-    # Repeating scale
-    if (length(scale) == 1)
-      scale <- rep(scale, length(initial))
-    
-    # Checkihg burnins
-    if (burnin >= nbatch)
-      stop("-burnin- (",burnin,") cannot be >= than -nbatch- (",nbatch,").", call. = FALSE)
-  
-    # Checking thin
-    if (thin > nbatch)
-      stop("-thin- (",thin,") cannot be > than -nbatch- (",nbatch,").", call. = FALSE)
-    
-    if (thin < 1L)
-      stop("-thin- should be >= 1.", call. = FALSE)
     
     if (useCpp) {
       ans <- .MCMC(f, initial, nbatch, lb, ub, scale, fixed)
