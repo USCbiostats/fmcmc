@@ -269,7 +269,7 @@ MCMC <- function(
                  fixed, multicore, ...) {
           MCMC(
             fun       = Fun,
-            initial   = initial[i,,drop=TRUE],
+            initial   = initial[i,,drop=FALSE],
             nbatch    = nbatch,
             nchains   = 1L,
             thin      = thin,
@@ -296,7 +296,7 @@ MCMC <- function(
                  fixed, multicore, ...) {
           MCMC(
             fun     = Fun,
-            initial = initial[i, , drop=TRUE],
+            initial = initial[i, , drop=FALSE],
             nbatch  = nbatch,
             nchains = 1L,
             thin    = thin,
@@ -363,10 +363,12 @@ MCMC <- function(
     }
     
     if (useCpp) {
+      
       ans <- .MCMC(f, initial, nbatch, lb, ub, scale, fixed)
       dimnames(ans) <- list(1:nbatch, cnames)
       
     } else {
+      
       theta0 <- initial
       theta1 <- theta0
       f0     <- f(theta0)
@@ -417,9 +419,24 @@ MCMC <- function(
         ans,
         start = as.integer(rownames(ans)[1]),
         end   = as.integer(rownames(ans)[nrow(ans)]),
-        thin = thin
+        thin  = thin
         )
       )
   }
+}
+
+c.mcmc <- function(...) {
+  
+  # retrieving the list of objects
+  dots <- list(...)
+  
+  thin <- sapply(dots, "[[", "thin")
+  thin <- unique(thin)
+  
+  if (length(thin) != 1L)
+    stop()
+  
+  
+  
 }
 
