@@ -11,7 +11,17 @@ gelman_convergence <- function(threshold = 1.10) {
     if (coda::nchain(x) > 1L) {
       
       # Computing gelman test
-      d <- coda::gelman.diag(x)
+      d <- tryCatch(coda::gelman.diag(x), error = function(e) e)
+      
+      if (inherits(d, "error")) {
+        
+        warning("At ", coda::niter(x), " `gelman.diag` failed to be computed.",
+                " Will skip and try with the next batch.", call. = FALSE,
+                immediate. = TRUE)
+        
+        return(FALSE)
+        
+      }
       
       # Depending on multivariable or not
       val <- ifelse(coda::nvar(x) > 1L, d$mpsrf, d$psrf[1,"Point est."])
@@ -31,7 +41,7 @@ gelman_convergence <- function(threshold = 1.10) {
   
 }
 
-with_autostop <- function(expr, has_converged) {
+with_autostop <- function(expr, conv_checker) {
   
   # Getting the parent environment
   parenv <- parent.frame()
@@ -40,7 +50,7 @@ with_autostop <- function(expr, has_converged) {
   nbatch   <- parenv$nbatch
   nchains  <- parenv$nchains
   autostop <- parenv$autostop
-
+  
   # Checking frequency to measure batch
   if (!is.numeric(autostop))
     stop("The `autostop` parameter must be a number. autostop=", autostop,
@@ -48,6 +58,12 @@ with_autostop <- function(expr, has_converged) {
   else if (length(autostop) != 1L)
     stop("The `autostop` parameter must be of length 1. autostop=", autostop,
          call. = FALSE)
+  
+  # Correcting the autostop
+  if (autostop*2 > nbatch) {
+    autostop <- 0L
+    parenv$autostop <- 0L
+  }
 
   # Capturing the expression
   expr <- sys.call()[[2]]
@@ -75,12 +91,23 @@ with_autostop <- function(expr, has_converged) {
     # Updating the nbatch argument
     parenv$nbatch <- bulks[i]
     
-    # Running the MCMC
-    ans <- c(ans, eval(expr, envir = parenv))
+    if (i > 1) {
+      parenv$burnin  <- 0L
+      parenv$initial <- do.call(rbind, lapply(ans, "[", i=coda::niter(ans), j=, drop=FALSE))
+    }
+      
+        # Running the MCMC and adding it to the tail
+    tmp <- eval(expr, envir = parenv)
+    if (is.list(tmp) & !coda::is.mcmc.list(tmp))
+      tmp <- coda::as.mcmc.list(tmp)
     
-    if ((autostop > 0L) && (converged <- has_converged(ans))) {
+    # Appending retults
+    ans <- append_chains(ans, tmp)
+    
+    if ((autostop > 0L) && (converged <- conv_checker(ans))) {
       message(
-        "Convergence has been reached with ", coda::niter(ans), " iterations."
+        "Convergence has been reached with ", coda::niter(ans), " iterations (",
+        sum(bulks[1:i]), " steps)."
         )
       break
     }

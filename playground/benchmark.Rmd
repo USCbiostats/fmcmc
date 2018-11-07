@@ -38,11 +38,13 @@ t0 <- system.time(
 )
 
 t1 <- system.time(
-  out1 <- MCMC(lupost, beta.init, 1e5, burnin = 0L, x = x, y = y, useCpp = FALSE)
+  out1 <- MCMC(lupost, initial = beta.init, nbatch = 1e5, burnin = 0L, x = x,
+               y = y, useCpp = FALSE)
 )
 
 t2 <- system.time(
-  out1 <- MCMC(lupost, beta.init, 1e5, burnin = 0L, x = x, y = y, useCpp = TRUE)
+  out1 <- MCMC(lupost, initial = beta.init, nbatch = 1e5, burnin = 0L, x = x,
+               y = y, useCpp = TRUE)
 )
 t0-t1
 t0-t2

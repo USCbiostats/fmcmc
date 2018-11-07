@@ -2,11 +2,14 @@
 % Please edit documentation in R/append_chains.R
 \name{append_chains}
 \alias{append_chains}
+\alias{append_chains.default}
 \alias{append_chains.mcmc.list}
 \alias{append_chains.mcmc}
 \title{Append MCMC chains (objects of class \link[coda:mcmc]{coda::mcmc})}
 \usage{
 append_chains(...)
+
+\method{append_chains}{default}(...)
 
 \method{append_chains}{mcmc.list}(...)
 
@@ -15,6 +18,12 @@ append_chains(...)
 \arguments{
 \item{...}{A list of \code{mcmc} or \code{mcmc.list} class objects.}
 }
+\value{
+If \code{mcmc.list}, an object of class \code{mcmc.list}, otherwise,
+an object of class \code{mcmc}.
+}
 \description{
-Append MCMC chains (objects of class \link[coda:mcmc]{coda::mcmc})
+Combines two or more MCMC runs into a single run. If runs have
+multiple chains, it will check that all have the same number of chains, and
+it will join chains as by \link{rbind}.
 }

@@ -6,9 +6,9 @@ test_that("Error passing arguents", {
   fun1 <- function(x, a) {}
   fun2 <- function(x, a, b) {}
   
-  expect_error(MCMC(fun0, 1, 10000, a=1), "not present in -fun")
-  expect_error(MCMC(fun1, 1, 10000), "has extra arguments")
-  expect_error(MCMC(fun2, 1, 10000, a=1), "requires more arguments")
+  expect_error(MCMC(fun0, initial = 1, nbatch = 10000, a=1), "not present in -fun")
+  expect_error(MCMC(fun1, initial = 1, nbatch = 10000), "has extra arguments")
+  expect_error(MCMC(fun2, initial = 1, nbatch = 10000, a=1), "requires more arguments")
 })
 
 # ------------------------------------------------------------------------------
