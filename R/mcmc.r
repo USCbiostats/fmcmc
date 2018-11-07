@@ -424,19 +424,3 @@ MCMC <- function(
       )
   }
 }
-
-c.mcmc <- function(...) {
-  
-  # retrieving the list of objects
-  dots <- list(...)
-  
-  thin <- sapply(dots, "[[", "thin")
-  thin <- unique(thin)
-  
-  if (length(thin) != 1L)
-    stop()
-  
-  
-  
-}
-
