@@ -30,7 +30,7 @@ check_initial <- function(initial, nchains) {
               call. = FALSE)
     
     initial <- matrix(initial, ncol=length(initial), nrow=nchains,
-                      dimnames = list(NULL, names(initial)))
+                      dimnames = list(NULL, names(initial)), byrow=TRUE)
     
   } else if (!is.matrix(initial))
     stop("When `initial` is not a numeric vector, it should be a matrix. Right now it is ",

@@ -2,13 +2,32 @@
 #' 
 #' @param threshold Numeric value. A Gelman statistic below the threshold
 #' will return `TRUE`.
+#' @param check_invariant Logical. When `TRUE` the function only computes
+#' the gelman diagnostic using variables with greater than `1e-10` variance
 #' @return A function passed to [MCMC] to check automatic convergence.
 #' @export
-gelman_convergence <- function(threshold = 1.10) {
+gelman_convergence <- function(threshold = 1.10, check_invariant=TRUE) {
 
   function(x) {
     
     if (coda::nchain(x) > 1L) {
+      
+      # Checking invariant
+      if (check_invariant) {
+        
+        variances <- which(stats::sd(do.call(rbind, x))^2 < 1e-10)
+        
+        if (length(variances) > 0) {
+        
+          if (length(variances) == coda::nvar(x))
+            return(FALSE)
+            
+          for (i in 1:coda::nchain(x))
+            x[[i]] <- x[[i]][, -variances,drop=FALSE]
+        
+        }
+        
+      }
       
       # Computing gelman test
       d <- tryCatch(coda::gelman.diag(x), error = function(e) e)
@@ -116,7 +135,7 @@ with_autostop <- function(expr, conv_checker) {
   
   # Did it converged?
   if (autostop && (i == length(bulks) & !converged))
-    warning("No convergence reached.", call. = TRUE)
+    warning("No convergence reached.", call. = FALSE)
   
   # Returning
   return(ans)

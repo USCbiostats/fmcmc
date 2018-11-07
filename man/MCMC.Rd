@@ -10,7 +10,7 @@ MCMC(fun, ..., initial, nbatch, nchains = 1L, thin = 1L,
   ub = rep(.Machine$double.xmax, length(initial)),
   lb = rep(-.Machine$double.xmax, length(initial)), useCpp = FALSE,
   cl = NULL, fixed = rep(FALSE, length(initial)), multicore = TRUE,
-  conv_checker = gelman_convergence(1.1), autostop = nbatch\%/\%10)
+  conv_checker = gelman_convergence(1.1), autostop = 500)
 }
 \arguments{
 \item{fun}{A function. Returns the log-likelihood}

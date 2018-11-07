@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Adaptative MCMC — amcmc • amcmc</title>
+<title>State-Dependent Memory-Less Adaptive Transition Kernel — sdml_adaptive_kernel • amcmc</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Adaptative MCMC — amcmc" />
+<meta property="og:title" content="State-Dependent Memory-Less Adaptive Transition Kernel — sdml_adaptive_kernel" />
 
-<meta property="og:description" content="Adaptative MCMC" />
+<meta property="og:description" content="State-Dependent Memory-Less Adaptive Transition Kernel" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -97,23 +97,68 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Adaptative MCMC</h1>
-    <small class="dont-index">Source: <a href='https://github.com/USCbiostats/amcmc/blob/master/R/imports.r'><code>R/imports.r</code></a></small>
-    <div class="hidden name"><code>amcmc.Rd</code></div>
+    <h1>State-Dependent Memory-Less Adaptive Transition Kernel</h1>
+    <small class="dont-index">Source: <a href='https://github.com/USCbiostats/amcmc/blob/master/R/kernel_sdml.r'><code>R/kernel_sdml.r</code></a></small>
+    <div class="hidden name"><code>sdml_adaptive_kernel.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Adaptative MCMC</p>
+    <p>State-Dependent Memory-Less Adaptive Transition Kernel</p>
     
     </div>
 
-        
+    <pre class="usage"><span class='fu'>sdml_adaptive_kernel</span>(<span class='no'>x</span>, <span class='no'>f</span>, <span class='no'>gr</span>, <span class='kw'>rz</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='no'><a href='http://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>, <span class='kw'>dz</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='no'><a href='http://www.rdocumentation.org/packages/stats/topics/Normal'>dnorm</a></span>,
+  <span class='kw'>rz.args</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span>), <span class='no'>...</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.9</span>,
+  <span class='kw'>eps</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='fl'>1e-05</span>, <span class='fu'>length</span>(<span class='no'>x</span>)))</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>x</th>
+      <td><p>Current state</p></td>
+    </tr>
+    <tr>
+      <th>f</th>
+      <td><p>Objective function</p></td>
+    </tr>
+    <tr>
+      <th>gr</th>
+      <td><p>(optional) Gradient of the objective function.</p></td>
+    </tr>
+    <tr>
+      <th>rz</th>
+      <td><p>Random number function.</p></td>
+    </tr>
+    <tr>
+      <th>dz</th>
+      <td><p>Fensity function of <code>z</code>.</p></td>
+    </tr>
+    <tr>
+      <th>rz.args</th>
+      <td><p>List of parameters passed to <code>rz</code>.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Further arguments passed to <code>f</code> and, if specified, <code>gr</code></p></td>
+    </tr>
+    <tr>
+      <th>alpha</th>
+      <td><p>Number in <code>[0, 1)</code>.</p></td>
+    </tr>
+    <tr>
+      <th>eps</th>
+      <td><p>If no <code>gr</code> is specified, epsilon used to approximate the gradient.</p></td>
+    </tr>
+    </table>
+    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
                 </ul>
 
   </div>

@@ -17,7 +17,7 @@ test_that("Check of initial values", {
   init <- c(.4, .1)
   expect_equivalent(check_initial(init, 1), matrix(init, nrow=1))
   expect_equivalent(
-    suppressWarnings(check_initial(init, 2)), matrix(init, nrow=2, ncol=2)
+    suppressWarnings(check_initial(init, 2)), matrix(init, nrow=2, ncol=2, byrow=TRUE)
     )
   
   init <- matrix(1:9, ncol=3)

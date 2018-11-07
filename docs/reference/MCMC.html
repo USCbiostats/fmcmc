@@ -21,16 +21,22 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+
+
+
 <meta property="og:title" content="Markov Chain Monte Carlo — MCMC" />
 
 <meta property="og:description" content="Metropolis-Hastings algorithm using a random walk kernel with reflecting boundaries." />
 <meta name="twitter:card" content="summary" />
+
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -53,8 +59,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">amcmc</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">amcmc</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9000</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
@@ -69,8 +79,14 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/USCbiostats/amcmc">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -78,22 +94,28 @@
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Markov Chain Monte Carlo</h1>
+    <small class="dont-index">Source: <a href='https://github.com/USCbiostats/amcmc/blob/master/R/mcmc.r'><code>R/mcmc.r</code></a></small>
+    <div class="hidden name"><code>MCMC.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Metropolis-Hastings algorithm using a random walk kernel with reflecting boundaries.</p>
     
+    </div>
 
-    <pre class="usage"><span class='fu'>MCMC</span>(<span class='no'>fun</span>, <span class='no'>initial</span>, <span class='no'>nbatch</span>, <span class='kw'>nchains</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>scale</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='fl'>1</span>,
-  <span class='fu'>length</span>(<span class='no'>initial</span>)), <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>1000L</span>, <span class='kw'>ub</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='no'>.Machine</span>$<span class='no'>double.xmax</span>,
-  <span class='fu'>length</span>(<span class='no'>initial</span>)), <span class='kw'>lb</span> <span class='kw'>=</span> <span class='fu'>rep</span>(-<span class='no'>.Machine</span>$<span class='no'>double.xmax</span>, <span class='fu'>length</span>(<span class='no'>initial</span>)),
-  <span class='kw'>useCpp</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fixed</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='fl'>FALSE</span>, <span class='fu'>length</span>(<span class='no'>initial</span>)), <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>MCMC</span>(<span class='no'>fun</span>, <span class='no'>...</span>, <span class='no'>initial</span>, <span class='no'>nbatch</span>, <span class='kw'>nchains</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
+  <span class='kw'>scale</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='fl'>1</span>, <span class='fu'>length</span>(<span class='no'>initial</span>)), <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>1000L</span>,
+  <span class='kw'>ub</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='no'>.Machine</span>$<span class='no'>double.xmax</span>, <span class='fu'>length</span>(<span class='no'>initial</span>)),
+  <span class='kw'>lb</span> <span class='kw'>=</span> <span class='fu'>rep</span>(-<span class='no'>.Machine</span>$<span class='no'>double.xmax</span>, <span class='fu'>length</span>(<span class='no'>initial</span>)), <span class='kw'>useCpp</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fixed</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='fl'>FALSE</span>, <span class='fu'>length</span>(<span class='no'>initial</span>)), <span class='kw'>multicore</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>conv_checker</span> <span class='kw'>=</span> <span class='fu'><a href='gelman_convergence.html'>gelman_convergence</a></span>(<span class='fl'>1.1</span>), <span class='kw'>autostop</span> <span class='kw'>=</span> <span class='fl'>500</span>)</pre>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
@@ -101,8 +123,13 @@
       <td><p>A function. Returns the log-likelihood</p></td>
     </tr>
     <tr>
+      <th>...</th>
+      <td><p>Further arguments passed to <code>fun</code>.</p></td>
+    </tr>
+    <tr>
       <th>initial</th>
-      <td><p>A numeric vector. Initial values of the parameters.</p></td>
+      <td><p>A numeric vector or matrix with as many rows as chains with
+initial values of the parameters for each chain (See details).</p></td>
     </tr>
     <tr>
       <th>nbatch</th>
@@ -123,7 +150,7 @@ scalar. Step size for the transition kernel (see details).</p></td>
     </tr>
     <tr>
       <th>burnin</th>
-      <td><p>Integer scalar. Number of burn-in samples. Passed to 
+      <td><p>Integer scalar. Number of burn-in samples. Passed to
 <code><a href='http://www.rdocumentation.org/packages/coda/topics/mcmc'>coda::mcmc</a></code> as <code>init</code>.</p></td>
     </tr>
     <tr>
@@ -148,8 +175,19 @@ scalar. Step size for the transition kernel (see details).</p></td>
 value will be fixed.</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>Further arguments passed to <code>fun</code>.</p></td>
+      <th>multicore</th>
+      <td><p>Logical. If <code>FALSE</code> then it will execute the chains in a serial
+fashion.</p></td>
+    </tr>
+    <tr>
+      <th>conv_checker</th>
+      <td><p>A function that receives an object of class <a href='http://www.rdocumentation.org/packages/coda/topics/mcmc.list'>coda::mcmc.list</a>,
+and returns a logical value with <code>TRUE</code> indicating convergence.</p></td>
+    </tr>
+    <tr>
+      <th>autostop</th>
+      <td><p>Integer scalar. Frequency used to check for convergence.
+By default the function uses <a href='gelman_convergence.html'>gelman_convergence</a> as criteria.</p></td>
     </tr>
     </table>
     
@@ -163,15 +201,15 @@ and <code>nbatch</code> rows. If <code>nchains &gt; 1</code>, then it returns a 
 
     <p>This function implements MCMC using the Metropolis-Hastings ratio with
 scaled standard normal propositions for each parameter. For each parameter
-the transition function is
-    $$
+the transition function is</p>
+<p>$$
 \theta' = \theta + scale*z
 $$</p>
 <p>Where \(z\) has standard normal distribution. The MCMC follows a block
 sampling scheme, i.e. proposed states are either accepted or rejected
 altogether. If <code>length(initial) &gt; 1</code> and <code>length(scale) == 1</code>,
 the value will be recycled so that <code>length(initial) == length(scale)</code>.</p>
-<p>Lower and upper bounds are treated using reflecting boundaries, this is, 
+<p>Lower and upper bounds are treated using reflecting boundaries, this is,
 if the proposed \(\theta'\) is greater than the <code>ub</code>, then \(\theta' - ub\)
 is substracted from \(ub\). At the same time, if it is less than <code>lb</code>, then
 \(lb - \theta'\) is added to <code>lb</code> iterating until \(\theta\) is within
@@ -183,7 +221,8 @@ if <code>cl</code> is not passed, <code>MCMC</code> will create a <code>PSOCK</c
 using <code><a href='http://www.rdocumentation.org/packages/parallel/topics/makeCluster'>makePSOCKcluster</a></code> with
 <code><a href='http://www.rdocumentation.org/packages/parallel/topics/detectCores'>detectCores</a></code>
 clusters and try to run it using multiple cores. Internally, the function does
-the following:</p><pre>
+the following:</p>
+<pre>
   # Creating the cluster
   ncores &lt;- parallel::detectCores()
   ncores &lt;- ifelse(nchains &lt; ncores, nchains, ncores)
@@ -195,6 +234,22 @@ the following:</p><pre>
     <p>In such case, when running in parallel, objects that are
 used within <code>fun</code> must be passed throught <code>...</code>, otherwise the cluster
 will return with an error.</p>
+<p>In the case of the initial parameter, when using multiple chains, <code>nchains &gt; 1</code>,
+the user can specify multiple starting points (which is recommended). In such
+case, if <code>initial</code> is a vector, the value is recycled (so all chains start from
+the same point), otherwise, if <code>initial</code> is a matrix with as many rows as
+chains, then each row of <code>initial</code> is use as a starting point for each of the
+chains.</p>
+    
+    <h2 class="hasAnchor" id="automatic-stop"><a class="anchor" href="#automatic-stop"></a>Automatic stop</h2>
+
+    
+    <p>When <code>autostop</code> is greater than 0, the function will perform a convergence
+check every <code>autostop</code> steps. By default, the convergence check is done
+using the Gelman diagostic as implemented in <a href='http://www.rdocumentation.org/packages/coda/topics/gelman.diag'>coda::gelman.diag</a>, so it will
+only be calculated when <code>nchains &gt; 1L</code>.</p>
+<p>The user may provide a different convergence criteria by passing a different
+function via <code>conv_checker</code>. It's current default is <a href='gelman_convergence.html'>gelman_convergence</a>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -214,7 +269,8 @@ will return with an error.</p>
 <span class='co'># Calling MCMC, but first, loading the coda R package for</span>
 <span class='co'># diagnostics</span>
 <span class='fu'>library</span>(<span class='no'>coda</span>)
-<span class='no'>ans</span> <span class='kw'>&lt;-</span> <span class='fu'>MCMC</span>(<span class='no'>fun</span>, <span class='fu'>c</span>(<span class='kw'>mu</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>sigma</span><span class='kw'>=</span><span class='fl'>1</span>), <span class='kw'>nbatch</span> <span class='kw'>=</span> <span class='fl'>2e3</span>, <span class='kw'>scale</span> <span class='kw'>=</span> <span class='fl'>.1</span>, <span class='kw'>ub</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>lb</span> <span class='kw'>=</span> <span class='fl'>0</span>)
+<span class='no'>ans</span> <span class='kw'>&lt;-</span> <span class='fu'>MCMC</span>(<span class='no'>fun</span>, <span class='kw'>initial</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='kw'>mu</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>sigma</span><span class='kw'>=</span><span class='fl'>1</span>), <span class='kw'>nbatch</span> <span class='kw'>=</span> <span class='fl'>2e3</span>, <span class='kw'>scale</span> <span class='kw'>=</span> <span class='fl'>.1</span>,
+   <span class='kw'>ub</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>lb</span> <span class='kw'>=</span> <span class='fl'>0</span>)
 
 <span class='co'># Ploting the output</span>
 <span class='no'>oldpar</span> <span class='kw'>&lt;-</span> <span class='fu'>par</span>(<span class='kw'>no.readonly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
@@ -230,7 +286,7 @@ will return with an error.</p>
 <span class='fu'>plot</span>(<span class='fu'>apply</span>(<span class='fu'>as.matrix</span>(<span class='no'>ans</span>), <span class='fl'>1</span>, <span class='no'>fun</span>), <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"l"</span>,
      <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"LogLikelihood"</span>,
      <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='fu'>expression</span>(<span class='fu'>L</span>(<span class='st'>"{"</span>~<span class='no'>mu</span>,<span class='no'>sigma</span>~<span class='st'>"}"</span>~<span class='st'>"|"</span>~<span class='no'>D</span>))
-)</div><div class='img'><img src='MCMC-1.png' alt='' width='700' height='432.632880098887' /></div><div class='input'><span class='fu'>par</span>(<span class='no'>oldpar</span>)</div><span class='co'># NOT RUN {</span>
+)</div><div class='img'><img src='MCMC-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>par</span>(<span class='no'>oldpar</span>)</div><span class='co'># NOT RUN {</span>
 <span class='co'># In this example we estimate the parameter for a dataset with ----------------</span>
 <span class='co'># With 5,000 draws from a MVN() with parameters M and S.</span>
 
@@ -315,6 +371,8 @@ will return with an error.</p>
       <li><a href="#value">Value</a></li>
 
       <li><a href="#details">Details</a></li>
+
+      <li><a href="#automatic-stop">Automatic stop</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>
@@ -334,5 +392,8 @@ will return with an error.</p>
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

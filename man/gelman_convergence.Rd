@@ -4,11 +4,14 @@
 \alias{gelman_convergence}
 \title{Automatic stop}
 \usage{
-gelman_convergence(threshold = 1.1)
+gelman_convergence(threshold = 1.1, check_invariant = TRUE)
 }
 \arguments{
 \item{threshold}{Numeric value. A Gelman statistic below the threshold
 will return \code{TRUE}.}
+
+\item{check_invariant}{Logical. When \code{TRUE} the function only computes
+the gelman diagnostic using variables with greater than \code{1e-10} variance}
 }
 \value{
 A function passed to \link{MCMC} to check automatic convergence.
