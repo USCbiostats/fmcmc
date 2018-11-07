@@ -21,6 +21,10 @@
 #' @param multicore Logical. If `FALSE` then it will execute the chains in a serial
 #' fashion.
 #' @param ... Further arguments passed to \code{fun}.
+#' @param conv_checker A function that receives an object of class [coda::mcmc.list],
+#' and returns a logical value with `TRUE` indicating convergence.
+#' @param autostop Integer scalar. Frequency used to check for convergence.
+#' By default the function uses [gelman_convergence] as criteria.
 #' 
 #' @details This function implements MCMC using the Metropolis-Hastings ratio with
 #' scaled standard normal propositions for each parameter. For each parameter
@@ -73,6 +77,17 @@
 #' chains, then each row of `initial` is use as a starting point for each of the
 #' chains.
 #' 
+#' @section Automatic stop:
+#' 
+#' When `autostop` is greater than 0, the function will perform a convergence
+#' check every `autostop` steps. By default, the convergence check is done
+#' using the Gelman diagostic as implemented in [coda::gelman.diag], so it will
+#' only be calculated when `nchains > 1L`.
+#' 
+#' The user may provide a different convergence criteria by passing a different
+#' function via `conv_checker`. It's current default is [gelman_convergence].
+#' 
+#' 
 #' @return An object of class \code{\link[coda:mcmc]{mcmc}} from the \CRANpkg{coda}
 #' package. The \code{mcmc} object is a matrix with one column per parameter,
 #' and \code{nbatch} rows. If \code{nchains > 1}, then it returns a \code{\link[coda:mcmc]{mcmc.list}}.
@@ -96,7 +111,8 @@
 #' # Calling MCMC, but first, loading the coda R package for
 #' # diagnostics
 #' library(coda)
-#' ans <- MCMC(fun, c(mu=1, sigma=1), nbatch = 2e3, scale = .1, ub = 10, lb = 0)
+#' ans <- MCMC(fun, initial = c(mu=1, sigma=1), nbatch = 2e3, scale = .1,
+#'    ub = 10, lb = 0)
 #' 
 #' # Ploting the output
 #' oldpar <- par(no.readonly = TRUE)
@@ -194,20 +210,27 @@
 #' @aliases Metropolis-Hastings
 MCMC <- function(
   fun,
+  ...,
   initial, 
   nbatch,
-  nchains   = 1L,
-  thin      = 1L,
-  scale     = rep(1, length(initial)),
-  burnin    = 1e3L,
-  ub        = rep(.Machine$double.xmax, length(initial)),
-  lb        = rep(-.Machine$double.xmax, length(initial)),
-  useCpp    = FALSE,
-  cl        = NULL,
-  fixed     = rep(FALSE, length(initial)),
-  multicore = TRUE,
-  ...
+  nchains      = 1L,
+  thin         = 1L,
+  scale        = rep(1, length(initial)),
+  burnin       = 1e3L,
+  ub           = rep(.Machine$double.xmax, length(initial)),
+  lb           = rep(-.Machine$double.xmax, length(initial)),
+  useCpp       = FALSE,
+  cl           = NULL,
+  fixed        = rep(FALSE, length(initial)),
+  multicore    = TRUE,
+  conv_checker = gelman_convergence(1.1),
+  autostop     = 500
   ) {
+  
+  
+  # # if the coda package hasn't been loaded, then return a warning
+  # if (!("package:coda" %in% search()))
+  #   warning("The -coda- package has not been loaded.", call. = FALSE, )
   
   # Checking initial argument
   initial <- check_initial(initial, nchains)
@@ -228,16 +251,49 @@ MCMC <- function(
     
   }
   
+  # Checking boundaries
+  if (length(ub) > 1 && (ncol(initial) != length(ub)))
+    stop("Incorrect length of -ub-", call. = FALSE)
+  
+  if (length(lb) > 1 && (ncol(initial) != length(lb)))
+    stop("Incorrect length of -lb-", call. = FALSE)
+  
+  # Repeating boundaries
+  if (length(ub) == 1)
+    ub <- rep(ub, ncol(initial))
+  
+  if (length(lb) == 1)
+    lb <- rep(lb, ncol(initial))
+  
+  if (any(ub <= lb))
+    stop("-ub- cannot be <= than -lb-.", call. = FALSE)
+  
+  # Repeating scale
+  if (length(scale) == 1)
+    scale <- rep(scale, ncol(initial))
+  
+  # Checkihg burnins
+  if (burnin >= nbatch)
+    stop("-burnin- (",burnin,") cannot be >= than -nbatch- (",nbatch,").", call. = FALSE)
+  
+  # Checking thin
+  if (thin > nbatch)
+    stop("-thin- (",thin,") cannot be > than -nbatch- (",nbatch,").", call. = FALSE)
+  
+  if (thin < 1L)
+    stop("-thin- should be >= 1.", call. = FALSE)
+  
   if (multicore && nchains > 1L) {
 
     # Running the cluster
-    ans <- parallel::clusterApply(
+    ans <- with_autostop(parallel::clusterApply(
       cl, 1:nchains, fun=
         function(i, Fun, initial, nbatch, thin, scale, burnin, ub, lb, useCpp,
                  fixed, multicore, ...) {
           MCMC(
             fun       = Fun,
-            initial   = initial[i,,drop=TRUE],
+            ...,
+            initial   = initial[i,,drop=FALSE],
             nbatch    = nbatch,
             nchains   = 1L,
             thin      = thin,
@@ -247,24 +303,25 @@ MCMC <- function(
             lb        = lb,
             useCpp    = useCpp,
             fixed     = fixed,
-            multicore = multicore,
-            ...
+            multicore = multicore
             )
           }, Fun = fun, nbatch=nbatch, initial = initial, thin = thin, scale = scale,
       burnin = burnin, ub = ub, lb = lb, useCpp = useCpp, fixed = fixed, 
-      multicore = multicore, ...)
+      multicore = multicore, ...), conv_checker)
     
     return(coda::mcmc.list(ans))
     
   } else if (nchains > 1L) {
+    
     # Running the cluster
-    ans <- lapply(
+    ans <-  with_autostop(lapply(
       1:nchains, FUN=
         function(i, Fun, initial, nbatch, thin, scale, burnin, ub, lb, useCpp,
                  fixed, multicore, ...) {
           MCMC(
             fun     = Fun,
-            initial = initial[i, , drop=TRUE],
+            ...,
+            initial = initial[i, , drop=FALSE],
             nbatch  = nbatch,
             nchains = 1L,
             thin    = thin,
@@ -274,14 +331,14 @@ MCMC <- function(
             lb      = lb,
             useCpp  = useCpp,
             fixed   = fixed,
-            multicore = multicore,
-            ...
+            multicore = multicore
           )
         }, Fun = fun, nbatch=nbatch, initial = initial, thin = thin, scale = scale,
       burnin = burnin, ub = ub, lb = lb, useCpp = useCpp, fixed = fixed, 
-      multicore = multicore, ...)
+      multicore = multicore, ...), conv_checker)
     
     return(coda::mcmc.list(ans))
+    
   } else {
   
     # Adding names
@@ -330,43 +387,13 @@ MCMC <- function(
       
     }
     
-    # Checking boundaries
-    if (length(ub) > 1 && (length(initial) != length(ub)))
-      stop("Incorrect length of -ub-", call. = FALSE)
-    
-    if (length(lb) > 1 && (length(initial) != length(lb)))
-      stop("Incorrect length of -lb-", call. = FALSE)
-    
-    # Repeating boundaries
-    if (length(ub) == 1)
-      ub <- rep(ub, length(initial))
-  
-    if (length(lb) == 1)
-      lb <- rep(lb, length(initial))
-    
-    if (any(ub <= lb))
-      stop("-ub- cannot be <= than -lb-.", call. = FALSE)
-    
-    # Repeating scale
-    if (length(scale) == 1)
-      scale <- rep(scale, length(initial))
-    
-    # Checkihg burnins
-    if (burnin >= nbatch)
-      stop("-burnin- (",burnin,") cannot be >= than -nbatch- (",nbatch,").", call. = FALSE)
-  
-    # Checking thin
-    if (thin > nbatch)
-      stop("-thin- (",thin,") cannot be > than -nbatch- (",nbatch,").", call. = FALSE)
-    
-    if (thin < 1L)
-      stop("-thin- should be >= 1.", call. = FALSE)
-    
     if (useCpp) {
+      
       ans <- .MCMC(f, initial, nbatch, lb, ub, scale, fixed)
       dimnames(ans) <- list(1:nbatch, cnames)
       
     } else {
+      
       theta0 <- initial
       theta1 <- theta0
       f0     <- f(theta0)
@@ -408,18 +435,13 @@ MCMC <- function(
     if (thin)   ans <- ans[(1:nrow(ans) %% thin) == 0, , drop=FALSE]
     
     # Returning an mcmc object from the coda package
-    # if the coda package hasn't been loaded, then return a warning
-    if (!("package:coda" %in% search()))
-      warning("The -coda- package has not been loaded.", call. = FALSE)
-    
     return(
       coda::mcmc(
         ans,
         start = as.integer(rownames(ans)[1]),
         end   = as.integer(rownames(ans)[nrow(ans)]),
-        thin = thin
+        thin  = thin
         )
       )
   }
 }
-

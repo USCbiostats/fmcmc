@@ -5,14 +5,17 @@
 \alias{Metropolis-Hastings}
 \title{Markov Chain Monte Carlo}
 \usage{
-MCMC(fun, initial, nbatch, nchains = 1L, thin = 1L, scale = rep(1,
-  length(initial)), burnin = 1000L, ub = rep(.Machine$double.xmax,
-  length(initial)), lb = rep(-.Machine$double.xmax, length(initial)),
-  useCpp = FALSE, cl = NULL, fixed = rep(FALSE, length(initial)),
-  multicore = TRUE, ...)
+MCMC(fun, ..., initial, nbatch, nchains = 1L, thin = 1L,
+  scale = rep(1, length(initial)), burnin = 1000L,
+  ub = rep(.Machine$double.xmax, length(initial)),
+  lb = rep(-.Machine$double.xmax, length(initial)), useCpp = FALSE,
+  cl = NULL, fixed = rep(FALSE, length(initial)), multicore = TRUE,
+  conv_checker = gelman_convergence(1.1), autostop = nbatch\%/\%10)
 }
 \arguments{
 \item{fun}{A function. Returns the log-likelihood}
+
+\item{...}{Further arguments passed to \code{fun}.}
 
 \item{initial}{A numeric vector or matrix with as many rows as chains with
 initial values of the parameters for each chain (See details).}
@@ -43,7 +46,11 @@ value will be fixed.}
 \item{multicore}{Logical. If \code{FALSE} then it will execute the chains in a serial
 fashion.}
 
-\item{...}{Further arguments passed to \code{fun}.}
+\item{conv_checker}{A function that receives an object of class \link[coda:mcmc.list]{coda::mcmc.list},
+and returns a logical value with \code{TRUE} indicating convergence.}
+
+\item{autostop}{Integer scalar. Frequency used to check for convergence.
+By default the function uses \link{gelman_convergence} as criteria.}
 }
 \value{
 An object of class \code{\link[coda:mcmc]{mcmc}} from the \CRANpkg{coda}
@@ -105,6 +112,18 @@ the same point), otherwise, if \code{initial} is a matrix with as many rows as
 chains, then each row of \code{initial} is use as a starting point for each of the
 chains.
 }
+\section{Automatic stop}{
+
+
+When \code{autostop} is greater than 0, the function will perform a convergence
+check every \code{autostop} steps. By default, the convergence check is done
+using the Gelman diagostic as implemented in \link[coda:gelman.diag]{coda::gelman.diag}, so it will
+only be calculated when \code{nchains > 1L}.
+
+The user may provide a different convergence criteria by passing a different
+function via \code{conv_checker}. It's current default is \link{gelman_convergence}.
+}
+
 \examples{
 # Univariate distributed data with multiple parameters ----------------------
 # Parameters
@@ -122,7 +141,8 @@ fun <- function(x) {
 # Calling MCMC, but first, loading the coda R package for
 # diagnostics
 library(coda)
-ans <- MCMC(fun, c(mu=1, sigma=1), nbatch = 2e3, scale = .1, ub = 10, lb = 0)
+ans <- MCMC(fun, initial = c(mu=1, sigma=1), nbatch = 2e3, scale = .1,
+   ub = 10, lb = 0)
 
 # Ploting the output
 oldpar <- par(no.readonly = TRUE)
