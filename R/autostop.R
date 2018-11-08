@@ -112,7 +112,7 @@ with_autostop <- function(expr, conv_checker) {
     
     if (i > 1) {
       parenv$burnin  <- 0L
-      parenv$initial <- do.call(rbind, lapply(ans, "[", i=coda::niter(ans), j=, drop=FALSE))
+      parenv$initial <- do.call(rbind, ans[coda::niter(ans),])
     }
       
         # Running the MCMC and adding it to the tail
