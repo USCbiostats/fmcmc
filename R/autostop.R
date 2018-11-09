@@ -3,9 +3,15 @@
 #' @param threshold Numeric value. A Gelman statistic below the threshold
 #' will return `TRUE`.
 #' @param check_invariant Logical. When `TRUE` the function only computes
-#' the gelman diagnostic using variables with greater than `1e-10` variance
+#' the gelman diagnostic using variables with greater than `1e-10` variance.
+#' @param ... Further arguments passed to the method.
 #' @return A function passed to [MCMC] to check automatic convergence.
+#' @name convergence-checker
+NULL
+
+
 #' @export
+#' @rdname convergence-checker
 gelman_convergence <- function(threshold = 1.10, check_invariant=TRUE) {
 
   function(x) {
@@ -56,6 +62,46 @@ gelman_convergence <- function(threshold = 1.10, check_invariant=TRUE) {
       
     }
     
+  }
+  
+}
+
+#' @rdname convergence-checker
+#' @details
+#' In the case of `geweke_convergence`, `threshold` sets the p-value 
+#' for the null \eqn{H0: Z = 0}, i.e. equal means between the first and last
+#' chunks of the chain. See [coda::geweke.diag]. This implies that the higher
+#' the threshold, the lower the probability of stopping the chain.
+#' 
+#' In the case that the chain has more than one parameter, the algorithm will
+#' return true if and only if the test fails to reject the null for all the
+#' parameters.
+#' @export
+geweke_convergence <- function(threshold, ...) {
+  
+  
+  function(x) {
+    
+    if (coda::nchain(x) > 1L) 
+      stop("The `geweke` convergence check is only available with runs of a single chain.",
+           call. = FALSE)
+    
+    d <- tryCatch(coda::geweke.diag(x, ...)$z, error = function(e) e)
+    
+    if (inherits(d, "error")) {
+      
+      warning("At ", coda::niter(x), " `geweke.diag` failed to be computed.",
+              " Will skip and try with the next batch.", call. = FALSE,
+              immediate. = TRUE)
+      
+      return(FALSE)
+      
+    }
+    
+    d <- stats::pnorm(d)
+    d <- ifelse(d > .5, 1 - d, d)*2
+    
+    all(d > threshold)
   }
   
 }
