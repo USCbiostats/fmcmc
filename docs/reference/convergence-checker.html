@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • amcmc</title>
+<title>Automatic stop — convergence-checker • amcmc</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,7 +30,11 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Automatic stop — convergence-checker" />
+
+<meta property="og:description" content="Built-in set of functions to be used in companion with the argument
+conv_checker in MCMC. These functions are not intended to be used" />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -46,7 +50,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -92,72 +96,76 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Automatic stop</h1>
+    <small class="dont-index">Source: <a href='https://github.com/USCbiostats/amcmc/blob/master/R/autostop.R'><code>R/autostop.R</code></a></small>
+    <div class="hidden name"><code>convergence-checker.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    
+    <p>Built-in set of functions to be used in companion with the argument
+<code>conv_checker</code> in <a href='MCMC.html'>MCMC</a>. These functions are not intended to be used</p>
+    
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>gelman_convergence</span>(<span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>1.1</span>, <span class='kw'>check_invariant</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="MCMC.html">MCMC()</a></code> </p>
-        </td>
-        <td><p>Markov Chain Monte Carlo</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="amcmc.html">amcmc</a></code> </p>
-        </td>
-        <td><p>Adaptative MCMC</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="append_chains.html">append_chains()</a></code> </p>
-        </td>
-        <td><p>Append MCMC chains (objects of class <a href='http://www.rdocumentation.org/packages/coda/topics/mcmc'>coda::mcmc</a>)</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="check_initial.html">check_initial()</a></code> </p>
-        </td>
-        <td><p>Checks the initial values of the MCMC</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="convergence-checker.html">gelman_convergence()</a></code> <code><a href="convergence-checker.html">geweke_convergence()</a></code> <code><a href="convergence-checker.html">auto_convergence()</a></code> </p>
-        </td>
-        <td><p>Automatic stop</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sdml_adaptive_kernel.html">sdml_adaptive_kernel()</a></code> </p>
-        </td>
-        <td><p>State-Dependent Memory-Less Adaptive Transition Kernel</p></td>
-      </tr>
-    </tbody>
+<span class='fu'>geweke_convergence</span>(<span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>0.025</span>, <span class='kw'>check_invariant</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)
+
+<span class='fu'>auto_convergence</span>()</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>threshold</th>
+      <td><p>Numeric value. A Gelman statistic below the threshold
+will return <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>check_invariant</th>
+      <td><p>Logical. When <code>TRUE</code> the function only computes
+the gelman diagnostic using variables with greater than <code>1e-10</code> variance.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Further arguments passed to the method.</p></td>
+    </tr>
     </table>
-  </div>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>A function passed to <a href='MCMC.html'>MCMC</a> to check automatic convergence.</p>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>In the case of <code>geweke_convergence</code>, <code>threshold</code> sets the p-value
+for the null \(H0: Z = 0\), i.e. equal means between the first and last
+chunks of the chain. See <a href='http://www.rdocumentation.org/packages/coda/topics/geweke.diag'>coda::geweke.diag</a>. This implies that the higher
+the threshold, the lower the probability of stopping the chain.</p>
+<p>In the case that the chain has more than one parameter, the algorithm will
+return true if and only if the test fails to reject the null for all the
+parameters.</p>
+<p>The <code>auto_convergence</code> function is the default and is just a wrapper
+of <code>gelman_convergence</code> and <code>geweke_convergence</code>. This function returns a
+convergence checker that will be either of the other two depending on wether
+<code>nchains</code> in <code>MCMC</code> is greater than one--in which case it will use the Gelman
+test--or not--in which case it will use the Geweke test.</p>
+    
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
-    </ul>
+      <li><a href="#arguments">Arguments</a></li>
+      
+      <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
+          </ul>
+
   </div>
 </div>
 

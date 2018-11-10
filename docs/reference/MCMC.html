@@ -108,12 +108,11 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>MCMC</span>(<span class='no'>fun</span>, <span class='no'>...</span>, <span class='no'>initial</span>, <span class='no'>nbatch</span>, <span class='kw'>nchains</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
-  <span class='kw'>scale</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='fl'>1</span>, <span class='fu'>length</span>(<span class='no'>initial</span>)), <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>1000L</span>,
-  <span class='kw'>ub</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='no'>.Machine</span>$<span class='no'>double.xmax</span>, <span class='fu'>length</span>(<span class='no'>initial</span>)),
-  <span class='kw'>lb</span> <span class='kw'>=</span> <span class='fu'>rep</span>(-<span class='no'>.Machine</span>$<span class='no'>double.xmax</span>, <span class='fu'>length</span>(<span class='no'>initial</span>)), <span class='kw'>useCpp</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fixed</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='fl'>FALSE</span>, <span class='fu'>length</span>(<span class='no'>initial</span>)), <span class='kw'>multicore</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>conv_checker</span> <span class='kw'>=</span> <span class='fu'><a href='gelman_convergence.html'>gelman_convergence</a></span>(<span class='fl'>1.1</span>), <span class='kw'>autostop</span> <span class='kw'>=</span> <span class='fl'>500</span>)</pre>
+    <pre class="usage"><span class='fu'>MCMC</span>(<span class='no'>fun</span>, <span class='no'>...</span>, <span class='no'>initial</span>, <span class='no'>nbatch</span>, <span class='kw'>nchains</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>scale</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>1000L</span>, <span class='kw'>ub</span> <span class='kw'>=</span> <span class='no'>.Machine</span>$<span class='no'>double.xmax</span>,
+  <span class='kw'>lb</span> <span class='kw'>=</span> -<span class='no'>.Machine</span>$<span class='no'>double.xmax</span>, <span class='kw'>useCpp</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>fixed</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>multicore</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>conv_checker</span> <span class='kw'>=</span> <span class='fu'><a href='convergence-checker.html'>auto_convergence</a></span>(), <span class='kw'>autostop</span> <span class='kw'>=</span> <span class='fl'>500L</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -187,7 +186,7 @@ and returns a logical value with <code>TRUE</code> indicating convergence.</p></
     <tr>
       <th>autostop</th>
       <td><p>Integer scalar. Frequency used to check for convergence.
-By default the function uses <a href='gelman_convergence.html'>gelman_convergence</a> as criteria.</p></td>
+By default the function uses <a href='convergence-checker.html'>gelman_convergence</a> as criteria.</p></td>
     </tr>
     </table>
     
@@ -249,7 +248,7 @@ check every <code>autostop</code> steps. By default, the convergence check is do
 using the Gelman diagostic as implemented in <a href='http://www.rdocumentation.org/packages/coda/topics/gelman.diag'>coda::gelman.diag</a>, so it will
 only be calculated when <code>nchains &gt; 1L</code>.</p>
 <p>The user may provide a different convergence criteria by passing a different
-function via <code>conv_checker</code>. It's current default is <a href='gelman_convergence.html'>gelman_convergence</a>.</p>
+function via <code>conv_checker</code>. It's current default is <a href='convergence-checker.html'>gelman_convergence</a>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -270,8 +269,7 @@ function via <code>conv_checker</code>. It's current default is <a href='gelman_
 <span class='co'># diagnostics</span>
 <span class='fu'>library</span>(<span class='no'>coda</span>)
 <span class='no'>ans</span> <span class='kw'>&lt;-</span> <span class='fu'>MCMC</span>(<span class='no'>fun</span>, <span class='kw'>initial</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='kw'>mu</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>sigma</span><span class='kw'>=</span><span class='fl'>1</span>), <span class='kw'>nbatch</span> <span class='kw'>=</span> <span class='fl'>2e3</span>, <span class='kw'>scale</span> <span class='kw'>=</span> <span class='fl'>.1</span>,
-   <span class='kw'>ub</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>lb</span> <span class='kw'>=</span> <span class='fl'>0</span>)
-
+   <span class='kw'>ub</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>lb</span> <span class='kw'>=</span> <span class='fl'>0</span>)</div><div class='output co'>#&gt; <span class='message'>Convergence has been reached with 2000 steps (1000 final count of observations).</span></div><div class='input'>
 <span class='co'># Ploting the output</span>
 <span class='no'>oldpar</span> <span class='kw'>&lt;-</span> <span class='fu'>par</span>(<span class='kw'>no.readonly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='fu'>par</span>(<span class='kw'>mfrow</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1</span>,<span class='fl'>2</span>))
@@ -299,7 +297,7 @@ function via <code>conv_checker</code>. It's current default is <a href='gelman_
 <span class='no'>M</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>1</span>)
 
 <span class='fu'>set.seed</span>(<span class='fl'>123</span>)
-<span class='no'>D</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/mvtnorm/topics/Mvnorm'>rmvnorm</a></span>(<span class='fl'>5e3</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='no'>M</span>, <span class='kw'>sigma</span> <span class='kw'>=</span> <span class='no'>S</span>)
+<span class='no'>D</span> <span class='kw'>&lt;-</span> <span class='fu'>rmvnorm</span>(<span class='fl'>5e3</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='no'>M</span>, <span class='kw'>sigma</span> <span class='kw'>=</span> <span class='no'>S</span>)
 
 <span class='co'># Function to pass to MCMC</span>
 <span class='no'>fun</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>pars</span>) {
@@ -308,7 +306,7 @@ function via <code>conv_checker</code>. It's current default is <a href='gelman_
   <span class='no'>s</span> <span class='kw'>&lt;-</span> <span class='fu'>cbind</span>( <span class='fu'>c</span>(<span class='no'>pars</span>[<span class='fl'>3</span>], <span class='no'>pars</span>[<span class='fl'>4</span>]), <span class='fu'>c</span>(<span class='no'>pars</span>[<span class='fl'>4</span>], <span class='no'>pars</span>[<span class='fl'>5</span>]) )
 
   <span class='co'># Computing the unnormalized log likelihood</span>
-  <span class='fu'>sum</span>(<span class='fu'>log</span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/mvtnorm/topics/Mvnorm'>dmvnorm</a></span>(<span class='no'>D</span>, <span class='no'>m</span>, <span class='no'>s</span>)))
+  <span class='fu'>sum</span>(<span class='fu'>log</span>(<span class='fu'>dmvnorm</span>(<span class='no'>D</span>, <span class='no'>m</span>, <span class='no'>s</span>)))
 }
 
 <span class='co'># Calling MCMC</span>
@@ -341,7 +339,7 @@ function via <code>conv_checker</code>. It's current default is <a href='gelman_
   <span class='no'>s</span> <span class='kw'>&lt;-</span> <span class='fu'>cbind</span>( <span class='fu'>c</span>(<span class='no'>pars</span>[<span class='fl'>3</span>], <span class='no'>pars</span>[<span class='fl'>4</span>]), <span class='fu'>c</span>(<span class='no'>pars</span>[<span class='fl'>4</span>], <span class='no'>pars</span>[<span class='fl'>5</span>]) )
 
   <span class='co'># Computing the unnormalized log likelihood</span>
-  <span class='fu'>sum</span>(<span class='fu'>log</span>(<span class='kw pkg'>mvtnorm</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/mvtnorm/topics/Mvnorm'>dmvnorm</a></span>(<span class='no'>D</span>, <span class='no'>m</span>, <span class='no'>s</span>)))
+  <span class='fu'>sum</span>(<span class='fu'>log</span>(<span class='kw pkg'>mvtnorm</span><span class='kw ns'>::</span><span class='fu'>dmvnorm</span>(<span class='no'>D</span>, <span class='no'>m</span>, <span class='no'>s</span>)))
 }
 
 <span class='co'># Two chains</span>
