@@ -215,23 +215,23 @@ MCMC <- function(
   nbatch,
   nchains      = 1L,
   thin         = 1L,
-  scale        = rep(1, length(initial)),
+  scale        = 1,
   burnin       = 1e3L,
-  ub           = rep(.Machine$double.xmax, length(initial)),
-  lb           = rep(-.Machine$double.xmax, length(initial)),
+  ub           = .Machine$double.xmax,
+  lb           = -.Machine$double.xmax,
   useCpp       = FALSE,
   cl           = NULL,
-  fixed        = rep(FALSE, length(initial)),
-  multicore    = TRUE,
-  conv_checker = gelman_convergence(1.1),
-  autostop     = 500
+  fixed        = FALSE,
+  multicore    = FALSE,
+  conv_checker = auto_convergence(),
+  autostop     = 500L
   ) {
   
   
   # # if the coda package hasn't been loaded, then return a warning
   # if (!("package:coda" %in% search()))
   #   warning("The -coda- package has not been loaded.", call. = FALSE, )
-  
+
   # Checking initial argument
   initial <- check_initial(initial, nchains)
   
@@ -268,6 +268,10 @@ MCMC <- function(
   if (any(ub <= lb))
     stop("-ub- cannot be <= than -lb-.", call. = FALSE)
   
+  # Repeating 
+  if (length(fixed) == 1)
+    fixed <- rep(fixed, ncol(initial))
+  
   # Repeating scale
   if (length(scale) == 1)
     scale <- rep(scale, ncol(initial))
@@ -303,15 +307,16 @@ MCMC <- function(
             lb        = lb,
             useCpp    = useCpp,
             fixed     = fixed,
-            multicore = multicore
+            multicore = FALSE,
+            autostop = 0L
             )
           }, Fun = fun, nbatch=nbatch, initial = initial, thin = thin, scale = scale,
-      burnin = burnin, ub = ub, lb = lb, useCpp = useCpp, fixed = fixed, 
-      multicore = multicore, ...), conv_checker)
+      burnin = burnin, ub = ub, lb = lb, useCpp = useCpp, fixed = fixed, ...),
+      conv_checker)
     
     return(coda::mcmc.list(ans))
     
-  } else if (nchains > 1L) {
+  } else if (autostop > 0L) {
     
     # Running the cluster
     ans <-  with_autostop(lapply(
@@ -331,13 +336,17 @@ MCMC <- function(
             lb      = lb,
             useCpp  = useCpp,
             fixed   = fixed,
-            multicore = multicore
+            multicore = FALSE,
+            autostop = 0L
           )
         }, Fun = fun, nbatch=nbatch, initial = initial, thin = thin, scale = scale,
       burnin = burnin, ub = ub, lb = lb, useCpp = useCpp, fixed = fixed, 
-      multicore = multicore, ...), conv_checker)
+      ...), conv_checker)
     
-    return(coda::mcmc.list(ans))
+    if (nchains > 1L)
+      return(coda::mcmc.list(ans))
+    else
+      return(ans[[1]])
     
   } else {
   

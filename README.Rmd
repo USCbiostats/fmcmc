@@ -10,6 +10,70 @@ output: github_document
 
 The `amcmc` R package implements out-of-the-box methods for Adaptive Markov Chain Monte Carlo, and Optimal Scaling Algorithms of Random Walk MCMC. Designed to be used with the `coda` R package, `amcmc` allows running multiple chains simultaneously (parallel computing), using Parallel Tempering MCMC, and Random Walks with Reflecting Boundaries.
 
+Current features:
+
+1.  Automatic stop using convergence checker.
+
+2.  Parallel chains using `parallel::lapply`
+
+3.  Normal Random Walk with Reflective Boundaries kernel.
+
+
+# Installing
+
+From github:
+
+```r
+devtools::install_github("USCbiostats/amcmc")
+```
+
+# Example
+
+Linear regression model
+
+```{r}
+library(amcmc)
+
+# Simulating data
+set.seed(78845)
+n <- 1000
+X <- rnorm(n)
+y <- 3 + 2*X + rnorm(n, sd = 2)
+
+# Loglikelihood function
+ll <- function(par, X., y.) {
+  
+  ans <- sum(log(dnorm((y. - (par[1] + X.*par[2]))/par[3])/par[3]))
+  
+  if (!is.finite(ans))
+    return(-Inf)
+  
+  ans
+}
+
+# Running the MCMC
+ans <- MCMC(
+  ll, X. = X, y. = y,
+  initial = c(1, 1, 1),
+  nbatch   = 2e4,
+  nchains  = 4L,
+  autostop = 1e3,
+  burnin   = 1e4,
+  thin     = 20,
+  scale    = .1,
+  multicore = TRUE
+  )
+```
+
+```{r summary-and-plot1}
+library(coda)
+
+summary(ans)
+plot(ans)
+gelman.diag(ans)
+```
+
+
 # Other tools
 
 *   https://cran.r-project.org/web/packages/mcmc/mcmc.pdf

@@ -1,5 +1,9 @@
 #' Automatic stop
 #' 
+#' Built-in set of functions to be used in companion with the argument 
+#' `conv_checker` in [MCMC]. These functions are not intended to be used
+#' 
+#' 
 #' @param threshold Numeric value. A Gelman statistic below the threshold
 #' will return `TRUE`.
 #' @param check_invariant Logical. When `TRUE` the function only computes
@@ -9,6 +13,24 @@
 #' @name convergence-checker
 NULL
 
+#' Removes invariant columns
+#' @noRd
+rm_invariant <- function(x) {
+  
+  variances <- which(stats::sd(do.call(rbind, x))^2 < 1e-10)
+  
+  if (length(variances) > 0) {
+    
+    if (length(variances) == coda::nvar(x))
+      return(FALSE)
+    
+    for (i in 1:coda::nchain(x))
+      x[[i]] <- x[[i]][, -variances,drop=FALSE]
+    
+  }
+  
+  x
+}
 
 #' @export
 #' @rdname convergence-checker
@@ -19,22 +41,9 @@ gelman_convergence <- function(threshold = 1.10, check_invariant=TRUE) {
     if (coda::nchain(x) > 1L) {
       
       # Checking invariant
-      if (check_invariant) {
+      if (check_invariant) 
+        x <- rm_invariant(x)
         
-        variances <- which(stats::sd(do.call(rbind, x))^2 < 1e-10)
-        
-        if (length(variances) > 0) {
-        
-          if (length(variances) == coda::nvar(x))
-            return(FALSE)
-            
-          for (i in 1:coda::nchain(x))
-            x[[i]] <- x[[i]][, -variances,drop=FALSE]
-        
-        }
-        
-      }
-      
       # Computing gelman test
       d <- tryCatch(coda::gelman.diag(x), error = function(e) e)
       
@@ -77,7 +86,7 @@ gelman_convergence <- function(threshold = 1.10, check_invariant=TRUE) {
 #' return true if and only if the test fails to reject the null for all the
 #' parameters.
 #' @export
-geweke_convergence <- function(threshold, ...) {
+geweke_convergence <- function(threshold=.025, check_invariant=TRUE,...) {
   
   
   function(x) {
@@ -86,7 +95,11 @@ geweke_convergence <- function(threshold, ...) {
       stop("The `geweke` convergence check is only available with runs of a single chain.",
            call. = FALSE)
     
-    d <- tryCatch(coda::geweke.diag(x, ...)$z, error = function(e) e)
+    # Checking invariant
+    if (check_invariant) 
+      x <- rm_invariant(x)
+    
+    d <- tryCatch(coda::geweke.diag(x, ...)[[1]]$z, error = function(e) e)
     
     if (inherits(d, "error")) {
       
@@ -101,7 +114,42 @@ geweke_convergence <- function(threshold, ...) {
     d <- stats::pnorm(d)
     d <- ifelse(d > .5, 1 - d, d)*2
     
+    if (any(!is.finite(d)))
+      return(FALSE)
+    
     all(d > threshold)
+  }
+  
+}
+
+#' @rdname convergence-checker
+#' @details The `auto_convergence` function is the default and is just a wrapper
+#' of `gelman_convergence` and `geweke_convergence`. This function returns a 
+#' convergence checker that will be either of the other two depending on wether
+#' `nchains` in `MCMC` is greater than one--in which case it will use the Gelman
+#' test--or not--in which case it will use the Geweke test.
+#' @export
+auto_convergence <- function() {
+  
+  gelman_conv <- gelman_convergence()
+  geweke_conv <- geweke_convergence()
+  
+  function(x) {
+    
+    if (as.character(sys.call(-1L)[[1]]) != "with_autostop") {
+      warning("This function should not be used in a context other than ",
+              "the argument `conv_checker` in `MCMC`.")
+      
+      return(FALSE)
+    }
+    
+    env <- parent.frame()
+    
+    if (env$nchains > 1L)
+      gelman_conv(x)
+    else
+      geweke_conv(x)
+    
   }
   
 }
@@ -171,8 +219,8 @@ with_autostop <- function(expr, conv_checker) {
     
     if ((autostop > 0L) && (converged <- conv_checker(ans))) {
       message(
-        "Convergence has been reached with ", coda::niter(ans), " iterations (",
-        sum(bulks[1:i]), " steps)."
+        "Convergence has been reached with ", sum(bulks[1:i]), " steps (",
+        coda::niter(ans), " final count of observations)."
         )
       break
     }

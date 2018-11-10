@@ -5,12 +5,11 @@
 \alias{Metropolis-Hastings}
 \title{Markov Chain Monte Carlo}
 \usage{
-MCMC(fun, ..., initial, nbatch, nchains = 1L, thin = 1L,
-  scale = rep(1, length(initial)), burnin = 1000L,
-  ub = rep(.Machine$double.xmax, length(initial)),
-  lb = rep(-.Machine$double.xmax, length(initial)), useCpp = FALSE,
-  cl = NULL, fixed = rep(FALSE, length(initial)), multicore = TRUE,
-  conv_checker = gelman_convergence(1.1), autostop = 500)
+MCMC(fun, ..., initial, nbatch, nchains = 1L, thin = 1L, scale = 1,
+  burnin = 1000L, ub = .Machine$double.xmax,
+  lb = -.Machine$double.xmax, useCpp = FALSE, cl = NULL,
+  fixed = FALSE, multicore = FALSE,
+  conv_checker = auto_convergence(), autostop = 500L)
 }
 \arguments{
 \item{fun}{A function. Returns the log-likelihood}

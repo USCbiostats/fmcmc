@@ -4,11 +4,14 @@
 \alias{convergence-checker}
 \alias{gelman_convergence}
 \alias{geweke_convergence}
+\alias{auto_convergence}
 \title{Automatic stop}
 \usage{
 gelman_convergence(threshold = 1.1, check_invariant = TRUE)
 
-geweke_convergence(threshold, ...)
+geweke_convergence(threshold = 0.025, check_invariant = TRUE, ...)
+
+auto_convergence()
 }
 \arguments{
 \item{threshold}{Numeric value. A Gelman statistic below the threshold
@@ -23,7 +26,8 @@ the gelman diagnostic using variables with greater than \code{1e-10} variance.}
 A function passed to \link{MCMC} to check automatic convergence.
 }
 \description{
-Automatic stop
+Built-in set of functions to be used in companion with the argument
+\code{conv_checker} in \link{MCMC}. These functions are not intended to be used
 }
 \details{
 In the case of \code{geweke_convergence}, \code{threshold} sets the p-value
@@ -34,4 +38,10 @@ the threshold, the lower the probability of stopping the chain.
 In the case that the chain has more than one parameter, the algorithm will
 return true if and only if the test fails to reject the null for all the
 parameters.
+
+The \code{auto_convergence} function is the default and is just a wrapper
+of \code{gelman_convergence} and \code{geweke_convergence}. This function returns a
+convergence checker that will be either of the other two depending on wether
+\code{nchains} in \code{MCMC} is greater than one--in which case it will use the Gelman
+test--or not--in which case it will use the Geweke test.
 }
