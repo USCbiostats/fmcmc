@@ -1,5 +1,5 @@
 ---
-title: "amcmc: Adaptive and other Markov Chain Monte Carlo methods"
+title: "amcmc: A flexible MCMC estimation framework"
 output: github_document
 ---
 
@@ -7,8 +7,8 @@ output: github_document
 [![Build status](https://ci.appveyor.com/api/projects/status/3x9qj7imvoijb1vf?svg=true)](https://ci.appveyor.com/project/gvegayon/amcmc)
 [![Coverage Status](https://img.shields.io/codecov/c/github/USCbiostats/amcmc/master.svg)](https://codecov.io/github/USCbiostats/amcmc?branch=master)
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![CRAN status](https://www.r-pkg.org/badges/version/amcmc)](https://cran.r-project.org/package=amcmc)
 
-The `amcmc` R package implements out-of-the-box methods for Adaptive Markov Chain Monte Carlo, and Optimal Scaling Algorithms of Random Walk MCMC. Designed to be used with the `coda` R package, `amcmc` allows running multiple chains simultaneously (parallel computing), using Parallel Tempering MCMC, and Random Walks with Reflecting Boundaries.
 
 Current features:
 
@@ -55,11 +55,10 @@ ll <- function(par, X., y.) {
 ans <- MCMC(
   ll, X. = X, y. = y,
   initial = c(1, 1, 1),
-  nbatch   = 2e4,
+  nsteps   = 2e4,
   nchains  = 4L,
   autostop = 1e3,
   burnin   = 1e4,
-  thin     = 20,
   scale    = .1,
   multicore = TRUE
   )
@@ -87,3 +86,7 @@ gelman.diag(ans)
 # Contributing to `amcmc`
 
 Please note that the 'amcmc' project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project, you agree to abide by its terms.
+
+# Funding
+
+Supported by National Cancer Institute Grant #1P01CA196596.

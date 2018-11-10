@@ -5,7 +5,7 @@
 \alias{Metropolis-Hastings}
 \title{Markov Chain Monte Carlo}
 \usage{
-MCMC(fun, ..., initial, nbatch, nchains = 1L, thin = 1L, scale = 1,
+MCMC(fun, ..., initial, nsteps, nchains = 1L, thin = 1L, scale = 1,
   burnin = 1000L, ub = .Machine$double.xmax,
   lb = -.Machine$double.xmax, useCpp = FALSE, cl = NULL,
   fixed = FALSE, multicore = FALSE,
@@ -19,7 +19,7 @@ MCMC(fun, ..., initial, nbatch, nchains = 1L, thin = 1L, scale = 1,
 \item{initial}{A numeric vector or matrix with as many rows as chains with
 initial values of the parameters for each chain (See details).}
 
-\item{nbatch}{Integer scalar. Number of MCMC runs.}
+\item{nsteps}{Integer scalar. Number of MCMC runs.}
 
 \item{nchains}{Integer scalar. Number of chains to run (in parallel).}
 
@@ -54,7 +54,7 @@ By default the function uses \link{gelman_convergence} as criteria.}
 \value{
 An object of class \code{\link[coda:mcmc]{mcmc}} from the \CRANpkg{coda}
 package. The \code{mcmc} object is a matrix with one column per parameter,
-and \code{nbatch} rows. If \code{nchains > 1}, then it returns a \code{\link[coda:mcmc]{mcmc.list}}.
+and \code{nsteps} rows. If \code{nchains > 1}, then it returns a \code{\link[coda:mcmc]{mcmc.list}}.
 }
 \description{
 Metropolis-Hastings algorithm using a random walk kernel with reflecting boundaries.
@@ -140,7 +140,7 @@ fun <- function(x) {
 # Calling MCMC, but first, loading the coda R package for
 # diagnostics
 library(coda)
-ans <- MCMC(fun, initial = c(mu=1, sigma=1), nbatch = 2e3, scale = .1,
+ans <- MCMC(fun, initial = c(mu=1, sigma=1), nsteps = 2e3, scale = .1,
    ub = 10, lb = 0)
 
 # Ploting the output
@@ -191,7 +191,7 @@ ans <- MCMC(
   initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
   lb      = c(-10, -10, .01, -5, .01),
   ub      = 5,
-  nbatch  = 1e5,
+  nsteps  = 1e5,
   thin    = 20,
   scale   = .01,
   burnin  = 5e3,
@@ -225,7 +225,7 @@ ans <- MCMC(
   nchains = 2,
   lb      = c(-10, -10, .01, -5, .01),
   ub      = 5,
-  nbatch  = 1e5,
+  nsteps  = 1e5,
   thin    = 20,
   scale   = .01,
   burnin  = 5e3,

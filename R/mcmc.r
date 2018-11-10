@@ -5,7 +5,7 @@
 #' @param fun A function. Returns the log-likelihood
 #' @param initial A numeric vector or matrix with as many rows as chains with
 #' initial values of the parameters for each chain (See details).
-#' @param nbatch Integer scalar. Number of MCMC runs.
+#' @param nsteps Integer scalar. Number of MCMC runs.
 #' @param nchains Integer scalar. Number of chains to run (in parallel).
 #' @param cl A cluster object passed to \code{\link[parallel:clusterApply]{clusterApply}}.
 #' @param thin Integer scalar. Passed to \code{\link[coda:mcmc]{coda::mcmc}}.
@@ -90,7 +90,7 @@
 #' 
 #' @return An object of class \code{\link[coda:mcmc]{mcmc}} from the \CRANpkg{coda}
 #' package. The \code{mcmc} object is a matrix with one column per parameter,
-#' and \code{nbatch} rows. If \code{nchains > 1}, then it returns a \code{\link[coda:mcmc]{mcmc.list}}.
+#' and \code{nsteps} rows. If \code{nchains > 1}, then it returns a \code{\link[coda:mcmc]{mcmc.list}}.
 #' 
 #' 
 #' @export
@@ -111,7 +111,7 @@
 #' # Calling MCMC, but first, loading the coda R package for
 #' # diagnostics
 #' library(coda)
-#' ans <- MCMC(fun, initial = c(mu=1, sigma=1), nbatch = 2e3, scale = .1,
+#' ans <- MCMC(fun, initial = c(mu=1, sigma=1), nsteps = 2e3, scale = .1,
 #'    ub = 10, lb = 0)
 #' 
 #' # Ploting the output
@@ -162,7 +162,7 @@
 #'   initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
 #'   lb      = c(-10, -10, .01, -5, .01),
 #'   ub      = 5,
-#'   nbatch  = 1e5,
+#'   nsteps  = 1e5,
 #'   thin    = 20,
 #'   scale   = .01,
 #'   burnin  = 5e3,
@@ -196,7 +196,7 @@
 #'   nchains = 2,
 #'   lb      = c(-10, -10, .01, -5, .01),
 #'   ub      = 5,
-#'   nbatch  = 1e5,
+#'   nsteps  = 1e5,
 #'   thin    = 20,
 #'   scale   = .01,
 #'   burnin  = 5e3,
@@ -212,7 +212,7 @@ MCMC <- function(
   fun,
   ...,
   initial, 
-  nbatch,
+  nsteps,
   nchains      = 1L,
   thin         = 1L,
   scale        = 1,
@@ -277,12 +277,12 @@ MCMC <- function(
     scale <- rep(scale, ncol(initial))
   
   # Checkihg burnins
-  if (burnin >= nbatch)
-    stop("-burnin- (",burnin,") cannot be >= than -nbatch- (",nbatch,").", call. = FALSE)
+  if (burnin >= nsteps)
+    stop("-burnin- (",burnin,") cannot be >= than -nsteps- (",nsteps,").", call. = FALSE)
   
   # Checking thin
-  if (thin > nbatch)
-    stop("-thin- (",thin,") cannot be > than -nbatch- (",nbatch,").", call. = FALSE)
+  if (thin > nsteps)
+    stop("-thin- (",thin,") cannot be > than -nsteps- (",nsteps,").", call. = FALSE)
   
   if (thin < 1L)
     stop("-thin- should be >= 1.", call. = FALSE)
@@ -292,13 +292,13 @@ MCMC <- function(
     # Running the cluster
     ans <- with_autostop(parallel::clusterApply(
       cl, 1:nchains, fun=
-        function(i, Fun, initial, nbatch, thin, scale, burnin, ub, lb, useCpp,
+        function(i, Fun, initial, nsteps, thin, scale, burnin, ub, lb, useCpp,
                  fixed, multicore, ...) {
           MCMC(
             fun       = Fun,
             ...,
             initial   = initial[i,,drop=FALSE],
-            nbatch    = nbatch,
+            nsteps    = nsteps,
             nchains   = 1L,
             thin      = thin,
             scale     = scale,
@@ -310,7 +310,7 @@ MCMC <- function(
             multicore = FALSE,
             autostop = 0L
             )
-          }, Fun = fun, nbatch=nbatch, initial = initial, thin = thin, scale = scale,
+          }, Fun = fun, nsteps=nsteps, initial = initial, thin = thin, scale = scale,
       burnin = burnin, ub = ub, lb = lb, useCpp = useCpp, fixed = fixed, ...),
       conv_checker)
     
@@ -321,13 +321,13 @@ MCMC <- function(
     # Running the cluster
     ans <-  with_autostop(lapply(
       1:nchains, FUN=
-        function(i, Fun, initial, nbatch, thin, scale, burnin, ub, lb, useCpp,
+        function(i, Fun, initial, nsteps, thin, scale, burnin, ub, lb, useCpp,
                  fixed, multicore, ...) {
           MCMC(
             fun     = Fun,
             ...,
             initial = initial[i, , drop=FALSE],
-            nbatch  = nbatch,
+            nsteps  = nsteps,
             nchains = 1L,
             thin    = thin,
             scale   = scale,
@@ -339,7 +339,7 @@ MCMC <- function(
             multicore = FALSE,
             autostop = 0L
           )
-        }, Fun = fun, nbatch=nbatch, initial = initial, thin = thin, scale = scale,
+        }, Fun = fun, nsteps=nsteps, initial = initial, thin = thin, scale = scale,
       burnin = burnin, ub = ub, lb = lb, useCpp = useCpp, fixed = fixed, 
       ...), conv_checker)
     
@@ -398,8 +398,8 @@ MCMC <- function(
     
     if (useCpp) {
       
-      ans <- .MCMC(f, initial, nbatch, lb, ub, scale, fixed)
-      dimnames(ans) <- list(1:nbatch, cnames)
+      ans <- .MCMC(f, initial, nsteps, lb, ub, scale, fixed)
+      dimnames(ans) <- list(1:nsteps, cnames)
       
     } else {
       
@@ -407,11 +407,11 @@ MCMC <- function(
       theta1 <- theta0
       f0     <- f(theta0)
       
-      R <- stats::runif(nbatch)
-      ans <- matrix(ncol = length(initial), nrow = nbatch,
-                    dimnames = list(1:nbatch, cnames))
+      R <- stats::runif(nsteps)
+      ans <- matrix(ncol = length(initial), nrow = nsteps,
+                    dimnames = list(1:nsteps, cnames))
       
-      for (i in 1:nbatch) {
+      for (i in 1:nsteps) {
         # Step 1. Propose
         theta1[] <- normal_prop(theta0, lb, ub, scale, fixed)
         f1     <- f(theta1)

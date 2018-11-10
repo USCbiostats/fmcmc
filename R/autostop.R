@@ -1,9 +1,9 @@
-#' Automatic stop
+#' Convergence Monitoring
 #' 
 #' Built-in set of functions to be used in companion with the argument 
 #' `conv_checker` in [MCMC]. These functions are not intended to be used
-#' 
-#' 
+#' in a context other than the `MCMC` function.
+#'  
 #' @param threshold Numeric value. A Gelman statistic below the threshold
 #' will return `TRUE`.
 #' @param check_invariant Logical. When `TRUE` the function only computes
@@ -11,6 +11,7 @@
 #' @param ... Further arguments passed to the method.
 #' @return A function passed to [MCMC] to check automatic convergence.
 #' @name convergence-checker
+#' @aliases automatic-stop
 NULL
 
 #' Removes invariant columns
@@ -33,8 +34,12 @@ rm_invariant <- function(x) {
 }
 
 #' @export
+#' @param autoburnin Logical. Passed to [coda::gelman.diag]. By default this
+#' option is set to `FALSE` since the [MCMC] function already a first chunk of
+#' steps via the argument `burnin`.
+#' 
 #' @rdname convergence-checker
-gelman_convergence <- function(threshold = 1.10, check_invariant=TRUE) {
+gelman_convergence <- function(threshold = 1.10, check_invariant=TRUE, autoburnin=FALSE,...) {
 
   function(x) {
     
@@ -45,7 +50,7 @@ gelman_convergence <- function(threshold = 1.10, check_invariant=TRUE) {
         x <- rm_invariant(x)
         
       # Computing gelman test
-      d <- tryCatch(coda::gelman.diag(x), error = function(e) e)
+      d <- tryCatch(coda::gelman.diag(x, autoburnin = autoburnin, ...), error = function(e) e)
       
       if (inherits(d, "error")) {
         
@@ -160,7 +165,7 @@ with_autostop <- function(expr, conv_checker) {
   parenv <- parent.frame()
   
   # Retrieving parameters from the MCMC call
-  nbatch   <- parenv$nbatch
+  nsteps   <- parenv$nsteps
   nchains  <- parenv$nchains
   autostop <- parenv$autostop
   
@@ -173,7 +178,7 @@ with_autostop <- function(expr, conv_checker) {
          call. = FALSE)
   
   # Correcting the autostop
-  if (autostop*2 > nbatch) {
+  if (autostop*2 > nsteps) {
     autostop <- 0L
     parenv$autostop <- 0L
   }
@@ -182,18 +187,18 @@ with_autostop <- function(expr, conv_checker) {
   expr <- sys.call()[[2]]
   
   # Calculating lengths. The bulk vector sets what will be
-  # nbatch in each call. This excludes burnin
+  # nsteps in each call. This excludes burnin
   if (autostop > 0L) {
-    bulks <- rep(autostop, (nbatch - parenv$burnin) %/% autostop)
-    if ((nbatch - parenv$burnin) %% autostop)
-      bulks <- c(bulks, (nbatch - parenv$burnin) - sum(bulks))
+    bulks <- rep(autostop, (nsteps - parenv$burnin) %/% autostop)
+    if ((nsteps - parenv$burnin) %% autostop)
+      bulks <- c(bulks, (nsteps - parenv$burnin) - sum(bulks))
     
     # We need to add the burnin to the first
     bulks[1] <- bulks[1] + parenv$burnin
     
   } else
     # If there's no autostop, then no need to split
-    bulks <- nbatch
+    bulks <- nsteps
   
     # Do while no convergence
   converged <- FALSE
@@ -201,8 +206,8 @@ with_autostop <- function(expr, conv_checker) {
   ans       <- NULL
   for (i in seq_along(bulks)) {
     
-    # Updating the nbatch argument
-    parenv$nbatch <- bulks[i]
+    # Updating the nsteps argument
+    parenv$nsteps <- bulks[i]
     
     if (i > 1) {
       parenv$burnin  <- 0L

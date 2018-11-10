@@ -1,8 +1,10 @@
 Package: amcmc
-Title: Adaptive and other Markov Chain Monte Carlo methods
+Title: A flexible MCMC estimation framework
 Version: 0.0.9000
-Authors@R: person("George", "Vega Yon", email = "g.vegayon@gmail.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Authors@R: person("George", "Vega Yon", email = "g.vegayon@gmail.com", role = c("aut", "cre"),
+  comment = c(ORCID = "0000-0002-3171-0844"))
+Description: Implements a normal random walk kernel with reflective boundaries,
+  convergence monitoring with automatic stop, and multiple chains in parallel.
 Depends: R (>= 3.3.0)
 License: MIT + file LICENSE
 Encoding: UTF-8

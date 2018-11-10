@@ -1,4 +1,4 @@
-amcmc: Adaptive and other Markov Chain Monte Carlo methods
+amcmc: A flexible MCMC estimation framework
 ================
 
 [![Travis-CI Build
@@ -8,12 +8,8 @@ status](https://ci.appveyor.com/api/projects/status/3x9qj7imvoijb1vf?svg=true)](
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/USCbiostats/amcmc/master.svg)](https://codecov.io/github/USCbiostats/amcmc?branch=master)
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-
-The `amcmc` R package implements out-of-the-box methods for Adaptive
-Markov Chain Monte Carlo, and Optimal Scaling Algorithms of Random Walk
-MCMC. Designed to be used with the `coda` R package, `amcmc` allows
-running multiple chains simultaneously (parallel computing), using
-Parallel Tempering MCMC, and Random Walks with Reflecting Boundaries.
+[![CRAN
+status](https://www.r-pkg.org/badges/version/amcmc)](https://cran.r-project.org/package=amcmc)
 
 Current features:
 
@@ -59,11 +55,10 @@ ll <- function(par, X., y.) {
 ans <- MCMC(
   ll, X. = X, y. = y,
   initial = c(1, 1, 1),
-  nbatch   = 2e4,
+  nsteps   = 2e4,
   nchains  = 4L,
   autostop = 1e3,
   burnin   = 1e4,
-  thin     = 20,
   scale    = .1,
   multicore = TRUE
   )
@@ -72,7 +67,7 @@ ans <- MCMC(
     ## Warning: A single initial point has been passed via `initial`: c(1, 1, 1).
     ## The values will be recycled.
 
-    ## Convergence has been reached with 11000 steps (50 final count of observations).
+    ## Convergence has been reached with 11000 steps (1000 final count of observations).
 
 ``` r
 library(coda)
@@ -81,25 +76,25 @@ summary(ans)
 ```
 
     ## 
-    ## Iterations = 10020:11000
-    ## Thinning interval = 20 
+    ## Iterations = 10001:11000
+    ## Thinning interval = 1 
     ## Number of chains = 4 
-    ## Sample size per chain = 50 
+    ## Sample size per chain = 1000 
     ## 
     ## 1. Empirical mean and standard deviation for each variable,
     ##    plus standard error of the mean:
     ## 
-    ##       Mean      SD Naive SE Time-series SE
-    ## par1 3.069 0.06863 0.004853       0.004626
-    ## par2 1.998 0.06283 0.004443       0.004185
-    ## par3 2.049 0.04698 0.003322       0.003168
+    ##       Mean      SD  Naive SE Time-series SE
+    ## par1 3.072 0.06856 0.0010840       0.004018
+    ## par2 1.991 0.06352 0.0010044       0.003638
+    ## par3 2.050 0.04591 0.0007259       0.002161
     ## 
     ## 2. Quantiles for each variable:
     ## 
     ##       2.5%   25%   50%   75% 97.5%
-    ## par1 2.934 3.019 3.067 3.113 3.190
-    ## par2 1.885 1.957 1.999 2.033 2.142
-    ## par3 1.963 2.018 2.051 2.079 2.144
+    ## par1 2.939 3.028 3.073 3.121 3.201
+    ## par2 1.870 1.948 1.992 2.033 2.118
+    ## par3 1.960 2.020 2.051 2.082 2.139
 
 ``` r
 plot(ans)
@@ -114,13 +109,13 @@ gelman.diag(ans)
     ## Potential scale reduction factors:
     ## 
     ##      Point est. Upper C.I.
-    ## par1       1.00       1.02
-    ## par2       1.01       1.05
-    ## par3       1.01       1.03
+    ## par1       1.01       1.03
+    ## par2       1.01       1.03
+    ## par3       1.01       1.02
     ## 
     ## Multivariate psrf
     ## 
-    ## 1.02
+    ## 1.01
 
 # Other tools
 
@@ -137,3 +132,7 @@ gelman.diag(ans)
 Please note that the ‘amcmc’ project is released with a [Contributor
 Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,
 you agree to abide by its terms.
+
+# Funding
+
+Supported by National Cancer Institute Grant \#1P01CA196596.
