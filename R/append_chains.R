@@ -77,10 +77,24 @@ append_chains.mcmc <- function(...) {
   start <- sapply(mcpar, "[[", 1)
   end   <- sapply(mcpar, "[[", 2)
   
+  # checking rownames
+  rn <- lapply(dots, function(d) {
+    as.integer(rownames(unclass(d)))
+  })
+  
+  midnames <- Map(function(rn., add) {
+    as.character(rn. - rn.[1] + add + thin[1])
+  }, rn = rn[-1], add=cumsum(end[-length(end)])
+  )
+  
+  rn <- c(as.character(rn[[1]]), unlist(midnames))
+  
   # Correcting endings
   end[-1] <- end[-1] + 1 - start[-1]
   
+  
   dat <- do.call(rbind, unclass(dots))
+  rownames(dat) <- rn
   
   coda::mcmc(
     data  = dat,
