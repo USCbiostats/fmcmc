@@ -20,18 +20,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // MCMC
-NumericMatrix MCMC(Function fun, const NumericVector& theta, int nbatch, const NumericVector& lb, const NumericVector& ub, const NumericVector& scale, const IntegerVector& fixed);
-RcppExport SEXP _amcmc_MCMC(SEXP funSEXP, SEXP thetaSEXP, SEXP nbatchSEXP, SEXP lbSEXP, SEXP ubSEXP, SEXP scaleSEXP, SEXP fixedSEXP) {
+NumericMatrix MCMC(Function fun, const NumericVector& theta, int nsteps, const NumericVector& lb, const NumericVector& ub, const NumericVector& scale, const IntegerVector& fixed);
+RcppExport SEXP _amcmc_MCMC(SEXP funSEXP, SEXP thetaSEXP, SEXP nstepsSEXP, SEXP lbSEXP, SEXP ubSEXP, SEXP scaleSEXP, SEXP fixedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Function >::type fun(funSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type theta(thetaSEXP);
-    Rcpp::traits::input_parameter< int >::type nbatch(nbatchSEXP);
+    Rcpp::traits::input_parameter< int >::type nsteps(nstepsSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type lb(lbSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type ub(ubSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type scale(scaleSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type fixed(fixedSEXP);
-    rcpp_result_gen = Rcpp::wrap(MCMC(fun, theta, nbatch, lb, ub, scale, fixed));
+    rcpp_result_gen = Rcpp::wrap(MCMC(fun, theta, nsteps, lb, ub, scale, fixed));
     return rcpp_result_gen;
 END_RCPP
 }

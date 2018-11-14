@@ -2,13 +2,18 @@
 % Please edit documentation in R/autostop.R
 \name{convergence-checker}
 \alias{convergence-checker}
+\alias{automatic-stop}
 \alias{gelman_convergence}
 \alias{geweke_convergence}
-\title{Automatic stop}
+\alias{auto_convergence}
+\title{Convergence Monitoring}
 \usage{
-gelman_convergence(threshold = 1.1, check_invariant = TRUE)
+gelman_convergence(threshold = 1.1, check_invariant = TRUE,
+  autoburnin = FALSE, ...)
 
-geweke_convergence(threshold, ...)
+geweke_convergence(threshold = 0.025, check_invariant = TRUE, ...)
+
+auto_convergence()
 }
 \arguments{
 \item{threshold}{Numeric value. A Gelman statistic below the threshold
@@ -17,13 +22,19 @@ will return \code{TRUE}.}
 \item{check_invariant}{Logical. When \code{TRUE} the function only computes
 the gelman diagnostic using variables with greater than \code{1e-10} variance.}
 
+\item{autoburnin}{Logical. Passed to \link[coda:gelman.diag]{coda::gelman.diag}. By default this
+option is set to \code{FALSE} since the \link{MCMC} function already a first chunk of
+steps via the argument \code{burnin}.}
+
 \item{...}{Further arguments passed to the method.}
 }
 \value{
 A function passed to \link{MCMC} to check automatic convergence.
 }
 \description{
-Automatic stop
+Built-in set of functions to be used in companion with the argument
+\code{conv_checker} in \link{MCMC}. These functions are not intended to be used
+in a context other than the \code{MCMC} function.
 }
 \details{
 In the case of \code{geweke_convergence}, \code{threshold} sets the p-value
@@ -34,4 +45,10 @@ the threshold, the lower the probability of stopping the chain.
 In the case that the chain has more than one parameter, the algorithm will
 return true if and only if the test fails to reject the null for all the
 parameters.
+
+The \code{auto_convergence} function is the default and is just a wrapper
+of \code{gelman_convergence} and \code{geweke_convergence}. This function returns a
+convergence checker that will be either of the other two depending on wether
+\code{nchains} in \code{MCMC} is greater than one--in which case it will use the Gelman
+test--or not--in which case it will use the Geweke test.
 }

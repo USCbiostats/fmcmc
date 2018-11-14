@@ -61,7 +61,7 @@ NumericVector normal_prop(
 NumericMatrix MCMC(
     Function fun,
     const NumericVector & theta,
-    int nbatch,
+    int nsteps,
     const NumericVector & lb,
     const NumericVector & ub,
     const NumericVector & scale,
@@ -70,7 +70,7 @@ NumericMatrix MCMC(
   
   int K = lb.size();
   
-  NumericMatrix ans(nbatch, K);
+  NumericMatrix ans(nsteps, K);
   NumericVector theta0 = clone(theta);
   NumericVector theta1 = clone(theta);
   NumericVector f0 = fun(theta0), f1(1);
@@ -81,11 +81,11 @@ NumericMatrix MCMC(
   
   // Using sugar to generate the random values for the hastings ratio.
   GetRNGstate();
-  NumericVector R = runif(nbatch);
+  NumericVector R = runif(nsteps);
   PutRNGstate();
   
   int k;
-  for (int i = 0; i < nbatch; i++) {
+  for (int i = 0; i < nsteps; i++) {
   
     // Generating proposal
     normal_prop_void(&theta1, theta0, lb, ub, scale, fixed);
