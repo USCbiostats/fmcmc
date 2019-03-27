@@ -9,7 +9,3 @@ normal_prop <- function(x, lb, ub, scale, fixed) {
     .Call('_amcmc_MCMC', PACKAGE = 'amcmc', fun, theta, nsteps, lb, ub, scale, fixed)
 }
 
-update_equal <- function(par, ids) {
-    .Call('_amcmc_update_equal', PACKAGE = 'amcmc', par, ids)
-}
-

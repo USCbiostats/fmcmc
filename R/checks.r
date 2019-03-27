@@ -28,7 +28,11 @@ check_initial <- function(initial, nchains) {
       warning("A single initial point has been passed via `initial`: c(",
               paste(initial, collapse=", "), "). The values will be recycled.",
               call. = FALSE)
-    
+  
+    # The number of dimensions cannot be null
+    if (!length(initial))
+      stop("The `initial` vector is of length zero.", call. = FALSE)
+      
     initial <- matrix(initial, ncol=length(initial), nrow=nchains,
                       dimnames = list(NULL, names(initial)), byrow=TRUE)
     

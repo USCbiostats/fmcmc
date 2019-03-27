@@ -5,6 +5,7 @@
 \alias{automatic-stop}
 \alias{gelman_convergence}
 \alias{geweke_convergence}
+\alias{heildel_convergence}
 \alias{auto_convergence}
 \title{Convergence Monitoring}
 \usage{
@@ -12,6 +13,8 @@ gelman_convergence(threshold = 1.1, check_invariant = TRUE,
   autoburnin = FALSE, ...)
 
 geweke_convergence(threshold = 0.025, check_invariant = TRUE, ...)
+
+heildel_convergence(..., check_invariant = TRUE)
 
 auto_convergence()
 }
@@ -45,6 +48,8 @@ the threshold, the lower the probability of stopping the chain.
 In the case that the chain has more than one parameter, the algorithm will
 return true if and only if the test fails to reject the null for all the
 parameters.
+
+See \link[coda:heidel.diag]{coda::heidel.diag} for details on this test.
 
 The \code{auto_convergence} function is the default and is just a wrapper
 of \code{gelman_convergence} and \code{geweke_convergence}. This function returns a

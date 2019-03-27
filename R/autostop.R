@@ -127,6 +127,44 @@ geweke_convergence <- function(threshold=.025, check_invariant=TRUE,...) {
   
 }
 
+
+#' @rdname convergence-checker
+#' @details
+#' See [coda::heidel.diag] for details on this test.
+#' @export
+heildel_convergence <- function(..., check_invariant=TRUE) {
+  
+  function(x) {
+    
+    if (coda::nchain(x) > 1L) 
+      stop("The `heidel` convergence check is only available with runs of a single chain.",
+           call. = FALSE)
+    
+    # Checking invariant
+    if (check_invariant) 
+      x <- rm_invariant(x)
+    
+    d <- tryCatch(coda::heidel.diag(x, ...)[, c("stest", "htest")], error = function(e) e)
+    
+    if (inherits(d, "error")) {
+      
+      warning("At ", coda::niter(x), " `heidel.diag` failed to be computed.",
+              " Will skip and try with the next batch.", call. = FALSE,
+              immediate. = TRUE)
+      
+      return(FALSE)
+      
+    }
+    
+    if (any(!is.finite(d)))
+      return(FALSE)
+    
+    # The tests return a 1
+    all(d == 1)
+  }
+  
+}
+
 #' @rdname convergence-checker
 #' @details The `auto_convergence` function is the default and is just a wrapper
 #' of `gelman_convergence` and `geweke_convergence`. This function returns a 
@@ -159,6 +197,10 @@ auto_convergence <- function() {
   
 }
 
+#' Run MCMC with convergence checker
+#' @noRd
+#' @param expr The expression to parse
+#' @param conv_checker A function to be used as a convergence checker.
 with_autostop <- function(expr, conv_checker) {
   
   # Getting the parent environment

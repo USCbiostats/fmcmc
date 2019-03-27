@@ -111,27 +111,3 @@ NumericMatrix MCMC(
   return ans;
 }
 
-void update_equal(
-  NumericVector & par,
-  const std::vector< std::vector< unsigned int > > & ids
-) {
-  
-  for (int i = 0; i < (int) ids.size(); i++)
-    for (int j = 1; j < (int) ids.at(i).size(); j++)
-      par.at(ids.at(i).at(j)) = par.at(ids.at(i).at(0));
-  
-  return;
-}
-
-// [[Rcpp::export]]
-NumericVector update_equal(
-  const NumericVector & par,
-  const std::vector< std::vector< unsigned int > > & ids
-) {
-  
-  NumericVector ans = clone(par);
-  update_equal(ans, ids);
-  
-  return ans;
-  
-}

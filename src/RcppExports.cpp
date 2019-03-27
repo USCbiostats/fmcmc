@@ -35,23 +35,10 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// update_equal
-NumericVector update_equal(const NumericVector& par, const std::vector< std::vector< unsigned int > >& ids);
-RcppExport SEXP _amcmc_update_equal(SEXP parSEXP, SEXP idsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericVector& >::type par(parSEXP);
-    Rcpp::traits::input_parameter< const std::vector< std::vector< unsigned int > >& >::type ids(idsSEXP);
-    rcpp_result_gen = Rcpp::wrap(update_equal(par, ids));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_amcmc_normal_prop", (DL_FUNC) &_amcmc_normal_prop, 5},
     {"_amcmc_MCMC", (DL_FUNC) &_amcmc_MCMC, 7},
-    {"_amcmc_update_equal", (DL_FUNC) &_amcmc_update_equal, 2},
     {NULL, NULL, 0}
 };
 
