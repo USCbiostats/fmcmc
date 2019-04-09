@@ -16,7 +16,9 @@ Current features:
 
 2.  Parallel chains using `parallel::lapply`
 
-3.  Normal Random Walk with Reflective Boundaries kernel.
+3.  Flexible framework to specify different transition kernels.
+
+4.  Implements the Normal (random walk) with reflective boundaries kernel.
 
 
 # Installing
@@ -31,7 +33,7 @@ devtools::install_github("USCbiostats/amcmc")
 
 Linear regression model
 
-```{r}
+```{r random-data1}
 library(amcmc)
 
 # Simulating data
@@ -50,16 +52,28 @@ ll <- function(par, X., y.) {
   
   ans
 }
+```
 
+```{r mcmc1}
 # Running the MCMC
 ans <- MCMC(
   ll, X. = X, y. = y,
   initial = c(1, 1, 1),
-  nsteps   = 2e4,
-  nchains  = 4L,
-  autostop = 1e3,
+  # It allows to specify different kernels
+  kernel   = kernel_reflective(
+    k     = 3,
+    lb    = .00001,
+    ub    = 100,
+    scale = .1
+  ),
+  # As well as convergence checkers
+  conv_checker = gelman_convergence(threshold = 1.05),
+  nsteps   = 2e5,
+  thin     = 10,
+  autostop = 2e3,
   burnin   = 1e4,
-  scale    = .1,
+  # As well as parallel chains
+  nchains  = 4L,
   multicore = TRUE
   )
 ```
@@ -90,3 +104,4 @@ Please note that the 'amcmc' project is released with a [Contributor Code of Con
 # Funding
 
 Supported by National Cancer Institute Grant #1P01CA196596.
+cd 
