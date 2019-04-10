@@ -1,19 +1,26 @@
 Package: amcmc
 Title: A flexible MCMC estimation framework
-Version: 0.0.9000
+Version: 0.1-0
 Authors@R: person("George", "Vega Yon", email = "g.vegayon@gmail.com", role = c("aut", "cre"),
   comment = c(ORCID = "0000-0002-3171-0844"))
-Description: Implements a normal random walk kernel with reflective boundaries,
-  convergence monitoring with automatic stop, and multiple chains in parallel.
+Description: Provides functionality for doing MCMC including automatic stop using
+  convergence checkers and personalized transition kernel functions.
 Depends: R (>= 3.3.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/USCbiostats/amcmc
 BugReports: https://github.com/USCbiostats/amcmc/issues
-Suggests: testthat,
-    covr
-Imports: Rcpp, parallel, coda, stats, methods
+Suggests: 
+    testthat,
+    covr,
+    mvtnorm
+Imports:
+  Rcpp,
+  parallel,
+  coda,
+  stats,
+  methods
 LinkingTo: Rcpp
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)

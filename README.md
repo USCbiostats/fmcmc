@@ -17,7 +17,10 @@ Current features:
 
 2.  Parallel chains using `parallel::lapply`
 
-3.  Normal Random Walk with Reflective Boundaries kernel.
+3.  Flexible framework to specify different transition kernels.
+
+4.  Implements the Normal (random walk) with reflective boundaries
+    kernel.
 
 # Installing
 
@@ -50,16 +53,28 @@ ll <- function(par, X., y.) {
   
   ans
 }
+```
 
+``` r
 # Running the MCMC
 ans <- MCMC(
   ll, X. = X, y. = y,
   initial = c(1, 1, 1),
-  nsteps   = 2e4,
-  nchains  = 4L,
-  autostop = 1e3,
+  # It allows to specify different kernels
+  kernel   = kernel_reflective(
+    k     = 3,
+    lb    = .00001,
+    ub    = 100,
+    scale = .1
+  ),
+  # As well as convergence checkers
+  conv_checker = gelman_convergence(threshold = 1.05),
+  nsteps   = 2e5,
+  thin     = 10,
+  autostop = 2e3,
   burnin   = 1e4,
-  scale    = .1,
+  # As well as parallel chains
+  nchains  = 4L,
   multicore = TRUE
   )
 ```
@@ -67,7 +82,7 @@ ans <- MCMC(
     ## Warning: A single initial point has been passed via `initial`: c(1, 1, 1).
     ## The values will be recycled.
 
-    ## Convergence has been reached with 11000 steps (1000 final count of observations).
+    ## Convergence has been reached with 12000 steps (200 final count of observations).
 
 ``` r
 library(coda)
@@ -76,25 +91,25 @@ summary(ans)
 ```
 
     ## 
-    ## Iterations = 10001:11000
-    ## Thinning interval = 1 
+    ## Iterations = 10010:12000
+    ## Thinning interval = 10 
     ## Number of chains = 4 
-    ## Sample size per chain = 1000 
+    ## Sample size per chain = 200 
     ## 
     ## 1. Empirical mean and standard deviation for each variable,
     ##    plus standard error of the mean:
     ## 
-    ##       Mean      SD  Naive SE Time-series SE
-    ## par1 3.072 0.06856 0.0010840       0.004018
-    ## par2 1.991 0.06352 0.0010044       0.003638
-    ## par3 2.050 0.04591 0.0007259       0.002161
+    ##       Mean      SD Naive SE Time-series SE
+    ## par1 3.076 0.06644 0.002349       0.002782
+    ## par2 1.991 0.06664 0.002356       0.002840
+    ## par3 2.046 0.04739 0.001675       0.001813
     ## 
     ## 2. Quantiles for each variable:
     ## 
     ##       2.5%   25%   50%   75% 97.5%
-    ## par1 2.939 3.028 3.073 3.121 3.201
-    ## par2 1.870 1.948 1.992 2.033 2.118
-    ## par3 1.960 2.020 2.051 2.082 2.139
+    ## par1 2.939 3.036 3.075 3.122 3.201
+    ## par2 1.862 1.943 1.994 2.036 2.117
+    ## par3 1.953 2.013 2.046 2.074 2.140
 
 ``` r
 plot(ans)
@@ -109,13 +124,13 @@ gelman.diag(ans)
     ## Potential scale reduction factors:
     ## 
     ##      Point est. Upper C.I.
-    ## par1       1.01       1.03
-    ## par2       1.01       1.03
+    ## par1       1.00       1.01
+    ## par2       1.00       1.00
     ## par3       1.01       1.02
     ## 
     ## Multivariate psrf
     ## 
-    ## 1.01
+    ## 1
 
 # Other tools
 

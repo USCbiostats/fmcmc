@@ -5,11 +5,10 @@
 \alias{Metropolis-Hastings}
 \title{Markov Chain Monte Carlo}
 \usage{
-MCMC(fun, ..., initial, nsteps, nchains = 1L, thin = 1L, scale = 1,
-  burnin = 1000L, ub = .Machine$double.xmax,
-  lb = -.Machine$double.xmax, useCpp = FALSE, cl = NULL,
-  fixed = FALSE, multicore = FALSE,
-  conv_checker = auto_convergence(), autostop = 500L)
+MCMC(fun, ..., initial, nsteps, nchains = 1L, thin = 1L,
+  kernel = kernel_normal(), burnin = 1000L, cl = NULL,
+  multicore = FALSE, conv_checker = auto_convergence(),
+  autostop = 500L)
 }
 \arguments{
 \item{fun}{A function. Returns the log-likelihood}
@@ -25,22 +24,12 @@ initial values of the parameters for each chain (See details).}
 
 \item{thin}{Integer scalar. Passed to \code{\link[coda:mcmc]{coda::mcmc}}.}
 
-\item{scale}{Either a numeric vector of length \code{length(initial)} or a
-scalar. Step size for the transition kernel (see details).}
+\item{kernel}{An object of class \link{amcmc_kernel}.}
 
 \item{burnin}{Integer scalar. Number of burn-in samples. Passed to
 \code{\link[coda:mcmc]{coda::mcmc}} as \code{init}.}
 
-\item{ub}{Numeric vector of length \code{length(initial)}. Upper bounds}
-
-\item{lb}{Numeric vector of length \code{length(initial)}. Lower bounds}
-
-\item{useCpp}{Logical scalar. When \code{TRUE}, loops using a Rcpp implementation.}
-
 \item{cl}{A cluster object passed to \code{\link[parallel:clusterApply]{clusterApply}}.}
-
-\item{fixed}{Logical vector. If the kth position is \code{TRUE}, then that
-value will be fixed.}
 
 \item{multicore}{Logical. If \code{FALSE} then it will execute the chains in a serial
 fashion.}
@@ -61,23 +50,7 @@ Metropolis-Hastings algorithm using a random walk kernel with reflecting boundar
 }
 \details{
 This function implements MCMC using the Metropolis-Hastings ratio with
-scaled standard normal propositions for each parameter. For each parameter
-the transition function is
-
-\deqn{
-\theta' = \theta + scale*z
-}
-
-Where \eqn{z} has standard normal distribution. The MCMC follows a block
-sampling scheme, i.e. proposed states are either accepted or rejected
-altogether. If \code{length(initial) > 1} and \code{length(scale) == 1},
-the value will be recycled so that \code{length(initial) == length(scale)}.
-
-Lower and upper bounds are treated using reflecting boundaries, this is,
-if the proposed \eqn{\theta'} is greater than the \code{ub}, then \eqn{\theta' - ub}
-is substracted from \eqn{ub}. At the same time, if it is less than \code{lb}, then
-\eqn{lb - \theta'} is added to \code{lb} iterating until \eqn{\theta} is within
-\code{[lb, ub]}.
+flexible transition kernels.
 
 If \code{name(initial) == NULL}, then a names in the form of \code{par1, par2, ...}
 will be assigned to the variables.
@@ -140,8 +113,10 @@ fun <- function(x) {
 # Calling MCMC, but first, loading the coda R package for
 # diagnostics
 library(coda)
-ans <- MCMC(fun, initial = c(mu=1, sigma=1), nsteps = 2e3, scale = .1,
-   ub = 10, lb = 0)
+ans <- MCMC(
+  fun, initial = c(mu=1, sigma=1), nsteps = 2e3,
+  kernel = kernel_reflective(2, scale = .1, ub = 10, lb = 0)
+  )
 
 # Ploting the output
 oldpar <- par(no.readonly = TRUE)
@@ -189,13 +164,15 @@ fun <- function(pars) {
 ans <- MCMC(
   fun,
   initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
-  lb      = c(-10, -10, .01, -5, .01),
-  ub      = 5,
+  kernel  = kernel_reflective(
+    k     = 5,
+    lb    = c(-10, -10, .01, -5, .01),
+    ub    = 5
+    scale = 0.01
+  ),
   nsteps  = 1e5,
   thin    = 20,
-  scale   = .01,
-  burnin  = 5e3,
-  useCpp  = TRUE
+  burnin  = 5e3
 )
 
 # Checking out the outcomes
@@ -223,13 +200,15 @@ ans <- MCMC(
   fun,
   initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
   nchains = 2,
-  lb      = c(-10, -10, .01, -5, .01),
-  ub      = 5,
+  kernel  = kernel_reflective(
+    k     = 5,
+    lb    = c(-10, -10, .01, -5, .01),
+    ub    = 5
+    scale = 0.01
+  ),
   nsteps  = 1e5,
   thin    = 20,
-  scale   = .01,
   burnin  = 5e3,
-  useCpp  = TRUE,
   D       = D
 )
 
