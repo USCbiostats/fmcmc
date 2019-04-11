@@ -115,7 +115,7 @@ fun <- function(x) {
 library(coda)
 ans <- MCMC(
   fun, initial = c(mu=1, sigma=1), nsteps = 2e3,
-  kernel = kernel_reflective(2, scale = .1, ub = 10, lb = 0)
+  kernel = kernel_reflective(scale = .1, ub = 10, lb = 0)
   )
 
 # Ploting the output
@@ -165,7 +165,6 @@ ans <- MCMC(
   fun,
   initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
   kernel  = kernel_reflective(
-    k     = 5,
     lb    = c(-10, -10, .01, -5, .01),
     ub    = 5
     scale = 0.01
@@ -201,7 +200,6 @@ ans <- MCMC(
   initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
   nchains = 2,
   kernel  = kernel_reflective(
-    k     = 5,
     lb    = c(-10, -10, .01, -5, .01),
     ub    = 5
     scale = 0.01

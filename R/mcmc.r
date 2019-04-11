@@ -1,11 +1,11 @@
 #' Markov Chain Monte Carlo
 #' 
-#' Metropolis-Hastings algorithm using a random walk kernel with reflecting boundaries.
+#' A flexible implementation of the Metropolis-Hastings MCMC algorithm.
 #' 
 #' @param fun A function. Returns the log-likelihood
 #' @param initial A numeric vector or matrix with as many rows as chains with
 #' initial values of the parameters for each chain (See details).
-#' @param nsteps Integer scalar. Number of MCMC runs.
+#' @param nsteps Integer scalar. Length of each chain.
 #' @param nchains Integer scalar. Number of chains to run (in parallel).
 #' @param cl A cluster object passed to \code{\link[parallel:clusterApply]{clusterApply}}.
 #' @param thin Integer scalar. Passed to \code{\link[coda:mcmc]{coda::mcmc}}.
@@ -91,7 +91,7 @@
 #' library(coda)
 #' ans <- MCMC(
 #'   fun, initial = c(mu=1, sigma=1), nsteps = 2e3,
-#'   kernel = kernel_reflective(2, scale = .1, ub = 10, lb = 0)
+#'   kernel = kernel_reflective(scale = .1, ub = 10, lb = 0)
 #'   )
 #' 
 #' # Ploting the output
@@ -141,7 +141,6 @@
 #'   fun,
 #'   initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
 #'   kernel  = kernel_reflective(
-#'     k     = 5,
 #'     lb    = c(-10, -10, .01, -5, .01),
 #'     ub    = 5
 #'     scale = 0.01
@@ -177,7 +176,6 @@
 #'   initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
 #'   nchains = 2,
 #'   kernel  = kernel_reflective(
-#'     k     = 5,
 #'     lb    = c(-10, -10, .01, -5, .01),
 #'     ub    = 5
 #'     scale = 0.01
@@ -353,7 +351,7 @@ MCMC <- function(
     ans <- matrix(ncol = length(initial), nrow = nsteps,
                   dimnames = list(1:nsteps, cnames))
     
-    for (i in 1:nsteps) {
+    for (i in 1L:nsteps) {
       # Step 1. Propose
       theta1[] <- kernel$proposal(environment())
       f1     <- f(theta1)

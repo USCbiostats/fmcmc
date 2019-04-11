@@ -25,9 +25,10 @@ check_initial <- function(initial, nchains) {
   if (is.vector(initial, mode = "numeric")) {
     
     if (nchains > 1)
-      warning("A single initial point has been passed via `initial`: c(",
-              paste(initial, collapse=", "), "). The values will be recycled.",
-              call. = FALSE)
+      warning("While using multiple chains, a single initial point has been ",
+              "passed via `initial`: c(", paste(initial, collapse=", "),
+              "). The values will be recycled. Ideally you would want to ",
+              "start each chain from different locations.", call. = FALSE)
   
     # The number of dimensions cannot be null
     if (!length(initial))

@@ -62,7 +62,6 @@ ans <- MCMC(
   initial = c(1, 1, 1),
   # It allows to specify different kernels
   kernel   = kernel_reflective(
-    k     = 3,
     lb    = .00001,
     ub    = 100,
     scale = .1
@@ -150,4 +149,4 @@ you agree to abide by its terms.
 
 # Funding
 
-Supported by National Cancer Institute Grant \#1P01CA196596.
+Supported by National Cancer Institute Grant \#1P01CA196596. cd

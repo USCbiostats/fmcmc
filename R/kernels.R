@@ -58,7 +58,7 @@ kernel_new <- function(proposal, logratio, ...) {
   for (n in names(dots))
     env[[n]] <- dots[[n]]
   
-  structure(env, class = "amcmc_kernel")
+  structure(env, class = c("environment", "amcmc_kernel"))
   
 }
 
@@ -100,49 +100,58 @@ kernel_normal <- function(mean = 0, scale = 1) {
 #' 
 #' In this case, the transition probability is symmetric (just like the normal
 #' kernel).
-#' @param k Number of parameters in the model.
 kernel_reflective <- function(
-  k,
   scale = 1,
   lb    = -.Machine$double.xmax,
   ub    = .Machine$double.xmax,
   fixed = FALSE
   ) {
-  
-  if (missing(k))
-    stop("The argument `k` is missing in `kernel_reflective`. This function ",
-         "requires knowing the number of parameters in the model before ",
-         "generating the kernel.", call. = FALSE)
-  
-  # Checking boundaries
-  if (length(ub) > 1 && (k != length(ub)))
-    stop("Incorrect length of -ub-", call. = FALSE)
-  
-  if (length(lb) > 1 && (k != length(lb)))
-    stop("Incorrect length of -lb-", call. = FALSE)
-  
-  # Repeating boundaries
-  if (length(ub) == 1)
-    ub <- rep(ub, k)
-  
-  if (length(lb) == 1)
-    lb <- rep(lb, k)
-  
-  if (any(ub <= lb))
-    stop("-ub- cannot be <= than -lb-.", call. = FALSE)
-  
-  # Repeating 
-  if (length(fixed) == 1)
-    fixed <- rep(fixed, k)
-  
-  # Repeating scale
-  if (length(scale) == 1)
-    scale <- rep(scale, k)
-  
+
   kernel_new(
-    proposal = function(env) normal_prop(env$theta0, lb, ub, scale, fixed),
+    proposal = function(env) {
+      
+      # Checking whether k exists. We should do this only once. When doing this
+      # we have to make sure that the length of lb and ub are according to the
+      # length of model parameter.
+      #
+      # We also want to restart k in the first run. Since it is based on
+      # environments, the user may move this around... so it is better to just
+      # restart this every time that the MCMC function starts from scratch.
+      if (env$i == 1L | !length(environment(proposal)[["k"]])) {
+        
+        assign("k", length(env$theta0), envir = environment(proposal))
+        
+        # Checking boundaries
+        if (length(ub) > 1 && (k != length(ub)))
+          stop("Incorrect length of -ub-", call. = FALSE)
+        
+        if (length(lb) > 1 && (k != length(lb)))
+          stop("Incorrect length of -lb-", call. = FALSE)
+        
+        # Repeating boundaries
+        if (length(ub) == 1)
+          ub <<- rep(ub, k)
+        
+        if (length(lb) == 1)
+          lb <<- rep(lb, k)
+        
+        if (any(ub <= lb))
+          stop("-ub- cannot be <= than -lb-.", call. = FALSE)
+        
+        # Repeating 
+        if (length(fixed) == 1)
+          fixed <<- rep(fixed, k)
+        
+        # Repeating scale
+        if (length(scale) == 1)
+          scale <<- rep(scale, k)
+        
+      }
+      
+      normal_prop(env$theta0, lb, ub, scale, fixed)
+      },
     logratio = function(env) env$f1 - env$f0,
-    scale = scale, ub = ub, lb = lb, fixed = fixed, k = k
+    scale = scale, ub = ub, lb = lb, fixed = fixed
   )
   
 }

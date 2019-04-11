@@ -61,7 +61,6 @@ ans <- MCMC(
   initial = c(1, 1, 1),
   # It allows to specify different kernels
   kernel   = kernel_reflective(
-    k     = 3,
     lb    = .00001,
     ub    = 100,
     scale = .1

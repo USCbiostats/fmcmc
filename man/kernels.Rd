@@ -16,7 +16,7 @@ kernel_new(proposal, logratio, ...)
 
 kernel_normal(mean = 0, scale = 1)
 
-kernel_reflective(k, scale = 1, lb = -.Machine$double.xmax,
+kernel_reflective(scale = 1, lb = -.Machine$double.xmax,
   ub = .Machine$double.xmax, fixed = FALSE)
 }
 \arguments{
@@ -35,8 +35,6 @@ the kernel.}
 \item{x}{An object of class \code{amcmc_kernel}.}
 
 \item{mean, scale}{Either a numeric vector or a scalar. Proposal scale.}
-
-\item{k}{Number of parameters in the model.}
 
 \item{lb, ub}{Either a numeric vector or a scalar. Lower and upper bounds for
 bounded kernels (currently the \code{kernel_reflective} only).}
