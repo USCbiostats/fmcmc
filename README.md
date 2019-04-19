@@ -1,5 +1,5 @@
-amcmc: A flexible MCMC estimation framework
-================
+
+# amcmc: A flexible MCMC estimation framework — a
 
 [![Travis-CI Build
 Status](https://travis-ci.org/USCbiostats/amcmc.svg?branch=master)](https://travis-ci.org/USCbiostats/amcmc)
@@ -15,7 +15,7 @@ Current features:
 
 1.  Automatic stop using convergence checker.
 
-2.  Parallel chains using `parallel::lapply`
+2.  Parallel chains using `parallel`
 
 3.  Flexible framework to specify different transition kernels.
 
@@ -67,7 +67,7 @@ ans <- MCMC(
     scale = .1
   ),
   # As well as convergence checkers
-  conv_checker = gelman_convergence(threshold = 1.05),
+  conv_checker = convergence_gelman(threshold = 1.05),
   nsteps   = 2e5,
   thin     = 10,
   autostop = 2e3,
@@ -78,10 +78,11 @@ ans <- MCMC(
   )
 ```
 
-    ## Warning: A single initial point has been passed via `initial`: c(1, 1, 1).
-    ## The values will be recycled.
+    ## Warning: While using multiple chains, a single initial point has been
+    ## passed via `initial`: c(1, 1, 1). The values will be recycled. Ideally you
+    ## would want to start each chain from different locations.
 
-    ## Convergence has been reached with 12000 steps (200 final count of observations).
+    ## Convergence has been reached with 12000 steps. (200 final count of observations).
 
 ``` r
 library(coda)

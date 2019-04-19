@@ -6,9 +6,9 @@
 \title{Markov Chain Monte Carlo}
 \usage{
 MCMC(fun, ..., initial, nsteps, nchains = 1L, thin = 1L,
-  kernel = kernel_normal(), burnin = 1000L, cl = NULL,
-  multicore = FALSE, conv_checker = auto_convergence(),
-  autostop = 500L)
+  kernel = kernel_normal(), burnin = floor(nsteps/2L),
+  multicore = FALSE, conv_checker = convergence_auto(),
+  autostop = 500L, cl = NULL)
 }
 \arguments{
 \item{fun}{A function. Returns the log-likelihood}
@@ -18,48 +18,50 @@ MCMC(fun, ..., initial, nsteps, nchains = 1L, thin = 1L,
 \item{initial}{A numeric vector or matrix with as many rows as chains with
 initial values of the parameters for each chain (See details).}
 
-\item{nsteps}{Integer scalar. Number of MCMC runs.}
+\item{nsteps}{Integer scalar. Length of each chain.}
 
 \item{nchains}{Integer scalar. Number of chains to run (in parallel).}
 
-\item{thin}{Integer scalar. Passed to \code{\link[coda:mcmc]{coda::mcmc}}.}
+\item{thin}{Integer scalar. Passed to \link[coda:mcmc]{coda::mcmc}.}
 
 \item{kernel}{An object of class \link{amcmc_kernel}.}
 
-\item{burnin}{Integer scalar. Number of burn-in samples. Passed to
-\code{\link[coda:mcmc]{coda::mcmc}} as \code{init}.}
+\item{burnin}{Integer scalar. Length of burn-in. Passed to
+\link[coda:mcmc]{coda::mcmc} as \code{start}.}
 
-\item{cl}{A cluster object passed to \code{\link[parallel:clusterApply]{clusterApply}}.}
-
-\item{multicore}{Logical. If \code{FALSE} then it will execute the chains in a serial
-fashion.}
+\item{multicore}{Logical. If \code{FALSE} then chains will be executed in serial.}
 
 \item{conv_checker}{A function that receives an object of class \link[coda:mcmc.list]{coda::mcmc.list},
 and returns a logical value with \code{TRUE} indicating convergence.}
 
-\item{autostop}{Integer scalar. Frequency used to check for convergence.
-By default the function uses \link{gelman_convergence} as criteria.}
+\item{autostop}{Integer scalar. Controls the frequency with which convergence
+is checked (see details).}
+
+\item{cl}{A \code{cluster} object passed to \link[parallel:clusterApply]{parallel::clusterApply}.}
 }
 \value{
-An object of class \code{\link[coda:mcmc]{mcmc}} from the \CRANpkg{coda}
+An object of class \link[coda:mcmc]{coda::mcmc} from the \CRANpkg{coda}
 package. The \code{mcmc} object is a matrix with one column per parameter,
-and \code{nsteps} rows. If \code{nchains > 1}, then it returns a \code{\link[coda:mcmc]{mcmc.list}}.
+and \code{nsteps} rows. If \code{nchains > 1}, then it returns a \link[coda:mcmc.list]{coda::mcmc.list}.
 }
 \description{
-Metropolis-Hastings algorithm using a random walk kernel with reflecting boundaries.
+A flexible implementation of the Metropolis-Hastings MCMC algorithm.
 }
 \details{
 This function implements MCMC using the Metropolis-Hastings ratio with
-flexible transition kernels.
+flexible transition kernels. Users can specify either one of the available
+transition kernels or define one of their own (see \link{kernels}). Furthermore,
+it allows easy parallel implementation running multiple chains in parallel. In
+addition, we incorporate a variety of convergence diagnostics, alternatively
+the user can specify their own (see \link{convergence-checker}).
 
-If \code{name(initial) == NULL}, then a names in the form of \code{par1, par2, ...}
-will be assigned to the variables.
+We now give details of the various options included in the function.#'
 
 When \code{nchains > 1}, the function will run multiple chains. Furthermore,
 if \code{cl} is not passed, \code{MCMC} will create a \code{PSOCK} cluster
-using \code{\link[parallel:makePSOCKcluster]{makePSOCKcluster}} with
-\code{\link[parallel:detectCores]{detectCores}}
-clusters and try to run it using multiple cores. Internally, the function does
+using \link[parallel:makePSOCKcluster]{parallel::makePSOCKcluster} with
+\link[parallel:detectCores]{parallel::detectCores}
+clusters and attempt to execute using multiple cores. Internally, the function does
 the following:
 
 \preformatted{
@@ -73,27 +75,30 @@ the following:
   parallel::clusterSetRNGStream(cl, .Random.seed)
 }
 
-In such case, when running in parallel, objects that are
-used within \code{fun} must be passed throught \code{...}, otherwise the cluster
+When running in parallel, objects that are
+used within \code{fun} must be passed through \code{...}, otherwise the cluster
 will return with an error.
 
-In the case of the initial parameter, when using multiple chains, \code{nchains > 1},
-the user can specify multiple starting points (which is recommended). In such
-case, if \code{initial} is a vector, the value is recycled (so all chains start from
-the same point), otherwise, if \code{initial} is a matrix with as many rows as
-chains, then each row of \code{initial} is use as a starting point for each of the
-chains.
+The user controls the initial value of the parameters of the MCMC algorithm
+using the argument \code{initial}. When using multiple chains, i.e., \code{nchains > 1},
+the user can specify multiple starting points, which is recommended. In such a
+case, each row of \code{initial} is use as a starting point for each of the
+chains. If \code{initial} is a vector and \code{nchains > 1}, the value is recycled, so
+all chains start from the same point (not recommended, the function throws a
+warning message).
 }
 \section{Automatic stop}{
 
 
 When \code{autostop} is greater than 0, the function will perform a convergence
-check every \code{autostop} steps. By default, the convergence check is done
-using the Gelman diagostic as implemented in \link[coda:gelman.diag]{coda::gelman.diag}, so it will
-only be calculated when \code{nchains > 1L}.
+check every \code{autostop} iterations. By default, depending on the number of chains,
+the convergence check is done
+using either the Gelman diagostic as implemented in \link[coda:gelman.diag]{coda::gelman.diag}
+(if \code{nchains > 1}), or the Geweke diagnostic as implemented in \link[coda:geweke.diag]{coda::geweke.diag}
+(if \code{nchains == 1}).
 
 The user may provide a different convergence criteria by passing a different
-function via \code{conv_checker}. It's current default is \link{gelman_convergence}.
+function via \code{conv_checker}. For more information see \link{convergence-checker}.
 }
 
 \examples{

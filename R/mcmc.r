@@ -7,30 +7,32 @@
 #' initial values of the parameters for each chain (See details).
 #' @param nsteps Integer scalar. Length of each chain.
 #' @param nchains Integer scalar. Number of chains to run (in parallel).
-#' @param cl A cluster object passed to \code{\link[parallel:clusterApply]{clusterApply}}.
-#' @param thin Integer scalar. Passed to \code{\link[coda:mcmc]{coda::mcmc}}.
+#' @param cl A `cluster` object passed to [parallel::clusterApply].
+#' @param thin Integer scalar. Passed to [coda::mcmc].
 #' @param kernel An object of class [amcmc_kernel].
-#' @param burnin Integer scalar. Number of burn-in samples. Passed to 
-#' \code{\link[coda:mcmc]{coda::mcmc}} as \code{init}.
-#' @param multicore Logical. If `FALSE` then it will execute the chains in a serial
-#' fashion.
+#' @param burnin Integer scalar. Length of burn-in. Passed to 
+#' [coda::mcmc] as \code{start}.
+#' @param multicore Logical. If `FALSE` then chains will be executed in serial.
 #' @param ... Further arguments passed to \code{fun}.
 #' @param conv_checker A function that receives an object of class [coda::mcmc.list],
 #' and returns a logical value with `TRUE` indicating convergence.
-#' @param autostop Integer scalar. Frequency used to check for convergence.
-#' By default the function uses [gelman_convergence] as criteria.
+#' @param autostop Integer scalar. Controls the frequency with which convergence
+#' is checked (see details).
 #' 
 #' @details This function implements MCMC using the Metropolis-Hastings ratio with
-#' flexible transition kernels.
+#' flexible transition kernels. Users can specify either one of the available
+#' transition kernels or define one of their own (see [kernels]). Furthermore,
+#' it allows easy parallel implementation running multiple chains in parallel. In
+#' addition, we incorporate a variety of convergence diagnostics, alternatively
+#' the user can specify their own (see [convergence-checker]).
 #' 
-#' If \code{name(initial) == NULL}, then a names in the form of \code{par1, par2, ...}
-#' will be assigned to the variables.
+#' We now give details of the various options included in the function.#' 
 #' 
 #' When \code{nchains > 1}, the function will run multiple chains. Furthermore,
 #' if \code{cl} is not passed, \code{MCMC} will create a \code{PSOCK} cluster
-#' using \code{\link[parallel:makePSOCKcluster]{makePSOCKcluster}} with
-#' \code{\link[parallel:detectCores]{detectCores}}
-#' clusters and try to run it using multiple cores. Internally, the function does
+#' using [parallel::makePSOCKcluster] with
+#' [parallel::detectCores]
+#' clusters and attempt to execute using multiple cores. Internally, the function does
 #' the following:
 #' 
 #' \preformatted{
@@ -44,32 +46,33 @@
 #'   parallel::clusterSetRNGStream(cl, .Random.seed)
 #' }
 #' 
-#' In such case, when running in parallel, objects that are
-#' used within \code{fun} must be passed throught \code{...}, otherwise the cluster
+#' When running in parallel, objects that are
+#' used within \code{fun} must be passed through \code{...}, otherwise the cluster
 #' will return with an error.
 #' 
-#' In the case of the initial parameter, when using multiple chains, `nchains > 1`,
-#' the user can specify multiple starting points (which is recommended). In such
-#' case, if `initial` is a vector, the value is recycled (so all chains start from
-#' the same point), otherwise, if `initial` is a matrix with as many rows as
-#' chains, then each row of `initial` is use as a starting point for each of the
-#' chains.
+#' The user controls the initial value of the parameters of the MCMC algorithm
+#' using the argument `initial`. When using multiple chains, i.e., `nchains > 1`,
+#' the user can specify multiple starting points, which is recommended. In such a
+#' case, each row of `initial` is use as a starting point for each of the
+#' chains. If `initial` is a vector and `nchains > 1`, the value is recycled, so
+#' all chains start from the same point (not recommended, the function throws a
+#' warning message).
 #' 
 #' @section Automatic stop:
 #' 
 #' When `autostop` is greater than 0, the function will perform a convergence
-#' check every `autostop` steps. By default, the convergence check is done
-#' using the Gelman diagostic as implemented in [coda::gelman.diag], so it will
-#' only be calculated when `nchains > 1L`.
+#' check every `autostop` iterations. By default, depending on the number of chains,
+#' the convergence check is done 
+#' using either the Gelman diagostic as implemented in [coda::gelman.diag]
+#' (if `nchains > 1`), or the Geweke diagnostic as implemented in [coda::geweke.diag]
+#' (if `nchains == 1`).
 #' 
 #' The user may provide a different convergence criteria by passing a different
-#' function via `conv_checker`. It's current default is [gelman_convergence].
+#' function via `conv_checker`. For more information see [convergence-checker].
 #' 
-#' 
-#' @return An object of class \code{\link[coda:mcmc]{mcmc}} from the \CRANpkg{coda}
+#' @return An object of class [coda::mcmc] from the \CRANpkg{coda}
 #' package. The \code{mcmc} object is a matrix with one column per parameter,
-#' and \code{nsteps} rows. If \code{nchains > 1}, then it returns a \code{\link[coda:mcmc]{mcmc.list}}.
-#' 
+#' and \code{nsteps} rows. If \code{nchains > 1}, then it returns a [coda::mcmc.list].
 #' 
 #' @export
 #' @examples 
@@ -190,6 +193,13 @@
 #' }
 #' 
 #' @aliases Metropolis-Hastings
+#' @name MCMC
+NULL
+
+
+
+#' @export
+#' @rdname MCMC
 MCMC <- function(
   fun,
   ...,
@@ -198,13 +208,12 @@ MCMC <- function(
   nchains      = 1L,
   thin         = 1L,
   kernel       = kernel_normal(),
-  burnin       = 1e3L,
-  cl           = NULL,
+  burnin       = floor(nsteps/2L),
   multicore    = FALSE,
-  conv_checker = auto_convergence(),
-  autostop     = 500L
+  conv_checker = convergence_auto(),
+  autostop     = 500L,
+  cl           = NULL
   ) {
-  
   
   # # if the coda package hasn't been loaded, then return a warning
   # if (!("package:coda" %in% search()))
@@ -213,23 +222,15 @@ MCMC <- function(
   # Checking initial argument
   initial <- check_initial(initial, nchains)
   
-  # Filling the gap on parallel
-  if (multicore && (nchains > 1L) && !length(cl)) {
-    
-    # Creating the cluster
-    ncores <- parallel::detectCores()
-    ncores <- ifelse(nchains < ncores, nchains, ncores)
-    cl     <- parallel::makePSOCKcluster(ncores)
+  # Checking frequency to measure batch
+  if (!is.numeric(autostop))
+    stop("The `autostop` parameter must be a number. autostop=", autostop,
+         call. = FALSE)
+  else if (length(autostop) != 1L)
+    stop("The `autostop` parameter must be of length 1. autostop=", autostop,
+         call. = FALSE)
   
-    # Loading the package and setting the seed using clusterRNGStream
-    invisible(parallel::clusterEvalQ(cl, library(amcmc)))
-    parallel::clusterSetRNGStream(cl, .Random.seed)
-    
-    on.exit(parallel::stopCluster(cl))
-    
-  }
-  
-  # Checkihg burnins
+    # Checkihg burnins
   if (burnin >= nsteps)
     stop("-burnin- (",burnin,") cannot be >= than -nsteps- (",nsteps,").", call. = FALSE)
   
@@ -239,6 +240,22 @@ MCMC <- function(
   
   if (thin < 1L)
     stop("-thin- should be >= 1.", call. = FALSE)
+  
+  # Filling the gap on parallel
+  if (multicore && (nchains > 1L) && !length(cl)) {
+    
+    # Creating the cluster
+    ncores <- parallel::detectCores()
+    ncores <- ifelse(nchains < ncores, nchains, ncores)
+    cl     <- parallel::makePSOCKcluster(ncores)
+    
+    # Loading the package and setting the seed using clusterRNGStream
+    invisible(parallel::clusterEvalQ(cl, library(amcmc)))
+    parallel::clusterSetRNGStream(cl, .Random.seed)
+    
+    on.exit(parallel::stopCluster(cl))
+    
+  }
   
   if (multicore && nchains > 1L) {
 
@@ -380,8 +397,8 @@ MCMC <- function(
   
   
   # Thinning the data
-  if (burnin) ans <- ans[-c(1:burnin), , drop=FALSE]
-  if (thin)   ans <- ans[(1:nrow(ans) %% thin) == 0, , drop=FALSE]
+  if (burnin) ans <- ans[-c(1:burnin), , drop = FALSE]
+  if (thin)   ans <- ans[(1:nrow(ans) %% thin) == 0, , drop = FALSE]
   
   # Returning an mcmc object from the coda package
   return(

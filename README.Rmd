@@ -1,7 +1,8 @@
 ---
-title: "amcmc: A flexible MCMC estimation framework"
 output: github_document
 ---
+
+# amcmc: A flexible MCMC estimation framework 
 
 [![Travis-CI Build Status](https://travis-ci.org/USCbiostats/amcmc.svg?branch=master)](https://travis-ci.org/USCbiostats/amcmc)
 [![Build status](https://ci.appveyor.com/api/projects/status/3x9qj7imvoijb1vf?svg=true)](https://ci.appveyor.com/project/gvegayon/amcmc)
@@ -14,7 +15,7 @@ Current features:
 
 1.  Automatic stop using convergence checker.
 
-2.  Parallel chains using `parallel::lapply`
+2.  Parallel chains using `parallel`
 
 3.  Flexible framework to specify different transition kernels.
 
@@ -66,7 +67,7 @@ ans <- MCMC(
     scale = .1
   ),
   # As well as convergence checkers
-  conv_checker = gelman_convergence(threshold = 1.05),
+  conv_checker = convergence_gelman(threshold = 1.05),
   nsteps   = 2e5,
   thin     = 10,
   autostop = 2e3,

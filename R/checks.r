@@ -37,6 +37,10 @@ check_initial <- function(initial, nchains) {
     initial <- matrix(initial, ncol=length(initial), nrow=nchains,
                       dimnames = list(NULL, names(initial)), byrow=TRUE)
     
+  } else if (inherits(initial, "mcmc.list")) {
+    
+    
+    
   } else if (!is.matrix(initial))
     stop("When `initial` is not a numeric vector, it should be a matrix. Right now it is ",
          "an object of class `", class(initial), "`.", call. = FALSE)

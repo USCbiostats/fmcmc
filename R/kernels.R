@@ -84,8 +84,8 @@ kernel_normal <- function(mean = 0, scale = 1) {
     proposal = function(env) 
       env$theta0 + stats::rnorm(length(env$theta0), mean = mean, sd = scale),
     logratio = function(env) env$f1 - env$f0,
-    mean  = mean,
-    scale = scale
+    mean     = mean,
+    scale    = scale
     )
 }
 
@@ -151,7 +151,10 @@ kernel_reflective <- function(
       normal_prop(env$theta0, lb, ub, scale, fixed)
       },
     logratio = function(env) env$f1 - env$f0,
-    scale = scale, ub = ub, lb = lb, fixed = fixed
+    scale    = scale, 
+    ub       = ub, 
+    lb       = lb, 
+    fixed    = fixed
   )
   
 }

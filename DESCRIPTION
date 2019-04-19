@@ -1,8 +1,11 @@
 Package: amcmc
-Title: A flexible MCMC estimation framework
+Title: A flexible MCMC framework
 Version: 0.1-0
-Authors@R: person("George", "Vega Yon", email = "g.vegayon@gmail.com", role = c("aut", "cre"),
-  comment = c(ORCID = "0000-0002-3171-0844"))
+Authors@R: c(person("George", "Vega Yon", email = "g.vegayon@gmail.com", role = c("aut", "cre"),
+  comment = c(ORCID = "0000-0002-3171-0844")),
+  person("Paul", "Marjoram", email = "pmarjora@usc.edu", role = c("ctb"),
+  comment = c(ORCID = "0000-0003-0824-7449")),
+  person("National Cancer Institute (NCI)", role = "fnd", comment = "Grant Number 5P01CA196569-02"))
 Description: Provides functionality for doing MCMC including automatic stop using
   convergence checkers and personalized transition kernel functions.
 Depends: R (>= 3.3.0)
@@ -14,7 +17,10 @@ BugReports: https://github.com/USCbiostats/amcmc/issues
 Suggests: 
     testthat,
     covr,
-    mvtnorm
+    mvtnorm,
+    knitr,
+    rmarkdown,
+    mcmc
 Imports:
   Rcpp,
   parallel,
@@ -24,3 +30,4 @@ Imports:
 LinkingTo: Rcpp
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
+VignetteBuilder: knitr

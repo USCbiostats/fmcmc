@@ -25,5 +25,5 @@ an object of class \code{mcmc}.
 \description{
 Combines two or more MCMC runs into a single run. If runs have
 multiple chains, it will check that all have the same number of chains, and
-it will join chains as by \link{rbind}.
+it will join chains using the \link{rbind} function.
 }

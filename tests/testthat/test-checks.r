@@ -9,6 +9,20 @@ test_that("Error passing arguents", {
   expect_error(MCMC(fun0, initial = 1, nsteps = 10000, a=1), "not present in -fun")
   expect_error(MCMC(fun1, initial = 1, nsteps = 10000), "has extra arguments")
   expect_error(MCMC(fun2, initial = 1, nsteps = 10000, a=1), "requires more arguments")
+  
+})
+
+test_that("Checking errors", {
+  
+  ll <- function(p) {
+    ans <- sum(log(dnorm(y - p[1] - x*p[2], sd = p[3])))
+    if (!is.finite(ans))
+      return(-.Machine$double.xmax*1e-10)
+    ans
+  }
+  
+  expect_error(MCMC(ll, initial = 1, nsteps = 2000, autostop = "1"), "must be a number")
+  expect_error(MCMC(ll, initial = 1, nsteps = 2000, autostop = c(1,1)), "must be of length")
 })
 
 # ------------------------------------------------------------------------------

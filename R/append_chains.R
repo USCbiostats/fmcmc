@@ -2,7 +2,7 @@
 #' 
 #' Combines two or more MCMC runs into a single run. If runs have
 #' multiple chains, it will check that all have the same number of chains, and
-#' it will join chains as by [rbind].
+#' it will join chains using the [rbind] function.
 #' 
 #' @param ... A list of `mcmc` or `mcmc.list` class objects.
 #' @return If `mcmc.list`, an object of class `mcmc.list`, otherwise,

@@ -3,20 +3,20 @@
 \name{convergence-checker}
 \alias{convergence-checker}
 \alias{automatic-stop}
-\alias{gelman_convergence}
-\alias{geweke_convergence}
-\alias{heildel_convergence}
-\alias{auto_convergence}
+\alias{convergence_gelman}
+\alias{convergence_geweke}
+\alias{convergence_heildel}
+\alias{convergence_auto}
 \title{Convergence Monitoring}
 \usage{
-gelman_convergence(threshold = 1.1, check_invariant = TRUE,
+convergence_gelman(threshold = 1.1, check_invariant = TRUE,
   autoburnin = FALSE, ...)
 
-geweke_convergence(threshold = 0.025, check_invariant = TRUE, ...)
+convergence_geweke(threshold = 0.025, check_invariant = TRUE, ...)
 
-heildel_convergence(..., check_invariant = TRUE)
+convergence_heildel(..., check_invariant = TRUE)
 
-auto_convergence()
+convergence_auto()
 }
 \arguments{
 \item{threshold}{Numeric value. A Gelman statistic below the threshold
@@ -40,8 +40,8 @@ Built-in set of functions to be used in companion with the argument
 in a context other than the \code{MCMC} function.
 }
 \details{
-In the case of \code{geweke_convergence}, \code{threshold} sets the p-value
-for the null \eqn{H0: Z = 0}, i.e. equal means between the first and last
+In the case of \code{convergence_geweke}, \code{threshold} sets the p-value
+for the null \eqn{H_0: Z = 0}, i.e. equal means between the first and last
 chunks of the chain. See \link[coda:geweke.diag]{coda::geweke.diag}. This implies that the higher
 the threshold, the lower the probability of stopping the chain.
 
@@ -49,11 +49,11 @@ In the case that the chain has more than one parameter, the algorithm will
 return true if and only if the test fails to reject the null for all the
 parameters.
 
-See \link[coda:heidel.diag]{coda::heidel.diag} for details on this test.
+For the \code{convergence_heildel}, see \link[coda:heidel.diag]{coda::heidel.diag} for details.
 
-The \code{auto_convergence} function is the default and is just a wrapper
-of \code{gelman_convergence} and \code{geweke_convergence}. This function returns a
-convergence checker that will be either of the other two depending on wether
+The \code{convergence_auto} function is the default and is just a wrapper
+for \code{convergence_gelman} and \code{convergence_geweke}. This function returns a
+convergence checker that will be either of the other two depending on whether
 \code{nchains} in \code{MCMC} is greater than one--in which case it will use the Gelman
 test--or not--in which case it will use the Geweke test.
 }

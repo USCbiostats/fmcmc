@@ -39,7 +39,7 @@ rm_invariant <- function(x) {
 #' steps via the argument `burnin`.
 #' 
 #' @rdname convergence-checker
-gelman_convergence <- function(threshold = 1.10, check_invariant=TRUE, autoburnin=FALSE,...) {
+convergence_gelman <- function(threshold = 1.10, check_invariant=TRUE, autoburnin=FALSE,...) {
 
   function(x) {
     
@@ -82,8 +82,8 @@ gelman_convergence <- function(threshold = 1.10, check_invariant=TRUE, autoburni
 
 #' @rdname convergence-checker
 #' @details
-#' In the case of `geweke_convergence`, `threshold` sets the p-value 
-#' for the null \eqn{H0: Z = 0}, i.e. equal means between the first and last
+#' In the case of `convergence_geweke`, `threshold` sets the p-value 
+#' for the null \eqn{H_0: Z = 0}, i.e. equal means between the first and last
 #' chunks of the chain. See [coda::geweke.diag]. This implies that the higher
 #' the threshold, the lower the probability of stopping the chain.
 #' 
@@ -91,7 +91,7 @@ gelman_convergence <- function(threshold = 1.10, check_invariant=TRUE, autoburni
 #' return true if and only if the test fails to reject the null for all the
 #' parameters.
 #' @export
-geweke_convergence <- function(threshold=.025, check_invariant=TRUE,...) {
+convergence_geweke <- function(threshold=.025, check_invariant=TRUE,...) {
   
   
   function(x) {
@@ -116,8 +116,7 @@ geweke_convergence <- function(threshold=.025, check_invariant=TRUE,...) {
       
     }
     
-    d <- stats::pnorm(d)
-    d <- ifelse(d > .5, 1 - d, d)*2
+    d <- 1 - stats::pnorm(-abs(d))*2.0
     
     if (any(!is.finite(d)))
       return(FALSE)
@@ -130,9 +129,9 @@ geweke_convergence <- function(threshold=.025, check_invariant=TRUE,...) {
 
 #' @rdname convergence-checker
 #' @details
-#' See [coda::heidel.diag] for details on this test.
+#' For the `convergence_heildel`, see [coda::heidel.diag] for details.
 #' @export
-heildel_convergence <- function(..., check_invariant=TRUE) {
+convergence_heildel <- function(..., check_invariant=TRUE) {
   
   function(x) {
     
@@ -166,16 +165,16 @@ heildel_convergence <- function(..., check_invariant=TRUE) {
 }
 
 #' @rdname convergence-checker
-#' @details The `auto_convergence` function is the default and is just a wrapper
-#' of `gelman_convergence` and `geweke_convergence`. This function returns a 
-#' convergence checker that will be either of the other two depending on wether
+#' @details The `convergence_auto` function is the default and is just a wrapper
+#' for `convergence_gelman` and `convergence_geweke`. This function returns a 
+#' convergence checker that will be either of the other two depending on whether
 #' `nchains` in `MCMC` is greater than one--in which case it will use the Gelman
 #' test--or not--in which case it will use the Geweke test.
 #' @export
-auto_convergence <- function() {
+convergence_auto <- function() {
   
-  gelman_conv <- gelman_convergence()
-  geweke_conv <- geweke_convergence()
+  gelman_conv <- convergence_gelman()
+  geweke_conv <- convergence_geweke()
   
   function(x) {
     
@@ -207,18 +206,10 @@ with_autostop <- function(expr, conv_checker) {
   parenv <- parent.frame()
   
   # Retrieving parameters from the MCMC call
-  nsteps   <- parenv$nsteps
-  nchains  <- parenv$nchains
-  autostop <- parenv$autostop
-  
-  # Checking frequency to measure batch
-  if (!is.numeric(autostop))
-    stop("The `autostop` parameter must be a number. autostop=", autostop,
-         call. = FALSE)
-  else if (length(autostop) != 1L)
-    stop("The `autostop` parameter must be of length 1. autostop=", autostop,
-         call. = FALSE)
-  
+  nsteps    <- parenv$nsteps
+  nchains   <- parenv$nchains
+  autostop  <- parenv$autostop
+
   # Correcting the autostop
   if (autostop*2 > nsteps) {
     autostop <- 0L
@@ -256,7 +247,7 @@ with_autostop <- function(expr, conv_checker) {
       parenv$initial <- do.call(rbind, ans[coda::niter(ans),])
     }
       
-        # Running the MCMC and adding it to the tail
+    # Running the MCMC and adding it to the tail
     tmp <- eval(expr, envir = parenv)
     if (is.list(tmp) & !coda::is.mcmc.list(tmp))
       tmp <- coda::as.mcmc.list(tmp)
@@ -266,7 +257,7 @@ with_autostop <- function(expr, conv_checker) {
     
     if ((autostop > 0L) && (converged <- conv_checker(ans))) {
       message(
-        "Convergence has been reached with ", sum(bulks[1:i]), " steps (",
+        "Convergence has been reached with ", sum(bulks[1:i]), " steps. (",
         coda::niter(ans), " final count of observations)."
         )
       break
