@@ -235,7 +235,7 @@ MCMC <- function(
     stop("-burnin- (",burnin,") cannot be >= than -nsteps- (",nsteps,").", call. = FALSE)
   
   # Checking thin
-  if (thin > nsteps)
+  if (thin >= nsteps)
     stop("-thin- (",thin,") cannot be > than -nsteps- (",nsteps,").", call. = FALSE)
   
   if (thin < 1L)

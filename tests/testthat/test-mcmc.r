@@ -1,5 +1,31 @@
 context("MCMC")
 
+test_that("Error checks", {
+  
+  f <- function(i) {}
+  expect_error(
+    MCMC(f, initial = 1, nsteps = 100, burnin = 100),
+    "burnin"
+  )
+  
+  expect_error(
+    MCMC(f, initial = 1, nsteps = 100, burnin = 0, thin = -1),
+    "thin"
+  )
+  
+  expect_error(
+    MCMC(f, initial = 1, nsteps = 100, burnin = 0, thin = 100),
+    "thin"
+  )
+  
+  f <- function(i) {NaN}
+  expect_error(
+    MCMC(f, initial = 1, nsteps = 100, burnin = 10),
+    "undefined"
+  )
+  
+})
+
 # ------------------------------------------------------------------------------
 test_that("Reasonable values", {
   
@@ -68,12 +94,20 @@ test_that("Multiple chains", {
   }
   
   # Running the algorithm and checking expectation
-  ans <- suppressWarnings(
+  ans0 <- suppressWarnings(
     MCMC(fun, initial = 1, nsteps = 5e3, burnin = 500,
          kernel = kernel_reflective(ub = 3, lb = -3, scale = 1),
          D=D, nchains=2)
   )
-  expect_equal(sapply(ans, mean), rep(mean(D),2), tolerance = 0.1, scale = 1)
+  
+  ans1 <- suppressWarnings(
+    MCMC(fun, initial = 1, nsteps = 5e3, burnin = 500,
+         kernel = kernel_reflective(ub = 3, lb = -3, scale = 1),
+         D=D, nchains=2, multicore = TRUE)
+  )
+  
+  expect_equal(sapply(ans0, mean), rep(mean(D),2), tolerance = 0.1, scale = 1)
+  expect_equal(sapply(ans1, mean), rep(mean(D),2), tolerance = 0.1, scale = 1)
 })
 
 # ------------------------------------------------------------------------------
