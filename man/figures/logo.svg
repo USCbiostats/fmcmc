@@ -15,7 +15,10 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.4 (unknown)"
-   sodipodi:docname="hex.svg">
+   sodipodi:docname="logo.svg"
+   inkscape:export-filename="/home/vegayon/Documents/amcmc/hex/fmcmc.png"
+   inkscape:export-xdpi="201.92999"
+   inkscape:export-ydpi="201.92999">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -27,7 +30,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
      inkscape:cx="61.034665"
-     inkscape:cy="49.883136"
+     inkscape:cy="32.225956"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -64,7 +67,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -281,7 +284,9 @@
        y="226.99974" />
     <g
        id="g1066"
-       transform="matrix(1.6512904,0,0,1.6512904,-33.936694,-138.49231)">
+       transform="matrix(1.6512904,0,0,1.6512904,-33.936694,-138.49231)"
+       inkscape:export-xdpi="201.92999"
+       inkscape:export-ydpi="201.92999">
       <text
          inkscape:export-ydpi="201.92999"
          inkscape:export-xdpi="201.92999"
