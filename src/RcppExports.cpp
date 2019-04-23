@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // normal_prop
 NumericVector normal_prop(const NumericVector& x, const NumericVector& lb, const NumericVector& ub, const NumericVector& scale, const IntegerVector& fixed);
-RcppExport SEXP _amcmc_normal_prop(SEXP xSEXP, SEXP lbSEXP, SEXP ubSEXP, SEXP scaleSEXP, SEXP fixedSEXP) {
+RcppExport SEXP _fmcmc_normal_prop(SEXP xSEXP, SEXP lbSEXP, SEXP ubSEXP, SEXP scaleSEXP, SEXP fixedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const NumericVector& >::type x(xSEXP);
@@ -21,11 +21,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_amcmc_normal_prop", (DL_FUNC) &_amcmc_normal_prop, 5},
+    {"_fmcmc_normal_prop", (DL_FUNC) &_fmcmc_normal_prop, 5},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_amcmc(DllInfo *dll) {
+RcppExport void R_init_fmcmc(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

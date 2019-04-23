@@ -9,7 +9,7 @@
 #' @param nchains Integer scalar. Number of chains to run (in parallel).
 #' @param cl A `cluster` object passed to [parallel::clusterApply].
 #' @param thin Integer scalar. Passed to [coda::mcmc].
-#' @param kernel An object of class [amcmc_kernel].
+#' @param kernel An object of class [fmcmc_kernel].
 #' @param burnin Integer scalar. Length of burn-in. Passed to 
 #' [coda::mcmc] as \code{start}.
 #' @param multicore Logical. If `FALSE` then chains will be executed in serial.
@@ -42,7 +42,7 @@
 #'   cl     <- parallel::makePSOCKcluster(ncores)
 #'   
 #'   # Loading the package and setting the seed using clusterRNGStream
-#'   invisible(parallel::clusterEvalQ(cl, library(amcmc)))
+#'   invisible(parallel::clusterEvalQ(cl, library(fmcmc)))
 #'   parallel::clusterSetRNGStream(cl, .Random.seed)
 #' }
 #' 
@@ -250,7 +250,7 @@ MCMC <- function(
     cl     <- parallel::makePSOCKcluster(ncores)
     
     # Loading the package and setting the seed using clusterRNGStream
-    invisible(parallel::clusterEvalQ(cl, library(amcmc)))
+    invisible(parallel::clusterEvalQ(cl, library(fmcmc)))
     parallel::clusterSetRNGStream(cl, .Random.seed)
     
     on.exit(parallel::stopCluster(cl))

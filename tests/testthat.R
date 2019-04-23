@@ -1,6 +1,6 @@
 library(testthat)
-library(amcmc)
+library(fmcmc)
 
 Sys.setenv("R_TESTS" = "")
-test_check("amcmc")
+test_check("fmcmc")
 

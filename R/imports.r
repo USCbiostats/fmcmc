@@ -2,14 +2,14 @@
 #' @importFrom coda mcmc mcmc.list
 #' @importFrom parallel makePSOCKcluster stopCluster clusterExport clusterEvalQ
 #'   clusterApply detectCores clusterSetRNGStream
-#' @useDynLib amcmc
+#' @useDynLib fmcmc
 #' @importFrom methods formalArgs
 #' @importFrom stats runif plogis
 NULL
 
-#' Adaptative MCMC
+#' A friendly MCMC framework
 #' 
 #' @docType package
-#' @name amcmc
+#' @name fmcmc
 #' 
 NULL

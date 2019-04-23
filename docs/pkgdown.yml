@@ -2,5 +2,5 @@ pandoc: '2.4'
 pkgdown: 1.3.0
 pkgdown_sha: ~
 articles:
-  amcmc-a-flexible-mcmc-estimation-framework: amcmc-a-flexible-mcmc-estimation-framework.html
+  fmcmc-a-flexible-mcmc-estimation-framework: fmcmc-a-flexible-mcmc-estimation-framework.html
 

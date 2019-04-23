@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Various kernel functions for MCMC — kernels • amcmc</title>
+<title>Various kernel functions for MCMC — kernels • fmcmc</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -33,6 +33,8 @@
 <meta property="og:title" content="Various kernel functions for MCMC — kernels" />
 
 <meta property="og:description" content="Various kernel functions for MCMC" />
+
+<meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -62,7 +64,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">amcmc</a>
+        <a class="navbar-link" href="../index.html">fmcmc</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
@@ -86,7 +88,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/amcmc-a-flexible-mcmc-estimation-framework.html">Workflow with the MCMC function</a>
+      <a href="../articles/fmcmc-a-flexible-mcmc-estimation-framework.html">Workflow with the MCMC function</a>
     </li>
   </ul>
 </li>
@@ -94,7 +96,7 @@
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/USCbiostats/amcmc">
+  <a href="https://github.com/USCbiostats/fmcmc">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -112,7 +114,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Various kernel functions for MCMC</h1>
-    <small class="dont-index">Source: <a href='https://github.com/USCbiostats/amcmc/blob/master/R/kernels.R'><code>R/kernels.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/USCbiostats/fmcmc/blob/master/R/kernels.R'><code>R/kernels.R</code></a></small>
     <div class="hidden name"><code>kernels.Rd</code></div>
     </div>
 
@@ -124,7 +126,7 @@
 
     <pre class="usage"><span class='fu'>kernel_new</span>(<span class='no'>proposal</span>, <span class='no'>logratio</span>, <span class='no'>...</span>)
 
-<span class='co'># S3 method for amcmc_kernel</span>
+<span class='co'># S3 method for fmcmc_kernel</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
 <span class='fu'>kernel_normal</span>(<span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>scale</span> <span class='kw'>=</span> <span class='fl'>1</span>)
@@ -155,7 +157,7 @@ the kernel.</p></td>
     </tr>
     <tr>
       <th>x</th>
-      <td><p>An object of class <code>amcmc_kernel</code>.</p></td>
+      <td><p>An object of class <code>fmcmc_kernel</code>.</p></td>
     </tr>
     <tr>
       <th>mean, scale</th>
@@ -176,7 +178,7 @@ parameter, avoiding new proposals.</p></td>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The function <code>kernel_new</code> is a helper function that allows creating
-<code>amcmc_kernel</code> which is used with the <code>MCMC</code> function.</p>
+<code>fmcmc_kernel</code> which is used with the <code>MCMC</code> function.</p>
 <p>The <code>kernel_normal</code> function provides the cannonical normal kernel
 with symmetric transition probabilities.</p>
 <p>The <code>kernel_reflective</code> implements the normal kernel with reflective

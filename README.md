@@ -1,15 +1,15 @@
 
-# fmcmc: A friendly MCMC estimation framework <img src="man/figures/logo.png" align="right" height="140"/>
+# fmcmc: A friendly MCMC framework <img src="man/figures/logo.png" align="right" height="140"/>
 
 [![Travis-CI Build
-Status](https://travis-ci.org/USCbiostats/amcmc.svg?branch=master)](https://travis-ci.org/USCbiostats/amcmc)
+Status](https://travis-ci.org/USCbiostats/fmcmc.svg?branch=master)](https://travis-ci.org/USCbiostats/fmcmc)
 [![Build
-status](https://ci.appveyor.com/api/projects/status/3x9qj7imvoijb1vf?svg=true)](https://ci.appveyor.com/project/gvegayon/amcmc)
+status](https://ci.appveyor.com/api/projects/status/3x9qj7imvoijb1vf?svg=true)](https://ci.appveyor.com/project/gvegayon/fmcmc)
 [![Coverage
-Status](https://img.shields.io/codecov/c/github/USCbiostats/amcmc/master.svg)](https://codecov.io/github/USCbiostats/amcmc?branch=master)
+Status](https://img.shields.io/codecov/c/github/USCbiostats/fmcmc/master.svg)](https://codecov.io/github/USCbiostats/fmcmc?branch=master)
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![CRAN
-status](https://www.r-pkg.org/badges/version/amcmc)](https://cran.r-project.org/package=amcmc)
+status](https://www.r-pkg.org/badges/version/fmcmc)](https://cran.r-project.org/package=fmcmc)
 
 Current features:
 
@@ -27,7 +27,7 @@ Current features:
 From github:
 
 ``` r
-devtools::install_github("USCbiostats/amcmc")
+devtools::install_github("USCbiostats/fmcmc")
 ```
 
 # Example
@@ -35,7 +35,7 @@ devtools::install_github("USCbiostats/amcmc")
 Linear regression model
 
 ``` r
-library(amcmc)
+library(fmcmc)
 
 # Simulating data
 set.seed(78845)
@@ -142,9 +142,9 @@ gelman.diag(ans)
 
   - <https://cran.r-project.org/web/packages/elhmc/elhmc.pdf>
 
-# Contributing to `amcmc`
+# Contributing to `fmcmc`
 
-Please note that the ‘amcmc’ project is released with a [Contributor
+Please note that the ‘fmcmc’ project is released with a [Contributor
 Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,
 you agree to abide by its terms.
 

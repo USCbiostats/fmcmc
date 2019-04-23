@@ -2,7 +2,7 @@
 output: github_document
 ---
 
-# fmcmc: A friendly MCMC estimation framework <img src="man/figures/logo.png" align="right" height="140"/>
+# fmcmc: A friendly MCMC framework <img src="man/figures/logo.png" align="right" height="140"/>
 
 [![Travis-CI Build Status](https://travis-ci.org/USCbiostats/fmcmc.svg?branch=master)](https://travis-ci.org/USCbiostats/fmcmc)
 [![Build status](https://ci.appveyor.com/api/projects/status/3x9qj7imvoijb1vf?svg=true)](https://ci.appveyor.com/project/gvegayon/fmcmc)

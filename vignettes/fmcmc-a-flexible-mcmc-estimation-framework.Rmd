@@ -16,7 +16,7 @@ knitr::opts_chunk$set(fig.dim=c(9, 9), out.width=600, out.height=600)
 We start by loading the dataset that the `mcmc` package includes. We will use the `logit` data set to obtain a posterior distribution of the model parameters using the `MCMC` function.
 
 ```{r loading-data, include = TRUE}
-library(amcmc)
+library(fmcmc)
 data(logit, package = "mcmc")
 out <- glm(y ~ x1 + x2 + x3 + x4, data = logit, family = binomial, x = TRUE)
 beta.init <- as.numeric(coefficients(out))
@@ -68,7 +68,7 @@ out <- MCMC(
   )
 ```
 
-The `kernel_normal`, which is the default kernel in the `MCMC` function, returns an object of class `amcmc_kernel`. In principle it consists on a list of two functions that are used by the `MCMC` routine: `proposal`, the proposal kernel function, and `logratio`, the function that returns the log of the Metropolis-Hastings ratio. We will talk more about `amcmc_kernel` objects later. Now, let's look at the first three variables of our model:
+The `kernel_normal`, which is the default kernel in the `MCMC` function, returns an object of class `fmcmc_kernel`. In principle it consists on a list of two functions that are used by the `MCMC` routine: `proposal`, the proposal kernel function, and `logratio`, the function that returns the log of the Metropolis-Hastings ratio. We will talk more about `fmcmc_kernel` objects later. Now, let's look at the first three variables of our model:
 
 ```{r}
 plot(out[,1:3])

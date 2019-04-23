@@ -24,7 +24,7 @@ initial values of the parameters for each chain (See details).}
 
 \item{thin}{Integer scalar. Passed to \link[coda:mcmc]{coda::mcmc}.}
 
-\item{kernel}{An object of class \link{amcmc_kernel}.}
+\item{kernel}{An object of class \link{fmcmc_kernel}.}
 
 \item{burnin}{Integer scalar. Length of burn-in. Passed to
 \link[coda:mcmc]{coda::mcmc} as \code{start}.}
@@ -71,7 +71,7 @@ the following:
   cl     <- parallel::makePSOCKcluster(ncores)
   
   # Loading the package and setting the seed using clusterRNGStream
-  invisible(parallel::clusterEvalQ(cl, library(amcmc)))
+  invisible(parallel::clusterEvalQ(cl, library(fmcmc)))
   parallel::clusterSetRNGStream(cl, .Random.seed)
 }
 

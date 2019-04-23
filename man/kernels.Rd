@@ -2,17 +2,17 @@
 % Please edit documentation in R/kernels.R
 \name{kernels}
 \alias{kernels}
-\alias{amcmc_kernel}
-\alias{amcmc-kernel}
+\alias{fmcmc_kernel}
+\alias{fmcmc-kernel}
 \alias{kernel_new}
-\alias{print.amcmc_kernel}
+\alias{print.fmcmc_kernel}
 \alias{kernel_normal}
 \alias{kernel_reflective}
 \title{Various kernel functions for MCMC}
 \usage{
 kernel_new(proposal, logratio, ...)
 
-\method{print}{amcmc_kernel}(x, ...)
+\method{print}{fmcmc_kernel}(x, ...)
 
 kernel_normal(mean = 0, scale = 1)
 
@@ -32,7 +32,7 @@ compute the log of the hastings ratio.}
 \item{...}{In the case of \code{kernel_new}, further arguments to be stored with
 the kernel.}
 
-\item{x}{An object of class \code{amcmc_kernel}.}
+\item{x}{An object of class \code{fmcmc_kernel}.}
 
 \item{mean, scale}{Either a numeric vector or a scalar. Proposal scale.}
 
@@ -47,7 +47,7 @@ Various kernel functions for MCMC
 }
 \details{
 The function \code{kernel_new} is a helper function that allows creating
-\code{amcmc_kernel} which is used with the \code{MCMC} function.
+\code{fmcmc_kernel} which is used with the \code{MCMC} function.
 
 The \code{kernel_normal} function provides the cannonical normal kernel
 with symmetric transition probabilities.

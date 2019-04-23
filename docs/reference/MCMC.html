@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Markov Chain Monte Carlo — MCMC • amcmc</title>
+<title>Markov Chain Monte Carlo — MCMC • fmcmc</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -33,6 +33,8 @@
 <meta property="og:title" content="Markov Chain Monte Carlo — MCMC" />
 
 <meta property="og:description" content="A flexible implementation of the Metropolis-Hastings MCMC algorithm." />
+
+<meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -62,7 +64,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">amcmc</a>
+        <a class="navbar-link" href="../index.html">fmcmc</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
@@ -86,7 +88,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/amcmc-a-flexible-mcmc-estimation-framework.html">Workflow with the MCMC function</a>
+      <a href="../articles/fmcmc-a-flexible-mcmc-estimation-framework.html">Workflow with the MCMC function</a>
     </li>
   </ul>
 </li>
@@ -94,7 +96,7 @@
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/USCbiostats/amcmc">
+  <a href="https://github.com/USCbiostats/fmcmc">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -112,7 +114,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Markov Chain Monte Carlo</h1>
-    <small class="dont-index">Source: <a href='https://github.com/USCbiostats/amcmc/blob/master/R/mcmc.r'><code>R/mcmc.r</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/USCbiostats/fmcmc/blob/master/R/mcmc.r'><code>R/mcmc.r</code></a></small>
     <div class="hidden name"><code>MCMC.Rd</code></div>
     </div>
 
@@ -157,7 +159,7 @@ initial values of the parameters for each chain (See details).</p></td>
     </tr>
     <tr>
       <th>kernel</th>
-      <td><p>An object of class <a href='kernels.html'>amcmc_kernel</a>.</p></td>
+      <td><p>An object of class <a href='kernels.html'>fmcmc_kernel</a>.</p></td>
     </tr>
     <tr>
       <th>burnin</th>
@@ -211,7 +213,7 @@ the following:</p>
   ncores &lt;- ifelse(nchains &lt; ncores, nchains, ncores)
   cl     &lt;- parallel::makePSOCKcluster(ncores)
     # Loading the package and setting the seed using clusterRNGStream
-  invisible(parallel::clusterEvalQ(cl, library(amcmc)))
+  invisible(parallel::clusterEvalQ(cl, library(fmcmc)))
   parallel::clusterSetRNGStream(cl, .Random.seed)
 </pre>
     <p>When running in parallel, objects that are

@@ -6,7 +6,7 @@
 #' @param fixed Logical scalar or vector. When `TRUE` fixes the corresponding
 #' parameter, avoiding new proposals.
 #' @name kernels
-#' @aliases amcmc_kernel amcmc-kernel
+#' @aliases fmcmc_kernel fmcmc-kernel
 #' @examples 
 #' \dontrun{
 #' # Example creating a multivariate normal kernel using the mvtnorm R package
@@ -44,7 +44,7 @@ NULL
 #' the kernel.
 #' 
 #' @details The function `kernel_new` is a helper function that allows creating
-#' `amcmc_kernel` which is used with the `MCMC` function.
+#' `fmcmc_kernel` which is used with the `MCMC` function.
 kernel_new <- function(proposal, logratio, ...) {
   
   env <- new.env()
@@ -58,16 +58,16 @@ kernel_new <- function(proposal, logratio, ...) {
   for (n in names(dots))
     env[[n]] <- dots[[n]]
   
-  structure(env, class = c("environment", "amcmc_kernel"))
+  structure(env, class = c("environment", "fmcmc_kernel"))
   
 }
 
 #' @export
 #' @rdname kernels
-#' @param x An object of class `amcmc_kernel`.
-print.amcmc_kernel <- function(x, ...) {
+#' @param x An object of class `fmcmc_kernel`.
+print.fmcmc_kernel <- function(x, ...) {
   
-  cat("\nAn object of class amcmc_kernel. The following two functions are available:\n\n")
+  cat("\nAn object of class fmcmc_kernel. The following two functions are available:\n\n")
   print(utils::ls.str(x))
   cat("\n")
   invisible(x)
