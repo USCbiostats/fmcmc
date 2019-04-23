@@ -7,14 +7,17 @@ authors:
 - affiliation: 1
   name: Paul Marjoram
   orcid: 0000-0003-0824-7449
-date: "4 October 2018"
+date: "22 April 2019"
 output:
   html_document:
     df_print: paged
 bibliography: paper.bib
 tags:
-- text mining
-- natural language processing
+- metropolis-hastings
+- mcmc
+- markov chain monte carlo
+- transition kernel
+- automatic convergence
 affiliations:
 - index: 1
   name: Department of Preventive Medicine, University of Southern California
@@ -22,58 +25,13 @@ affiliations:
 
 # Summary
 
-**amcmc** is an R package
+Markov Chain Monte Carlo (MCMC) is used in a variaty of statistical and computational venues such as: statistical inference, Markov quadrature (also known as Monte Carlo integration), stochastic optimization, among others. The **amcmc** R [@R] package provides a flexible framework for implementing MCMC methods that use the Metropolis-Hastings algorithm [@hastings1970; @metropolis1953]. Notwithstanding the simplicity of its implementation, **amcmc** provides the following out-of-the-box features that can be valued for both practitioners of MCMC and educators: seemensly multiple-chains sampling using parallel computing, user-defined transition kernel, and automatic stop using convergence monitoring.
 
-The package is designed for R users needing to apply .
+In the case of transition kernels, users can either use one of the transition kernels shipped with the package (e.g. the gaussian kernel and its bounded version, the gaussian kernel with reflective boundaries), or create their own without having to write the MCMC algorithm from scracth.
 
-# Feature 1
+Likewise, users can use either use one of the convergence monitoring checking functions that are part of the package, for example: The Gelman and Rubin's [@Gelman1992], Geweke's [@Geweke1991], etc. Or build their own to be used within the framework.
 
-**amcmc** blah
-
-# Feature 2
-
- 
-# Package design
-
-**quanteda** has been carefully designed with several key aims in mind.
-
-_Consistency_.  **quanteda** functions and objects are named systematically such
-that `corpus()`, `tokens()` and `dfm()` construct those object types, and that
-`corpus_*()`, `tokens_*()` and `dfm_*()` functions return a modified version of these
-objects. Naming consistency applies also to the extensive built-in data objects in the
-package, whose names always start with `data_*` followed by object types. This
-not only gives the users a clear overview of the package, but also makes the
-package more reliable for other packages that depend on it.
-
-_Accessibility_.  **quanteda** contains extensive manual pages structured around
-the naming rules. Furthermore, there are references, package vignettes, examples,
-and tutorials on the website at https://quanteda.io. 
-These materials help beginner users understand how to use these functions for
-basic operations and expert users how to combine the functions for advanced text
-processing and analysis.
-
-_Performance_.  **quanteda**'s performance is enhanced by token hashing and
-parallel computation implemented in C++, permitting large and fast text analysis
-even on computers with relatively limited resources (such as laptop computers).
-Built to use sparse data structures, **quanteda** can efficiently performs
-complex textual data analyses, such as computing distances, calculating feature
-discrimination statistics (keyness), or model fitting, even for large
-document-feature matrices.
-
-_Transparency and reproducibility_.  **quanteda** is designed to facilitate rigorous,
-transparent, and reproducible scientific analysis of text. Being open-source
-software, its source code can be scrutinized and corrected by other experts. Its
-functions are designed to encourage a reproducible workflow by linking successive 
-processing tasks in a clear, readable manner.
-
-_Compatibility with other packages_.  For analysis not provided by built-in
-functions, users can move **quanteda** objects seamlessly to other packages,
-such as the
-**stm** package for structural topic models [@STM] or word embedding packages
-like **text2vec** [@text2vec].  **quanteda** also works well with companion
-packages such as **spacyr** [@spacyr], an R wrapper to the spaCy Python library
-[@spacy2], and **readtext** [@readtext], a package for converting and importing
-text files into R.
+While there are several other R packages that either implement MCMC algorithms or provide wrappers for implementations in other languages are several [see for example: @Sturtz2005; @Morey2009; @Stan2018; @Geyer2019; @Scheidegger2019], to the authors knowledge, the `amcmc` package is the first one on its kind providing a framework as flexible as the one described here implemented fully within R.
 
 # Funding and Support
 
