@@ -1,5 +1,5 @@
 
-# amcmc: A flexible MCMC estimation framework — a
+# fmcmc: A friendly MCMC estimation framework <img src="man/figures/logo.png" align="right" height="140"/>
 
 [![Travis-CI Build
 Status](https://travis-ci.org/USCbiostats/amcmc.svg?branch=master)](https://travis-ci.org/USCbiostats/amcmc)

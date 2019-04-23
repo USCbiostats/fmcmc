@@ -1,5 +1,5 @@
-Package: amcmc
-Title: A flexible MCMC framework
+Package: fmcmc
+Title: A friendly MCMC framework
 Version: 0.1-0
 Authors@R: c(person("George", "Vega Yon", email = "g.vegayon@gmail.com", role = c("aut", "cre"),
   comment = c(ORCID = "0000-0002-3171-0844")),
@@ -12,8 +12,8 @@ Depends: R (>= 3.3.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/USCbiostats/amcmc
-BugReports: https://github.com/USCbiostats/amcmc/issues
+URL: https://github.com/USCbiostats/fmcmc
+BugReports: https://github.com/USCbiostats/fmcmc/issues
 Suggests: 
     testthat,
     covr,
