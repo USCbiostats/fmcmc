@@ -87,6 +87,7 @@
 <a href="#fmcmc-a-friendly-mcmc-framework" class="anchor"></a>fmcmc: A friendly MCMC framework <img src="reference/figures/logo.png" align="right" height="140">
 </h1></div>
 
+<p>The <code>fmcmc</code> R package implements a flexible</p>
 <p>Current features:</p>
 <ol style="list-style-type: decimal">
 <li><p>Automatic stop using convergence checker.</p></li>
@@ -160,29 +161,29 @@
 ##    plus standard error of the mean:
 ## 
 ##       Mean      SD Naive SE Time-series SE
-## par1 3.076 0.06644 0.002349       0.002782
-## par2 1.991 0.06664 0.002356       0.002840
-## par3 2.046 0.04739 0.001675       0.001813
+## par1 3.069 0.06742 0.002384       0.002910
+## par2 1.990 0.06542 0.002313       0.002350
+## par3 2.049 0.04779 0.001690       0.002064
 ## 
 ## 2. Quantiles for each variable:
 ## 
 ##       2.5%   25%   50%   75% 97.5%
-## par1 2.939 3.036 3.075 3.122 3.201
-## par2 1.862 1.943 1.994 2.036 2.117
-## par3 1.953 2.013 2.046 2.074 2.140</code></pre>
+## par1 2.930 3.025 3.069 3.116 3.197
+## par2 1.862 1.942 1.990 2.037 2.110
+## par3 1.963 2.018 2.048 2.081 2.141</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(ans)</a></code></pre></div>
-<p><img src="index_files/figure-html/summary-and-plot1-1.png" width="700"></p>
+<p><img src="reference/figures/summary-and-plot1-1.png" width="700"></p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/coda/topics/gelman.diag">gelman.diag</a></span>(ans)</a></code></pre></div>
 <pre><code>## Potential scale reduction factors:
 ## 
 ##      Point est. Upper C.I.
 ## par1       1.00       1.01
-## par2       1.00       1.00
-## par3       1.01       1.02
+## par2       1.01       1.02
+## par3       1.00       1.00
 ## 
 ## Multivariate psrf
 ## 
-## 1</code></pre>
+## 1.01</code></pre>
 </div>
 <div id="other-tools" class="section level1">
 <h1 class="hasAnchor">
@@ -220,9 +221,8 @@
 <div class="license">
 <h2>License</h2>
 <ul class="list-unstyled">
-<li>
-<a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
-</li>
+<li><a href="LICENSE.html">Full license</a></li>
+<li><small><a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
 <div class="developers">
@@ -243,6 +243,7 @@
 <li><a href="https://codecov.io/github/USCbiostats/fmcmc?branch=master"><img src="https://img.shields.io/codecov/c/github/USCbiostats/fmcmc/master.svg" alt="Coverage Status"></a></li>
 <li><a href="https://www.tidyverse.org/lifecycle/#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="lifecycle"></a></li>
 <li><a href="https://cran.r-project.org/package=fmcmc"><img src="https://www.r-pkg.org/badges/version/fmcmc" alt="CRAN status"></a></li>
+<li><a href="http://joss.theoj.org/papers/2e86b709451443990c1c6776ebb7f756"><img src="http://joss.theoj.org/papers/2e86b709451443990c1c6776ebb7f756/status.svg" alt="status"></a></li>
 </ul>
 </div>
 </div>

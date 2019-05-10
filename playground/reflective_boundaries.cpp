@@ -2,7 +2,7 @@
 using namespace Rcpp;
 
 void normal_prop_void(
-    NumericVector* ans,
+    NumericVector & ans,
     const NumericVector & x,
     const NumericVector & lb,
     const NumericVector & ub,
@@ -14,25 +14,28 @@ void normal_prop_void(
   
   // Proposal
   GetRNGstate();
-  (*ans) = x + rnorm(x.size())*scale;
+  ans = x + rnorm(x.size())*scale;
+  // print(ans);
   PutRNGstate();
   
-  for (int k=0; k<K; k++) {
+  for (int k=0; k<K; ++k) {
     
     // Is it fixed?
     if (fixed.at(k)==1) {
-      (*ans).at(k) = x.at(k);
+      ans.at(k) = x.at(k);
       continue;
     }
     
     // Reflection adjustment
-    while( ((*ans)[k] > ub[k]) | ((*ans)[k] < lb[k]) ) {
+    double d = ub[k] - lb[k];
+    while (true) {
       
-      if ((*ans)[k] > ub[k]) {
-        (*ans)[k] = 2.0*ub[k] - (*ans)[k];
-      } else {
-        (*ans)[k] = 2.0*lb[k] - (*ans)[k];
-      }  
+      if (ans[k] > ub[k]) {
+        ans[k] = 2.0*ub[k] - ans[k];
+      } else if (ans[k] < lb[k]) {
+        ans[k] = 2.0*lb[k] - ans[k];
+      } else
+        break;
       
     }
     
@@ -52,7 +55,7 @@ NumericVector normal_prop(
   
   // Proposal
   NumericVector ans(x.length());
-  normal_prop_void(&ans, x, lb, ub, scale, fixed);
+  normal_prop_void(ans, x, lb, ub, scale, fixed);
   
   return ans;
 }

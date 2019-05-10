@@ -2,7 +2,6 @@ context("Convergence checkers work")
 
 test_that("Multiple chains mcmc behaves", {
   
-  RNGversion("3.4")
   set.seed(71)
   n <- 1000
   x <- rnorm(n)

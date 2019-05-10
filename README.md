@@ -10,6 +10,9 @@ Status](https://img.shields.io/codecov/c/github/USCbiostats/fmcmc/master.svg)](h
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/fmcmc)](https://cran.r-project.org/package=fmcmc)
+[![status](http://joss.theoj.org/papers/2e86b709451443990c1c6776ebb7f756/status.svg)](http://joss.theoj.org/papers/2e86b709451443990c1c6776ebb7f756)
+
+The `fmcmc` R package implements a flexible
 
 Current features:
 
@@ -100,22 +103,22 @@ summary(ans)
     ##    plus standard error of the mean:
     ## 
     ##       Mean      SD Naive SE Time-series SE
-    ## par1 3.076 0.06644 0.002349       0.002782
-    ## par2 1.991 0.06664 0.002356       0.002840
-    ## par3 2.046 0.04739 0.001675       0.001813
+    ## par1 3.069 0.06742 0.002384       0.002910
+    ## par2 1.990 0.06542 0.002313       0.002350
+    ## par3 2.049 0.04779 0.001690       0.002064
     ## 
     ## 2. Quantiles for each variable:
     ## 
     ##       2.5%   25%   50%   75% 97.5%
-    ## par1 2.939 3.036 3.075 3.122 3.201
-    ## par2 1.862 1.943 1.994 2.036 2.117
-    ## par3 1.953 2.013 2.046 2.074 2.140
+    ## par1 2.930 3.025 3.069 3.116 3.197
+    ## par2 1.862 1.942 1.990 2.037 2.110
+    ## par3 1.963 2.018 2.048 2.081 2.141
 
 ``` r
 plot(ans)
 ```
 
-![](README_files/figure-gfm/summary-and-plot1-1.png)<!-- -->
+![](man/figures/summary-and-plot1-1.png)<!-- -->
 
 ``` r
 gelman.diag(ans)
@@ -125,12 +128,12 @@ gelman.diag(ans)
     ## 
     ##      Point est. Upper C.I.
     ## par1       1.00       1.01
-    ## par2       1.00       1.00
-    ## par3       1.01       1.02
+    ## par2       1.01       1.02
+    ## par3       1.00       1.00
     ## 
     ## Multivariate psrf
     ## 
-    ## 1
+    ## 1.01
 
 # Other tools
 

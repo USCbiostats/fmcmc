@@ -148,7 +148,7 @@ kernel_reflective <- function(
         
       }
       
-      normal_prop(env$theta0, lb, ub, scale, fixed)
+      normal_reflective(env$theta0, lb, ub, scale, fixed)
       },
     logratio = function(env) env$f1 - env$f0,
     scale    = scale, 
@@ -156,6 +156,48 @@ kernel_reflective <- function(
     lb       = lb, 
     fixed    = fixed
   )
+  
+}
+
+normal_reflective <- function(
+  x,
+  lb, ub,
+  scale = rep(1, length(x)),
+  fixed = rep(FALSE, length(x))
+) {
+  
+  notfixed <- which(!fixed)
+  x[notfixed] <- x[notfixed] + stats::rnorm(length(notfixed)) * scale[notfixed]
+  
+  test_above <- which(x[notfixed] > ub[notfixed])
+  test_below <- which(x[notfixed] < lb[notfixed])
+  
+  d <- ub - lb
+  
+  if (length(test_above)) {
+    
+    # Direction of update
+    d_above <- x[test_above] - ub[test_above]
+    odd     <- (d_above %/% d[test_above]) %% 2
+    d_above <- d_above %% d[test_above]
+    
+    x[test_above] <- (lb[test_above] + d_above)*odd + 
+      (ub[test_above] - d_above)*(1-odd)
+  } 
+  
+  if (length(test_below)) {
+    
+    # Direction of update
+    d_below <- lb[test_below] - x[test_below]
+    odd     <- (d_below %/% d[test_below]) %% 2
+    d_below <- d_below %% d[test_below]
+    
+    x[test_below] <- (ub[test_below] - d_below)*odd + 
+      (lb[test_below] + d_below)*(1-odd)
+    
+  } 
+  
+  x
   
 }
 
