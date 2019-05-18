@@ -68,14 +68,13 @@ ans <- MCMC(
   # It allows to specify different kernels
   kernel   = kernel_reflective(
     lb    = .00001,
-    ub    = 100,
+    ub    = 50,
     scale = .1
   ),
   # As well as convergence checkers
-  conv_checker = convergence_gelman(threshold = 1.05),
+  conv_checker = convergence_gelman(500L, threshold = 1.05),
   nsteps   = 2e5,
   thin     = 10,
-  autostop = 2e3,
   burnin   = 1e4,
   # As well as parallel chains
   nchains  = 4L,

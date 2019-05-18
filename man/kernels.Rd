@@ -14,16 +14,14 @@ kernel_new(proposal, logratio, ...)
 
 \method{print}{fmcmc_kernel}(x, ...)
 
-kernel_normal(mean = 0, scale = 1)
+kernel_normal(mu = 0, scale = 1)
 
-kernel_reflective(scale = 1, lb = -.Machine$double.xmax,
+kernel_reflective(mu = 0, scale = 1, lb = -.Machine$double.xmax,
   ub = .Machine$double.xmax, fixed = FALSE)
 }
 \arguments{
-\item{proposal}{Function. The function receives a single argument, an environment.
-This function is later called in \link{MCMC} to propose changes in the chain based
-on the current state. The function must return a vector of length equal
-to the number of parameters in the model.}
+\item{proposal, logratio}{Functions. The function receives a single argument, an environment.
+This function is later called in \link{MCMC}}
 
 \item{logratio}{Function. This function receives a single argument, an environment.
 This function is called after a new state has been proposed, and is used to
@@ -34,7 +32,7 @@ the kernel.}
 
 \item{x}{An object of class \code{fmcmc_kernel}.}
 
-\item{mean, scale}{Either a numeric vector or a scalar. Proposal scale.}
+\item{mu, scale}{Either a numeric vector or a scalar. Proposal mean and scale.}
 
 \item{lb, ub}{Either a numeric vector or a scalar. Lower and upper bounds for
 bounded kernels (currently the \code{kernel_reflective} only).}
@@ -46,11 +44,72 @@ parameter, avoiding new proposals.}
 Various kernel functions for MCMC
 }
 \details{
+The objects \code{fmcmc_kernels} are environments that in general contain the
+following objects:
+\itemize{
+\item \code{proposal}: The function used to propose changes in the chain based
+on the current state. The function must return a vector of length equal
+to the number of parameters in the model.
+\item \code{logration}: This function is called after a new state has been proposed,
+and is used to compute the log of the hastings ratio.
+\item \code{...}: Further objects that are used within those functions.
+}
+
+Both functions, \code{proposal} and \code{logratio}, receive a single argument, an
+environment, which is passed by the \link{MCMC} function during each step using
+the function \link{environment}. The passed
+environment is actually the environemnt in which the \code{MCMC} function is running,
+in particular, this environment contains the following objects:
+
+\tabular{ll}{
+\code{i} \tab Integer. The current iteration. \cr
+\code{theta1} \tab Numeric vector. The last proposed state. \cr
+\code{theta0} \tab Numeric vector. The current state \cr
+\code{f} \tab The log-unnormalized posterior function (a wrapper of \code{fun} passed
+to \link{MCMC}). \cr
+\code{f1} \tab The last value of \code{f(theta1)} \cr
+\code{f0} \tab The last value of \code{f(theta0)} \cr
+\code{kernel} \tab The actual \code{fmcmc_kernel} object.
+}
+
+These are the core component of the \code{MCMC} function. The following block
+of code is how this is actually implemented in the package:\preformatted{for (i in 1L:nsteps) {
+  # Step 1. Propose
+  theta1[] <- kernel$proposal(environment())
+  f1       <- f(theta1)
+  
+  # Checking f(theta1) (it must be a number, can be Inf)
+  if (is.nan(f1) | is.na(f1) | is.null(f1)) 
+    stop(
+      "fun(par) is undefined (", f1, ")",
+      "Check either -fun- or the -lb- and -ub- parameters.",
+      call. = FALSE
+    )
+  
+  # Step 2. Hastings ratio
+  if (R[i] < kernel$logratio(environment())) {
+    theta0 <- theta1
+    f0     <- f1
+  }
+  
+  # Step 3. Saving the state
+  ans[i,] <- theta0
+  
+}
+}
+}
+\section{Creating your own kernels}{
+
 The function \code{kernel_new} is a helper function that allows creating
-\code{fmcmc_kernel} which is used with the \code{MCMC} function.
+\code{fmcmc_kernel} which is used with the \code{MCMC} function. The \code{fmcmc_kernel}
+are the backbone of the \link{MCMC} function.
+}
+
+\section{Kernels}{
 
 The \code{kernel_normal} function provides the cannonical normal kernel
 with symmetric transition probabilities.
+
 
 The \code{kernel_reflective} implements the normal kernel with reflective
 boundaries. Lower and upper bounds are treated using reflecting boundaries, this is,
@@ -62,6 +121,7 @@ is substracted from \eqn{ub}. At the same time, if it is less than \code{lb}, th
 In this case, the transition probability is symmetric (just like the normal
 kernel).
 }
+
 \examples{
 \dontrun{
 # Example creating a multivariate normal kernel using the mvtnorm R package

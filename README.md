@@ -12,8 +12,6 @@ Status](https://img.shields.io/codecov/c/github/USCbiostats/fmcmc/master.svg)](h
 status](https://www.r-pkg.org/badges/version/fmcmc)](https://cran.r-project.org/package=fmcmc)
 [![status](http://joss.theoj.org/papers/2e86b709451443990c1c6776ebb7f756/status.svg)](http://joss.theoj.org/papers/2e86b709451443990c1c6776ebb7f756)
 
-The `fmcmc` R package implements a flexible
-
 Current features:
 
 1.  Automatic stop using convergence checker.
@@ -66,7 +64,7 @@ ans <- MCMC(
   # It allows to specify different kernels
   kernel   = kernel_reflective(
     lb    = .00001,
-    ub    = 100,
+    ub    = 50,
     scale = .1
   ),
   # As well as convergence checkers

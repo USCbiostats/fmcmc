@@ -9,16 +9,19 @@
 \alias{convergence_auto}
 \title{Convergence Monitoring}
 \usage{
-convergence_gelman(threshold = 1.1, check_invariant = TRUE,
-  autoburnin = FALSE, ...)
+convergence_gelman(freq = 1000L, threshold = 1.1,
+  check_invariant = TRUE, autoburnin = FALSE, ...)
 
-convergence_geweke(threshold = 0.025, check_invariant = TRUE, ...)
+convergence_geweke(freq = 1000L, threshold = 0.025,
+  check_invariant = TRUE, ...)
 
-convergence_heildel(..., check_invariant = TRUE)
+convergence_heildel(freq = 1000L, ..., check_invariant = TRUE)
 
-convergence_auto()
+convergence_auto(freq = 1000L)
 }
 \arguments{
+\item{freq}{Integer scalar. Frequency of checking.}
+
 \item{threshold}{Numeric value. A Gelman statistic below the threshold
 will return \code{TRUE}.}
 

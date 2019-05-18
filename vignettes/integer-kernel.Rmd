@@ -1,0 +1,134 @@
+---
+title: "Creating your own kernel"
+author: "George G. Vega Yon"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Creating your own kernel function}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Example 1: Kernel for an integer parameter
+
+```{r dgp}
+set.seed(1)
+n <- 300
+p <- .2
+N <- 500
+
+y <- rbinom(n, size = N, prob = p)
+```
+
+```{r ll1}
+ll <- function(n.) {
+  sum(dbinom(y, n., prob = p, log = TRUE))
+}
+```
+
+```{r kern1}
+kernel_unif <- kernel_new(
+    proposal = function(env) env$theta0 + sample(-3:3, 1),
+    logratio = function(env) env$f1 - env$f0
+    )
+```
+
+
+```{r}
+ans <- MCMC(
+  ll,
+  initial = max(y),
+  kernel  = kernel_unif,
+  nsteps  = 1000,
+  thin    = 10
+  )
+```
+
+```{r}
+plot(ans)
+```
+
+```{r}
+ans <- MCMC(
+  ll,
+  initial = tail(ans, 0),
+  kernel  = kernel_unif,
+  nsteps  = 10000,
+  thin    = 10
+)
+```
+
+```{r}
+plot(ans)
+```
+
+```{r}
+ans1 <- optim(400, fn = ll, control = list(fnscale = -1))
+```
+
+
+# Example 2: Mixing with some bayesian statistics
+
+```{r ll2}
+ll <- function(p) {
+  ans <- sum(dbinom(y, p[1], prob = p[2], log = TRUE)) + 
+    dbeta(p[2], 2, 8, log = TRUE)
+  
+  if (!is.finite(ans))
+    return(-Inf)
+  ans
+}
+```
+
+
+```{r kern2}
+kernel_unif <- kernel_new(
+    proposal = function(env) {
+      with(env, theta0 + c(sample(-3:3, 1), rbeta(1, 1, 9)*(-1)^i))
+    },
+    logratio = function(env) {
+      # Improvements
+      f11 <- with(env, f(c(theta1[1], theta0[2])))
+      f12 <- with(env, f(c(theta0[1], theta1[2])))
+      
+      c(f11 - env$f0, f12 - env$f0)
+    })
+```
+
+```{r}
+set.seed(1)
+ans <- MCMC(
+  ll,
+  initial = c(max(y), .5),
+  kernel  = kernel_unif,
+  nsteps  = 10000,
+  thin    = 10
+  )
+```
+
+```{r}
+ans <- MCMC(
+  ll,
+  initial = tail(ans, 0),
+  kernel  = kernel_unif,
+  nsteps  = 10000,
+  thin    = 10
+  )
+```
+
+```{r}
+ans <- MCMC(
+  ll,
+  initial = tail(ans, 0),
+  kernel  = kernel_unif,
+  nsteps  = 10000,
+  thin    = 10
+  )
+```

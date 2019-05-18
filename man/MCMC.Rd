@@ -6,12 +6,11 @@
 \title{Markov Chain Monte Carlo}
 \usage{
 MCMC(fun, ..., initial, nsteps, nchains = 1L, thin = 1L,
-  kernel = kernel_normal(), burnin = floor(nsteps/2L),
-  multicore = FALSE, conv_checker = convergence_auto(),
-  autostop = 500L, cl = NULL)
+  kernel = kernel_normal(), burnin = 0L, multicore = FALSE,
+  conv_checker = NULL, cl = NULL)
 }
 \arguments{
-\item{fun}{A function. Returns the log-likelihood}
+\item{fun}{A function. Returns the log-likelihood.}
 
 \item{...}{Further arguments passed to \code{fun}.}
 
@@ -34,10 +33,10 @@ initial values of the parameters for each chain (See details).}
 \item{conv_checker}{A function that receives an object of class \link[coda:mcmc.list]{coda::mcmc.list},
 and returns a logical value with \code{TRUE} indicating convergence.}
 
+\item{cl}{A \code{cluster} object passed to \link[parallel:clusterApply]{parallel::clusterApply}.}
+
 \item{autostop}{Integer scalar. Controls the frequency with which convergence
 is checked (see details).}
-
-\item{cl}{A \code{cluster} object passed to \link[parallel:clusterApply]{parallel::clusterApply}.}
 }
 \value{
 An object of class \link[coda:mcmc]{coda::mcmc} from the \CRANpkg{coda}
@@ -90,15 +89,10 @@ warning message).
 \section{Automatic stop}{
 
 
-When \code{autostop} is greater than 0, the function will perform a convergence
-check every \code{autostop} iterations. By default, depending on the number of chains,
-the convergence check is done
-using either the Gelman diagostic as implemented in \link[coda:gelman.diag]{coda::gelman.diag}
-(if \code{nchains > 1}), or the Geweke diagnostic as implemented in \link[coda:geweke.diag]{coda::geweke.diag}
-(if \code{nchains == 1}).
-
-The user may provide a different convergence criteria by passing a different
-function via \code{conv_checker}. For more information see \link{convergence-checker}.
+By default, no automatic stop is implemented. If one of the functions in
+\link{convergence-checker} is used, then the MCMC is done by bulks as specified
+by the convergence checker function, and thus the algorithm will stop if,
+the \code{conv_checker} returns \code{TRUE}. For more information see \link{convergence-checker}.
 }
 
 \examples{

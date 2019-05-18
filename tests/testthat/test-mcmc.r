@@ -46,7 +46,7 @@ test_that("Reasonable values", {
   set.seed(111)
   ans0 <- suppressWarnings(
     MCMC(fun, initial = 1, nsteps = 5e3, burnin = 500,
-         kernel = kernel_reflective(ub = 3, lb = -3, scale = 1))
+         kernel = kernel_normal(scale = 1))
   )
   expect_equal(mean(ans0), mean(D), tolerance = 0.05, scale = 1)
   
@@ -72,7 +72,7 @@ test_that("Reasonable values after changing the scale", {
   set.seed(111)
   ans0 <- suppressWarnings(
     MCMC(fun, initial = 1, nsteps = 5e3, burnin = 500,
-         kernel = kernel_reflective(ub = 3, lb = -3, scale = 2))
+         kernel = kernel_normal(scale = 2))
   )
   expect_equal(mean(ans0), mean(D), tolerance = 0.05, scale = 1)
   
@@ -96,13 +96,13 @@ test_that("Multiple chains", {
   # Running the algorithm and checking expectation
   ans0 <- suppressWarnings(
     MCMC(fun, initial = 1, nsteps = 5e3, burnin = 500,
-         kernel = kernel_reflective(ub = 3, lb = -3, scale = 1),
+         kernel = kernel_normal(scale = 1),
          D=D, nchains=2)
   )
   
   ans1 <- suppressWarnings(
     MCMC(fun, initial = 1, nsteps = 5e3, burnin = 500,
-         kernel = kernel_reflective(ub = 3, lb = -3, scale = 1),
+         kernel = kernel_normal(scale = 1),
          D=D, nchains=2, multicore = TRUE)
   )
   
@@ -129,14 +129,14 @@ test_that("Repeating the chains in parallel", {
   set.seed(1)
   ans0 <- suppressWarnings(
     MCMC(fun, initial = 1, nsteps = 200, burnin = 0,
-         kernel = kernel_reflective(ub = 3, lb = -3, scale = 1),
+         kernel = kernel_normal(scale = 1),
          nchains=2, D=D)
   )
   
   set.seed(1)
   ans1 <- suppressWarnings(
     MCMC(fun, initial = 1, nsteps = 200, burnin = 0,
-         kernel = kernel_reflective(ub = 3, lb = -3, scale = 1),
+         kernel = kernel_normal(scale = 1),
          nchains=2, D=D)
   )
   

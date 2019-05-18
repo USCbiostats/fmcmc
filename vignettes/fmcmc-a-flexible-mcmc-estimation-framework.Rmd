@@ -38,13 +38,13 @@ lupost <- lupost_factory(out$x, out$y)
 
 Let's give it a first try. In this case we will use the beta estimates from the estimated GLM model as a starting point for the algorithm, and we will ask it to sample 1e4 points from the posterior distribution (`nsteps`).
 
-```{r estimation}
+```{r estimation1.0}
 # to get reproducible results
 set.seed(42)
 out <- MCMC(
   lupost,
   initial = beta.init,
-  nsteps  = 1e4
+  nsteps  = 1e3
 )
 ```
 
@@ -55,17 +55,17 @@ library(coda)
 plot(out[,1:3])
 ```
 
-While the algorithm has converged, the posterior distribution doesn't good at all. Let's give it another try by modifying the scale of the proposal kernel. To do this, we will have to use the `kernel` argument of the function:
+So this chain has very poor mixing, so let's try again by using a smaller scale for the normal kernel proposal moving it from 1 (the default value) to .2:
 
-```{r estimation2}
+```{r estimation1.1}
 # to get reproducible results
-set.seed(42)    
+set.seed(42)
 out <- MCMC(
   lupost,
   initial = beta.init,
-  nsteps  = 1e4,
-  kernel  = kernel_normal(scale = .5), # Setting the kernel to have a scale =.5
-  )
+  nsteps  = 1e3,
+  kernel  = kernel_normal(scale = .2) 
+)
 ```
 
 The `kernel_normal`, which is the default kernel in the `MCMC` function, returns an object of class `fmcmc_kernel`. In principle it consists on a list of two functions that are used by the `MCMC` routine: `proposal`, the proposal kernel function, and `logratio`, the function that returns the log of the Metropolis-Hastings ratio. We will talk more about `fmcmc_kernel` objects later. Now, let's look at the first three variables of our model:
@@ -74,11 +74,26 @@ The `kernel_normal`, which is the default kernel in the `MCMC` function, returns
 plot(out[,1:3])
 ```
 
+Better. Now, ideally we should only be using observations from the stationary distribution. Let's give it another try checking for convergence every 1,000 steps using the `convergence_geweke`:
+
+```{r estimation1.2}
+# to get reproducible results
+set.seed(42)
+out <- MCMC(
+  lupost,
+  initial = beta.init,
+  nsteps  = 1e4,
+  kernel  = kernel_normal(scale = .2),
+  conv_checker = convergence_geweke(200)
+)
+```
+
+
 A bit better. As announced by `MCMC`, the chain has reach a stationary state. With this in hand, we can now rerun the algorithm such that we start from the last couple of step of the chain, this time, without convergence monitoring as it is no longer necesary.
 
-We will increase the number of steps (sample size), use 2 chains using parallel computing:
+We will increase the number of steps (sample size), use 2 chains using parallel computing, and add some thining to reduce autocorrelation:
 
-```{r estimation4}
+```{r estimation2.0}
 # Now we change the seed so we get a different stream of
 # pseudo random numbers
 set.seed(112) 
@@ -87,11 +102,10 @@ out_final <- MCMC(
   lupost, 
   initial = tail(out, 1),              # The last 2 points
   nsteps  = 5e4,                       # Increasing the sample size
-  kernel  = kernel_normal(scale = .5),
+  kernel  = kernel_normal(scale = .2),
   thin    = 10,
   nchains = 2L,                        # Running parallel chains
-  multicore = TRUE,                    # in parallel.
-  autostop = 0L                        # No more convergence monitoring
+  multicore = TRUE                     # in parallel.
   )
 ```
 
@@ -99,5 +113,6 @@ We now see that the output posterior distribution appears to be stationary
 
 ```{r final-results}
 plot(out_final[, 1:3])
+summary(out_final[, 1:3])
 ```
 

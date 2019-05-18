@@ -1,10 +1,67 @@
 #' Various kernel functions for MCMC
 #' 
-#' @param mean,scale Either a numeric vector or a scalar. Proposal scale.
+#' @param mu,scale Either a numeric vector or a scalar. Proposal mean and scale.
 #' @param lb,ub Either a numeric vector or a scalar. Lower and upper bounds for
 #' bounded kernels (currently the `kernel_reflective` only).
 #' @param fixed Logical scalar or vector. When `TRUE` fixes the corresponding
 #' parameter, avoiding new proposals.
+#' @details
+#' The objects `fmcmc_kernels` are environments that in general contain the 
+#' following objects:
+#' 
+#' - `proposal`: The function used to propose changes in the chain based
+#' on the current state. The function must return a vector of length equal
+#' to the number of parameters in the model.
+#' - `logration`: This function is called after a new state has been proposed,
+#' and is used to compute the log of the hastings ratio.
+#' - `...`: Further objects that are used within those functions.
+#' 
+#' Both functions, `proposal` and `logratio`, receive a single argument, an
+#' environment, which is passed by the [MCMC] function during each step using
+#' the function [environment]. The passed
+#' environment is actually the environemnt in which the `MCMC` function is running,
+#' in particular, this environment contains the following objects:
+#' 
+#' \tabular{ll}{
+#' `i` \tab Integer. The current iteration. \cr
+#' `theta1` \tab Numeric vector. The last proposed state. \cr
+#' `theta0` \tab Numeric vector. The current state \cr
+#' `f` \tab The log-unnormalized posterior function (a wrapper of `fun` passed 
+#' to [MCMC]). \cr
+#' `f1` \tab The last value of `f(theta1)` \cr
+#' `f0` \tab The last value of `f(theta0)` \cr
+#' `kernel` \tab The actual `fmcmc_kernel` object.
+#' }
+#' 
+#' These are the core component of the `MCMC` function. The following block
+#' of code is how this is actually implemented in the package:
+#' 
+#' ```
+#' for (i in 1L:nsteps) {
+#'   # Step 1. Propose
+#'   theta1[] <- kernel$proposal(environment())
+#'   f1       <- f(theta1)
+#'   
+#'   # Checking f(theta1) (it must be a number, can be Inf)
+#'   if (is.nan(f1) | is.na(f1) | is.null(f1)) 
+#'     stop(
+#'       "fun(par) is undefined (", f1, ")",
+#'       "Check either -fun- or the -lb- and -ub- parameters.",
+#'       call. = FALSE
+#'     )
+#'   
+#'   # Step 2. Hastings ratio
+#'   if (R[i] < kernel$logratio(environment())) {
+#'     theta0 <- theta1
+#'     f0     <- f1
+#'   }
+#'   
+#'   # Step 3. Saving the state
+#'   ans[i,] <- theta0
+#'   
+#' }
+#' ```
+#' 
 #' @name kernels
 #' @aliases fmcmc_kernel fmcmc-kernel
 #' @examples 
@@ -33,19 +90,21 @@ NULL
 
 #' @export
 #' @rdname kernels
-#' @param proposal Function. The function receives a single argument, an environment.
-#' This function is later called in [MCMC] to propose changes in the chain based
-#' on the current state. The function must return a vector of length equal
-#' to the number of parameters in the model.
-#' @param logratio Function. This function receives a single argument, an environment.
-#' This function is called after a new state has been proposed, and is used to
-#' compute the log of the hastings ratio.
+#' @param proposal,logratio Functions. The function receives a single argument, an environment.
+#' This functions are called later within [MCMC] (see details).
 #' @param ... In the case of `kernel_new`, further arguments to be stored with
 #' the kernel.
-#' 
-#' @details The function `kernel_new` is a helper function that allows creating
-#' `fmcmc_kernel` which is used with the `MCMC` function.
+#' @section Creating your own kernels:
+#' The function `kernel_new` is a helper function that allows creating
+#' `fmcmc_kernel` which is used with the `MCMC` function. The `fmcmc_kernel`
+#' are the backbone of the [MCMC] function.
 kernel_new <- function(proposal, logratio, ...) {
+  
+  # Checks
+  if (length(formals(proposal)) != 1L)
+    stop("The `proposal` function should receive a single argument.", call. = FALSE)
+  if (length(formals(logratio)) != 1L)
+    stop("The `logratio` function should receive a single argument.", call. = FALSE)
   
   env <- new.env()
   environment(proposal) <- env
@@ -76,22 +135,24 @@ print.fmcmc_kernel <- function(x, ...) {
 
 #' @export
 #' @rdname kernels
-#' @details The `kernel_normal` function provides the cannonical normal kernel
+#' @section Kernels:
+#' The `kernel_normal` function provides the cannonical normal kernel
 #' with symmetric transition probabilities.
-kernel_normal <- function(mean = 0, scale = 1) {
+kernel_normal <- function(mu = 0, scale = 1) {
   
   kernel_new(
     proposal = function(env) 
-      env$theta0 + stats::rnorm(length(env$theta0), mean = mean, sd = scale),
+      env$theta0 + stats::rnorm(length(env$theta0), mean = mu, sd = scale),
     logratio = function(env) env$f1 - env$f0,
-    mean     = mean,
+    mu       = mu,
     scale    = scale
     )
 }
 
 #' @export 
 #' @rdname kernels
-#' @details The `kernel_reflective` implements the normal kernel with reflective
+#' @section Kernels:
+#' The `kernel_reflective` implements the normal kernel with reflective
 #' boundaries. Lower and upper bounds are treated using reflecting boundaries, this is, 
 #' if the proposed \eqn{\theta'} is greater than the \code{ub}, then \eqn{\theta' - ub}
 #' is substracted from \eqn{ub}. At the same time, if it is less than \code{lb}, then
@@ -101,12 +162,13 @@ kernel_normal <- function(mean = 0, scale = 1) {
 #' In this case, the transition probability is symmetric (just like the normal
 #' kernel).
 kernel_reflective <- function(
+  mu    = 0,
   scale = 1,
   lb    = -.Machine$double.xmax,
   ub    = .Machine$double.xmax,
   fixed = FALSE
   ) {
-
+  
   kernel_new(
     proposal = function(env) {
       
@@ -138,19 +200,21 @@ kernel_reflective <- function(
         if (any(ub <= lb))
           stop("-ub- cannot be <= than -lb-.", call. = FALSE)
         
-        # Repeating 
+        # mu, scale and fixed according to the number of parameters in the
+        # model if needed. 
+        if (length(mu) == 1)
+          mu <<- rep(mu, k)
+        if (length(scale) == 1)
+          scale <<- rep(scale, k)
         if (length(fixed) == 1)
           fixed <<- rep(fixed, k)
         
-        # Repeating scale
-        if (length(scale) == 1)
-          scale <<- rep(scale, k)
-        
       }
       
-      normal_reflective(env$theta0, lb, ub, scale, fixed)
+      normal_reflective(env$theta0, lb, ub, mu, scale, fixed)
       },
     logratio = function(env) env$f1 - env$f0,
+    mu       = mu,
     scale    = scale, 
     ub       = ub, 
     lb       = lb, 
@@ -162,12 +226,13 @@ kernel_reflective <- function(
 normal_reflective <- function(
   x,
   lb, ub,
+  mu    = rep(0, length(x)),
   scale = rep(1, length(x)),
   fixed = rep(FALSE, length(x))
 ) {
   
   notfixed <- which(!fixed)
-  x[notfixed] <- x[notfixed] + stats::rnorm(length(notfixed)) * scale[notfixed]
+  x[notfixed] <- x[notfixed] + stats::rnorm(length(notfixed), mu) * scale[notfixed]
   
   test_above <- which(x[notfixed] > ub[notfixed])
   test_below <- which(x[notfixed] < lb[notfixed])
