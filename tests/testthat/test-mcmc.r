@@ -155,7 +155,7 @@ test_that("Fixed parameters", {
   
   # Preparing function
   fun <- function(x) {
-    res <- log(dnorm(D, x[1], x[2]))
+    res <- dnorm(D, x[1], x[2], log = TRUE)
     if (any(is.infinite(res) | is.nan(res)))
       return(.Machine$double.xmin)
     sum(res)
@@ -170,5 +170,58 @@ test_that("Fixed parameters", {
   )
   expect_true(all(ans[,2] == 2))
   expect_equivalent(colMeans(ans), c(0, 2), tolerance = 0.1, scale = 1)
+  
+})
+
+
+# ------------------------------------------------------------------------------
+test_that("Passing the data", {
+  
+  # Simulating data
+  set.seed(91181)
+  
+  D <- rnorm(1000, 0, 2)
+  
+  # Serial version -------------------------------------------------------------
+  
+  # Preparing function
+  fun <- function(x, D.) {
+    res <- dnorm(D., x[1], x[2], log = TRUE)
+    if (any(is.infinite(res) | is.nan(res)))
+      return(.Machine$double.xmin)
+    sum(res)
+  }
+  
+  # Running the algorithm and checking expectation
+  ans <- suppressWarnings(
+    MCMC(fun,
+         initial = c(1, 2),
+         nsteps  = 5e3,
+         burnin  = 500,
+         kernel  = kernel_reflective(ub = 3, lb = c(-3, 0), scale = .25),
+         D.      = D
+         )
+  )
+  
+  expect_equivalent(colMeans(ans), c(0, 2), tolerance = 0.1, scale = .2)
+  
+  # Parallel version -----------------------------------------------------------
+  
+  # Running the algorithm and checking expectation
+  ans <- suppressWarnings(
+    MCMC(fun,
+         initial = c(1, 2),
+         nsteps  = 5e3,
+         burnin  = 500,
+         kernel  = kernel_reflective(ub = 3, lb = c(-3, 0), scale = .25),
+         D.      = D,
+         nchains = 2L,
+         multicore = TRUE
+    )
+  )
+  
+  expect_equivalent(
+    colMeans(do.call(rbind, ans)),
+    c(0, 2), tolerance = 0.1, scale = .2)
   
 })

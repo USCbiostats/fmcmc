@@ -42,8 +42,8 @@ Let's give it a first try. In this case we will use the beta estimates from the 
 # to get reproducible results
 set.seed(42)
 out <- MCMC(
-  lupost,
   initial = beta.init,
+  fun     = lupost,
   nsteps  = 1e3
 )
 ```
@@ -61,8 +61,8 @@ So this chain has very poor mixing, so let's try again by using a smaller scale 
 # to get reproducible results
 set.seed(42)
 out <- MCMC(
-  lupost,
   initial = beta.init,
+  fun     = lupost,
   nsteps  = 1e3,
   kernel  = kernel_normal(scale = .2) 
 )
@@ -80,8 +80,8 @@ Better. Now, ideally we should only be using observations from the stationary di
 # to get reproducible results
 set.seed(42)
 out <- MCMC(
-  lupost,
   initial = beta.init,
+  fun     = lupost,
   nsteps  = 1e4,
   kernel  = kernel_normal(scale = .2),
   conv_checker = convergence_geweke(200)
@@ -99,17 +99,17 @@ We will increase the number of steps (sample size), use 2 chains using parallel 
 set.seed(112) 
 
 out_final <- MCMC(
-  lupost, 
-  initial = tail(out, 1),              # The last 2 points
-  nsteps  = 5e4,                       # Increasing the sample size
-  kernel  = kernel_normal(scale = .2),
-  thin    = 10,
-  nchains = 2L,                        # Running parallel chains
-  multicore = TRUE                     # in parallel.
+  initial   = out,                       # Automagically takes the last 2 points
+  fun       = lupost, 
+  nsteps    = 5e4,                       # Increasing the sample size
+  kernel    = kernel_normal(scale = .2),
+  thin      = 10,
+  nchains   = 2L,                        # Running parallel chains
+  multicore = TRUE                       # in parallel.
   )
 ```
 
-We now see that the output posterior distribution appears to be stationary
+Observed that, instead of specifying what are the 2 starting points for each chain, we passed the `out` to the initial set of parameters. By default, if `initial` is of class `mcmc`, `MCMC` will take the last `nchains` points from the chain as starting point for the new sequence. If `initial` is of class `mcmc.list`, the number of chains in `initial` must match the `nchains` parameter. We now see that the output posterior distribution appears to be stationary
 
 ```{r final-results}
 plot(out_final[, 1:3])

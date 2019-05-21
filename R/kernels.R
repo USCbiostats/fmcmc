@@ -9,12 +9,18 @@
 #' The objects `fmcmc_kernels` are environments that in general contain the 
 #' following objects:
 #' 
-#' - `proposal`: The function used to propose changes in the chain based
-#' on the current state. The function must return a vector of length equal
-#' to the number of parameters in the model.
-#' - `logration`: This function is called after a new state has been proposed,
-#' and is used to compute the log of the hastings ratio.
-#' - `...`: Further objects that are used within those functions.
+#' -  `proposal`: The function used to propose changes in the chain based
+#'    on the current state. The function must return a vector of length equal
+#'    to the number of parameters in the model.
+#'    
+#' -  `logration`: This function is called after a new state has been proposed,
+#'    and is used to compute the log of the hastings ratio.
+#'    
+#'    In the case that the `logratio` function is not specified, then it is assumed
+#'    that the transition kernel is symmetric, this is, logratio is then implemented
+#'    as `function(env) {env$f1 - env$f0}`
+#'    
+#' -  `...`: Further objects that are used within those functions.
 #' 
 #' Both functions, `proposal` and `logratio`, receive a single argument, an
 #' environment, which is passed by the [MCMC] function during each step using
@@ -62,28 +68,38 @@
 #' }
 #' ```
 #' 
+#' For an extended example see the vignette "Personalized kernel functions".
+#' 
+#' 
 #' @name kernels
 #' @aliases fmcmc_kernel fmcmc-kernel
 #' @examples 
 #' \dontrun{
 #' # Example creating a multivariate normal kernel using the mvtnorm R package
+#' # for a bivariate normal distribution
 #' library(mvtnorm)
 #' 
 #' # Define your Sigma
-#' sigma <- ...
+# sigma <- matrix(c(1, .2, .2, 1), ncol = 2)
+#' 
+#' # How does it looks like?
+# sigma
+#'      [,1] [,2]
+#' [1,]  1.0  0.2
+#' [2,]  0.2  1.0
 #' 
 #' # Create the kernel
-#' mvn_kernel <- kernel_new(
+#' kernel_mvn <- kernel_new(
 #'   proposal = function(env) {
-#'   env$theta0 + as.vector(mvtnorm::rmvnorm(1, mean = 0, sigma = sigma, ...))
+#'   env$theta0 + as.vector(mvtnorm::rmvnorm(1, mean = 0, sigma = sigma.))
 #'   },
-#'   logratio = function(env) {
-#'     env$f1 - env$f0 +
-#'       log(mvtnorm::pmvnorm(upper = env$theta0 - env$theta1)) -
-#'       log(mvtnorm::pmvnorm(upper = env$theta1 - env$theta0))
-#'   },
-#'   sigma = sigma
+#'   sigma. = sigma
 #' )
+#' 
+#' # As you can see, in the previous call we passed sigma as it will be used by
+#' # the proposal function
+#' # The logaratio function was not necesary to be passed since this kernel is
+#' # symmetric.
 #' 
 #' }
 NULL
@@ -98,13 +114,16 @@ NULL
 #' The function `kernel_new` is a helper function that allows creating
 #' `fmcmc_kernel` which is used with the `MCMC` function. The `fmcmc_kernel`
 #' are the backbone of the [MCMC] function.
-kernel_new <- function(proposal, logratio, ...) {
+kernel_new <- function(proposal, logratio = NULL, ...) {
   
   # Checks
   if (length(formals(proposal)) != 1L)
     stop("The `proposal` function should receive a single argument.", call. = FALSE)
-  if (length(formals(logratio)) != 1L)
+  if (!is.null(logratio) && length(formals(logratio)) != 1L)
     stop("The `logratio` function should receive a single argument.", call. = FALSE)
+  
+  if (is.null(logratio))
+    logratio <- function(env) {env$f1 - env$f0}
   
   env <- new.env()
   environment(proposal) <- env

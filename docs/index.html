@@ -57,6 +57,9 @@
 <li>
       <a href="articles/fmcmc-a-flexible-mcmc-estimation-framework.html">Workflow with the MCMC function</a>
     </li>
+    <li>
+      <a href="articles/integer-kernel.html">Personalized kernel functions</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -134,55 +137,54 @@
 <a class="sourceLine" id="cb3-9" title="9">    <span class="dt">scale =</span> <span class="fl">.1</span></a>
 <a class="sourceLine" id="cb3-10" title="10">  ),</a>
 <a class="sourceLine" id="cb3-11" title="11">  <span class="co"># As well as convergence checkers</span></a>
-<a class="sourceLine" id="cb3-12" title="12">  <span class="dt">conv_checker =</span> <span class="kw"><a href="reference/convergence-checker.html">convergence_gelman</a></span>(<span class="dt">threshold =</span> <span class="fl">1.05</span>),</a>
+<a class="sourceLine" id="cb3-12" title="12">  <span class="dt">conv_checker =</span> <span class="kw"><a href="reference/convergence-checker.html">convergence_gelman</a></span>(500L, <span class="dt">threshold =</span> <span class="fl">1.05</span>),</a>
 <a class="sourceLine" id="cb3-13" title="13">  <span class="dt">nsteps   =</span> <span class="fl">2e5</span>,</a>
 <a class="sourceLine" id="cb3-14" title="14">  <span class="dt">thin     =</span> <span class="dv">10</span>,</a>
-<a class="sourceLine" id="cb3-15" title="15">  <span class="dt">autostop =</span> <span class="fl">2e3</span>,</a>
-<a class="sourceLine" id="cb3-16" title="16">  <span class="dt">burnin   =</span> <span class="fl">1e4</span>,</a>
-<a class="sourceLine" id="cb3-17" title="17">  <span class="co"># As well as parallel chains</span></a>
-<a class="sourceLine" id="cb3-18" title="18">  <span class="dt">nchains  =</span> 4L,</a>
-<a class="sourceLine" id="cb3-19" title="19">  <span class="dt">multicore =</span> <span class="ot">TRUE</span></a>
-<a class="sourceLine" id="cb3-20" title="20">  )</a></code></pre></div>
+<a class="sourceLine" id="cb3-15" title="15">  <span class="dt">burnin   =</span> <span class="fl">1e4</span>,</a>
+<a class="sourceLine" id="cb3-16" title="16">  <span class="co"># As well as parallel chains</span></a>
+<a class="sourceLine" id="cb3-17" title="17">  <span class="dt">nchains  =</span> 4L,</a>
+<a class="sourceLine" id="cb3-18" title="18">  <span class="dt">multicore =</span> <span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb3-19" title="19">  )</a></code></pre></div>
 <pre><code>## Warning: While using multiple chains, a single initial point has been
 ## passed via `initial`: c(1, 1, 1). The values will be recycled. Ideally you
 ## would want to start each chain from different locations.</code></pre>
-<pre><code>## Convergence has been reached with 12000 steps. (200 final count of observations).</code></pre>
+<pre><code>## Convergence has been reached with 10500 steps. (50 final count of observations).</code></pre>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(coda)</a>
 <a class="sourceLine" id="cb6-2" title="2"></a>
 <a class="sourceLine" id="cb6-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(ans)</a></code></pre></div>
 <pre><code>## 
-## Iterations = 10010:12000
+## Iterations = 10010:10500
 ## Thinning interval = 10 
 ## Number of chains = 4 
-## Sample size per chain = 200 
+## Sample size per chain = 50 
 ## 
 ## 1. Empirical mean and standard deviation for each variable,
 ##    plus standard error of the mean:
 ## 
 ##       Mean      SD Naive SE Time-series SE
-## par1 3.069 0.06742 0.002384       0.002910
-## par2 1.990 0.06542 0.002313       0.002350
-## par3 2.049 0.04779 0.001690       0.002064
+## par1 3.077 0.06468 0.004574       0.005823
+## par2 1.988 0.06436 0.004551       0.005400
+## par3 2.051 0.05007 0.003540       0.003603
 ## 
 ## 2. Quantiles for each variable:
 ## 
 ##       2.5%   25%   50%   75% 97.5%
-## par1 2.930 3.025 3.069 3.116 3.197
-## par2 1.862 1.942 1.990 2.037 2.110
-## par3 1.963 2.018 2.048 2.081 2.141</code></pre>
+## par1 2.942 3.039 3.078 3.121 3.211
+## par2 1.874 1.943 1.989 2.031 2.131
+## par3 1.974 2.012 2.053 2.081 2.160</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(ans)</a></code></pre></div>
 <p><img src="reference/figures/summary-and-plot1-1.png" width="700"></p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/coda/topics/gelman.diag">gelman.diag</a></span>(ans)</a></code></pre></div>
 <pre><code>## Potential scale reduction factors:
 ## 
 ##      Point est. Upper C.I.
-## par1       1.00       1.01
-## par2       1.01       1.02
-## par3       1.00       1.00
+## par1       1.01       1.04
+## par2       1.01       1.04
+## par3       1.02       1.06
 ## 
 ## Multivariate psrf
 ## 
-## 1.01</code></pre>
+## 1.02</code></pre>
 </div>
 <div id="other-tools" class="section level1">
 <h1 class="hasAnchor">

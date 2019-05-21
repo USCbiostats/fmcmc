@@ -42,7 +42,13 @@ rm_invariant <- function(x) {
 #' steps via the argument `burnin`.
 #' 
 #' @rdname convergence-checker
-convergence_gelman <- function(freq = 1000L, threshold = 1.10, check_invariant=TRUE, autoburnin=FALSE,...) {
+convergence_gelman <- function(
+  freq            = 1000L,
+  threshold       = 1.10,
+  check_invariant = TRUE,
+  autoburnin      = FALSE,
+  ...
+  ) {
 
   structure(function(x) {
     

@@ -3,7 +3,8 @@
 #' A flexible implementation of the Metropolis-Hastings MCMC algorithm.
 #' 
 #' @param fun A function. Returns the log-likelihood.
-#' @param initial A numeric vector or matrix with as many rows as chains with
+#' @param initial Either a numeric matrix or vector, or an object of class [coda::mcmc]
+#' or [coda::mcmc.list] (see details).
 #' initial values of the parameters for each chain (See details).
 #' @param nsteps Integer scalar. Length of each chain.
 #' @param nchains Integer scalar. Number of chains to run (in parallel).
@@ -24,7 +25,21 @@
 #' addition, we incorporate a variety of convergence diagnostics, alternatively
 #' the user can specify their own (see [convergence-checker]).
 #' 
-#' We now give details of the various options included in the function.#' 
+#' We now give details of the various options included in the function.
+#' 
+#' @section Starting point:
+#' 
+#' By default, if `initial` is of class `mcmc`, `MCMC` will take the last `nchains`
+#' points from the chain as starting point for the new sequence. If `initial` is
+#' of class `mcmc.list`, the number of chains in `initial` must match the `nchains`
+#' parameter. 
+#' 
+#' If `initial` is a vector, then it must be of length equal to the number of
+#' parameters used in the model. When using multiple chains, if `initial` is not
+#' an object of class `mcmc` or `mcmc.list`, then it must be a numeric matrix
+#' with as many rows as chains, and as many columns as parameters in the model.
+#' 
+#' @section Multiple chains:
 #' 
 #' When \code{nchains > 1}, the function will run multiple chains. Furthermore,
 #' if \code{cl} is not passed, \code{MCMC} will create a \code{PSOCK} cluster
@@ -134,8 +149,8 @@
 #' 
 #' # Calling MCMC
 #' ans <- MCMC(
-#'   fun,
 #'   initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
+#'   fun,
 #'   kernel  = kernel_reflective(
 #'     lb    = c(-10, -10, .01, -5, .01),
 #'     ub    = 5
@@ -168,8 +183,8 @@
 #' 
 #' # Two chains
 #' ans <- MCMC(
-#'   fun,
 #'   initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
+#'   fun,
 #'   nchains = 2,
 #'   kernel  = kernel_reflective(
 #'     lb    = c(-10, -10, .01, -5, .01),
@@ -186,16 +201,99 @@
 #' }
 #' 
 #' @aliases Metropolis-Hastings
-#' @name MCMC
-NULL
+MCMC <- function(
+  initial,
+  fun,
+  nsteps,
+  ...,
+  nchains      = 1L,
+  thin         = 1L,
+  kernel       = kernel_normal(),
+  burnin       = 0L,
+  multicore    = FALSE,
+  conv_checker = NULL, 
+  cl           = NULL
+) UseMethod("MCMC")
 
 #' @export
 #' @rdname MCMC
-MCMC <- function(
+MCMC.mcmc <- function(
+  initial,
   fun,
-  ...,
-  initial, 
   nsteps,
+  ...,
+  nchains      = 1L,
+  thin         = 1L,
+  kernel       = kernel_normal(),
+  burnin       = 0L,
+  multicore    = FALSE,
+  conv_checker = NULL, 
+  cl           = NULL
+) {
+  
+  MCMC.default(
+    initial      = utils::tail(initial, nchains - 1L),
+    fun          = fun,
+    nsteps       = nsteps,
+    ...,     
+    nchains      = nchains,
+    thin         = thin,
+    kernel       = kernel,
+    burnin       = burnin,
+    multicore    = multicore,
+    conv_checker = conv_checker,
+    cl           = cl
+  )
+  
+}
+
+#' @export
+#' @rdname MCMC
+MCMC.mcmc.list <- function(
+  initial,
+  fun,
+  nsteps,
+  ...,
+  nchains      = 1L,
+  thin         = 1L,
+  kernel       = kernel_normal(),
+  burnin       = 0L,
+  multicore    = FALSE,
+  conv_checker = NULL, 
+  cl           = NULL
+) {
+  
+  if (nchains != length(initial))
+    stop(
+      "The parameter `nchains` must equal the number of chains passed by ",
+      "`initial`.", call. = FALSE
+      )
+  
+  MCMC.default(
+    initial      = do.call(rbind, utils::tail(initial, 0)),
+    fun          = fun,
+    nsteps       = nsteps,
+    ...,     
+    nchains      = nchains,
+    thin         = thin,
+    kernel       = kernel,
+    burnin       = burnin,
+    multicore    = multicore,
+    conv_checker = conv_checker,
+    cl           = cl
+  )
+  
+}
+
+
+
+#' @export
+#' @rdname MCMC
+MCMC.default <- function(
+  initial,
+  fun,
+  nsteps,
+  ...,
   nchains      = 1L,
   thin         = 1L,
   kernel       = kernel_normal(),
@@ -375,7 +473,7 @@ MCMC <- function(
   theta0 <- initial
   theta1 <- theta0
   f0     <- f(theta0)
-  f1     <- theta1
+  f1     <- f(theta1)
   
   # The updates can be done jointly or sequentially
   klogratio <- kernel$logratio(environment())

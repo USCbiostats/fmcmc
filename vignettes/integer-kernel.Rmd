@@ -1,134 +1,113 @@
 ---
-title: "Creating your own kernel"
+title: "Personalized kernel functions"
 author: "George G. Vega Yon"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Creating your own kernel function}
+  %\VignetteIndexEntry{Personalized kernel functions}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+  collapse  = TRUE,
+  comment   = "#>",
+  out.width = "80%",
+  warning = FALSE,
+  fig.width = 7, fig.height = 5
 )
 ```
 
-# Example 1: Kernel for an integer parameter
+## Introduction
+
+One of the biggest benefits of the `fcmc` package is the fact that it allows you creating personalized kernel functions. `fmcmc_kernel` objects are created with the `kernel_new` function (a function factory), and require (at least) one parameter, the `proposal` function. In what follows, we show an example where the user specifies a transition kernel used to estimate an integer parameter, the `n` parameter from a binomial distribution.
+
+## Size parameter in a binomial distribution
+
+For this example, imagine that we are interested on learning what is the size of a population given that we already now the prevalence of a particular phenomena, for example, a disease. Furthermore, assume that 20\% of the population acquire this disease, and we have a random sample from this population $y \sim \mbox{Binom}(0.2, N)$. We don't know $N$.
+
+Such scenario, while perhaps a bit uncommon, needs a special treatment in a bayesian/MCMC framework. The parameter to estimate is not continuous so we would like to draw samples from a discrete distribution. Using the "normal" (pun intended) transition kernel may still be able to estimate something, but does not provide us with the correct posterior distribution. In this case, a transition kernel that makes discrete proposals would be desired.
+
+Let's simulate some data, say, 300 observations from this Binomial random variable with parameters $p = .2$ and $N = 500$:
 
 ```{r dgp}
-set.seed(1)
-n <- 300
+library(fmcmc)
+set.seed(1) # Always set the seed!!!!
+
+# Population parameters
 p <- .2
 N <- 500
 
-y <- rbinom(n, size = N, prob = p)
+y <- rbinom(300, size = N, prob = p)
 ```
 
-```{r ll1}
-ll <- function(n.) {
-  sum(dbinom(y, n., prob = p, log = TRUE))
+Our goal is to be able to estimate the parameter $N$. As in any MCMC function, we need to define the log-likelihood function:
+
+```{r ll}
+ll <- function(n., p.) {
+  sum(dbinom(y, n., prob = p., log = TRUE))
 }
 ```
 
-```{r kern1}
+
+Now comes the kernel object. In order to create an `fmcmc_kernel`, we can use the helper function `kernel_new` as follows:
+
+```{r creating-kernel}
 kernel_unif <- kernel_new(
     proposal = function(env) env$theta0 + sample(-3:3, 1),
-    logratio = function(env) env$f1 - env$f0
+    logratio = function(env) env$f1 - env$f0 # We could have skipped this
     )
 ```
 
+Here, the kernel is in the form of $\theta_1 = \theta_0 + R, R\sim \mbox{U}\{-3, ..., 3\}$, this is, proposals are done by adding a number $R$ drawn from a discrete uniform distribution with values between -3 and 3. While in this example we could have skipped the `logratio` function (as this transition kernel is symmetric), but we defined it so that the user can see an example of it.[^kernel_new] Let's take a look at the object:
 
-```{r}
+[^kernel_new]: For more details on what the `env` object contains, see the manual page of `kernel_new`.
+
+
+```{r print-kernel}
+kernel_unif
+```
+
+The object itself is actually an R environment. If we added more parameters to `kernel_new`, we would have seen those as well. Now that we have our transition kernel, let's give it a first try and see what can we get with this new `kernel_unif` object we just created with the MCMC function.
+
+```{r first-run}
 ans <- MCMC(
-  ll,
-  initial = max(y),
-  kernel  = kernel_unif,
-  nsteps  = 1000,
-  thin    = 10
+  ll,                    # The log-likleihood function
+  initial = max(y),      # A fair initial guess
+  kernel  = kernel_unif, # Our new kernel function
+  nsteps  = 1000,        # 1,000 MCMC draws
+  thin    = 10,          # We will sample every 10
+  p.      = p            # Passing extra parameters to be used by `ll`.
   )
 ```
 
-```{r}
+Notice that for the inital guess we are using the max of `y`, which is a reasonable starting point (the $N$ parameter MUST be at least the max of `y`). Since the returning object is an object of class `mcmc` from the `coda` R package, we can use any method available for it. Let's starty by plotting the chain:
+
+```{r plot1}
 plot(ans)
 ```
 
-```{r}
+As you can see, the trace pf the parameter started to go up right away and then stayed around 500, the actual population parameter $N$. As the first part of the chain is useless (we are essentially moving away from the starting point), it is wise (if not necessary) to start the MCMC chain from the last point of `ans`. We can easily do so by just passing `ans` as an starting point, since `MCMC` will automatically take the last value of the chain as starting point of this new one. This time, let's increase the sample size as well:
+
+```{r second-run}
 ans <- MCMC(
   ll,
-  initial = tail(ans, 0),
-  kernel  = kernel_unif,
-  nsteps  = 10000,
-  thin    = 10
+  initial = ans,         # MCMC will use tail(ans, 0) automatically
+  kernel  = kernel_unif, # same as before
+  nsteps  = 10000,       # More steps this time
+  thin    = 10,          # same as before
+  p.      = p            # same as before
 )
 ```
 
-```{r}
+Let's take a look at the posterior distribution:
+
+```{r plot2}
 plot(ans)
+summary(ans)
+table(ans)
 ```
 
-```{r}
-ans1 <- optim(400, fn = ll, control = list(fnscale = -1))
-```
+A very nice mixing (at least visually) and a posterior distribution from which we can safetly sample parameters.
 
-
-# Example 2: Mixing with some bayesian statistics
-
-```{r ll2}
-ll <- function(p) {
-  ans <- sum(dbinom(y, p[1], prob = p[2], log = TRUE)) + 
-    dbeta(p[2], 2, 8, log = TRUE)
-  
-  if (!is.finite(ans))
-    return(-Inf)
-  ans
-}
-```
-
-
-```{r kern2}
-kernel_unif <- kernel_new(
-    proposal = function(env) {
-      with(env, theta0 + c(sample(-3:3, 1), rbeta(1, 1, 9)*(-1)^i))
-    },
-    logratio = function(env) {
-      # Improvements
-      f11 <- with(env, f(c(theta1[1], theta0[2])))
-      f12 <- with(env, f(c(theta0[1], theta1[2])))
-      
-      c(f11 - env$f0, f12 - env$f0)
-    })
-```
-
-```{r}
-set.seed(1)
-ans <- MCMC(
-  ll,
-  initial = c(max(y), .5),
-  kernel  = kernel_unif,
-  nsteps  = 10000,
-  thin    = 10
-  )
-```
-
-```{r}
-ans <- MCMC(
-  ll,
-  initial = tail(ans, 0),
-  kernel  = kernel_unif,
-  nsteps  = 10000,
-  thin    = 10
-  )
-```
-
-```{r}
-ans <- MCMC(
-  ll,
-  initial = tail(ans, 0),
-  kernel  = kernel_unif,
-  nsteps  = 10000,
-  thin    = 10
-  )
-```

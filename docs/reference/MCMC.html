@@ -90,6 +90,9 @@
     <li>
       <a href="../articles/fmcmc-a-flexible-mcmc-estimation-framework.html">Workflow with the MCMC function</a>
     </li>
+    <li>
+      <a href="../articles/integer-kernel.html">Personalized kernel functions</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -124,30 +127,45 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>MCMC</span>(<span class='no'>fun</span>, <span class='no'>...</span>, <span class='no'>initial</span>, <span class='no'>nsteps</span>, <span class='kw'>nchains</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
-  <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='fu'><a href='kernels.html'>kernel_normal</a></span>(), <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Round'>floor</a></span>(<span class='no'>nsteps</span>/<span class='fl'>2L</span>),
-  <span class='kw'>multicore</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>conv_checker</span> <span class='kw'>=</span> <span class='fu'><a href='convergence-checker.html'>convergence_auto</a></span>(),
-  <span class='kw'>autostop</span> <span class='kw'>=</span> <span class='fl'>500L</span>, <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>MCMC</span>(<span class='no'>initial</span>, <span class='no'>fun</span>, <span class='no'>nsteps</span>, <span class='no'>...</span>, <span class='kw'>nchains</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
+  <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='fu'><a href='kernels.html'>kernel_normal</a></span>(), <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>multicore</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>conv_checker</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+
+<span class='co'># S3 method for mcmc</span>
+<span class='fu'>MCMC</span>(<span class='no'>initial</span>, <span class='no'>fun</span>, <span class='no'>nsteps</span>, <span class='no'>...</span>, <span class='kw'>nchains</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
+  <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='fu'><a href='kernels.html'>kernel_normal</a></span>(), <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>multicore</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>conv_checker</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+
+<span class='co'># S3 method for mcmc.list</span>
+<span class='fu'>MCMC</span>(<span class='no'>initial</span>, <span class='no'>fun</span>, <span class='no'>nsteps</span>, <span class='no'>...</span>, <span class='kw'>nchains</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
+  <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='fu'><a href='kernels.html'>kernel_normal</a></span>(), <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>0L</span>,
+  <span class='kw'>multicore</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>conv_checker</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+
+<span class='co'># S3 method for default</span>
+<span class='fu'>MCMC</span>(<span class='no'>initial</span>, <span class='no'>fun</span>, <span class='no'>nsteps</span>, <span class='no'>...</span>, <span class='kw'>nchains</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
+  <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='fu'><a href='kernels.html'>kernel_normal</a></span>(), <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>0L</span>,
+  <span class='kw'>multicore</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>conv_checker</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>fun</th>
-      <td><p>A function. Returns the log-likelihood</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Further arguments passed to <code>fun</code>.</p></td>
-    </tr>
-    <tr>
       <th>initial</th>
-      <td><p>A numeric vector or matrix with as many rows as chains with
+      <td><p>Either a numeric matrix or vector, or an object of class <a href='https://www.rdocumentation.org/packages/coda/topics/mcmc'>coda::mcmc</a>
+or <a href='https://www.rdocumentation.org/packages/coda/topics/mcmc.list'>coda::mcmc.list</a> (see details).
 initial values of the parameters for each chain (See details).</p></td>
+    </tr>
+    <tr>
+      <th>fun</th>
+      <td><p>A function. Returns the log-likelihood.</p></td>
     </tr>
     <tr>
       <th>nsteps</th>
       <td><p>Integer scalar. Length of each chain.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Further arguments passed to <code>fun</code>.</p></td>
     </tr>
     <tr>
       <th>nchains</th>
@@ -176,11 +194,6 @@ initial values of the parameters for each chain (See details).</p></td>
 and returns a logical value with <code>TRUE</code> indicating convergence.</p></td>
     </tr>
     <tr>
-      <th>autostop</th>
-      <td><p>Integer scalar. Controls the frequency with which convergence
-is checked (see details).</p></td>
-    </tr>
-    <tr>
       <th>cl</th>
       <td><p>A <code>cluster</code> object passed to <a href='https://www.rdocumentation.org/packages/parallel/topics/clusterApply'>parallel::clusterApply</a>.</p></td>
     </tr>
@@ -200,8 +213,24 @@ transition kernels or define one of their own (see <a href='kernels.html'>kernel
 it allows easy parallel implementation running multiple chains in parallel. In
 addition, we incorporate a variety of convergence diagnostics, alternatively
 the user can specify their own (see <a href='convergence-checker.html'>convergence-checker</a>).</p>
-<p>We now give details of the various options included in the function.#'</p>
-<p>When <code>nchains &gt; 1</code>, the function will run multiple chains. Furthermore,
+<p>We now give details of the various options included in the function.</p>
+    
+    <h2 class="hasAnchor" id="starting-point"><a class="anchor" href="#starting-point"></a>Starting point</h2>
+
+    
+    <p>By default, if <code>initial</code> is of class <code>mcmc</code>, <code>MCMC</code> will take the last <code>nchains</code>
+points from the chain as starting point for the new sequence. If <code>initial</code> is
+of class <code>mcmc.list</code>, the number of chains in <code>initial</code> must match the <code>nchains</code>
+parameter.</p>
+<p>If <code>initial</code> is a vector, then it must be of length equal to the number of
+parameters used in the model. When using multiple chains, if <code>initial</code> is not
+an object of class <code>mcmc</code> or <code>mcmc.list</code>, then it must be a numeric matrix
+with as many rows as chains, and as many columns as parameters in the model.</p>
+    
+    <h2 class="hasAnchor" id="multiple-chains"><a class="anchor" href="#multiple-chains"></a>Multiple chains</h2>
+
+    
+    <p>When <code>nchains &gt; 1</code>, the function will run multiple chains. Furthermore,
 if <code>cl</code> is not passed, <code>MCMC</code> will create a <code>PSOCK</code> cluster
 using <a href='https://www.rdocumentation.org/packages/parallel/topics/makeCluster'>parallel::makePSOCKcluster</a> with
 <a href='https://www.rdocumentation.org/packages/parallel/topics/detectCores'>parallel::detectCores</a>
@@ -230,14 +259,10 @@ warning message).</p>
     <h2 class="hasAnchor" id="automatic-stop"><a class="anchor" href="#automatic-stop"></a>Automatic stop</h2>
 
     
-    <p>When <code>autostop</code> is greater than 0, the function will perform a convergence
-check every <code>autostop</code> iterations. By default, depending on the number of chains,
-the convergence check is done
-using either the Gelman diagostic as implemented in <a href='https://www.rdocumentation.org/packages/coda/topics/gelman.diag'>coda::gelman.diag</a>
-(if <code>nchains &gt; 1</code>), or the Geweke diagnostic as implemented in <a href='https://www.rdocumentation.org/packages/coda/topics/geweke.diag'>coda::geweke.diag</a>
-(if <code>nchains == 1</code>).</p>
-<p>The user may provide a different convergence criteria by passing a different
-function via <code>conv_checker</code>. For more information see <a href='convergence-checker.html'>convergence-checker</a>.</p>
+    <p>By default, no automatic stop is implemented. If one of the functions in
+<a href='convergence-checker.html'>convergence-checker</a> is used, then the MCMC is done by bulks as specified
+by the convergence checker function, and thus the algorithm will stop if,
+the <code>conv_checker</code> returns <code>TRUE</code>. For more information see <a href='convergence-checker.html'>convergence-checker</a>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -260,7 +285,8 @@ function via <code>conv_checker</code>. For more information see <a href='conver
 <span class='no'>ans</span> <span class='kw'>&lt;-</span> <span class='fu'>MCMC</span>(
   <span class='no'>fun</span>, <span class='kw'>initial</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='kw'>mu</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>sigma</span><span class='kw'>=</span><span class='fl'>1</span>), <span class='kw'>nsteps</span> <span class='kw'>=</span> <span class='fl'>2e3</span>,
   <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='fu'><a href='kernels.html'>kernel_reflective</a></span>(<span class='kw'>scale</span> <span class='kw'>=</span> <span class='fl'>.1</span>, <span class='kw'>ub</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>lb</span> <span class='kw'>=</span> <span class='fl'>0</span>)
-  )</div><div class='output co'>#&gt; <span class='message'>Convergence has been reached with 1500 steps. (500 final count of observations).</span></div><div class='input'>
+  )
+
 <span class='co'># Ploting the output</span>
 <span class='no'>oldpar</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/par'>par</a></span>(<span class='kw'>no.readonly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/par'>par</a></span>(<span class='kw'>mfrow</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>2</span>))
@@ -302,8 +328,8 @@ fun <- function(pars) {
 
 # Calling MCMC
 ans <- MCMC(
-  fun,
   initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
+  fun,
   kernel  = kernel_reflective(
     lb    = c(-10, -10, .01, -5, .01),
     ub    = 5
@@ -336,8 +362,8 @@ fun <- function(pars, D) {
 
 # Two chains
 ans <- MCMC(
-  fun,
   initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
+  fun,
   nchains = 2,
   kernel  = kernel_reflective(
     lb    = c(-10, -10, .01, -5, .01),
@@ -363,6 +389,10 @@ summary(ans)
       <li><a href="#value">Value</a></li>
 
       <li><a href="#details">Details</a></li>
+
+      <li><a href="#starting-point">Starting point</a></li>
+
+      <li><a href="#multiple-chains">Multiple chains</a></li>
 
       <li><a href="#automatic-stop">Automatic stop</a></li>
       

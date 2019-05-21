@@ -3,21 +3,37 @@
 \name{MCMC}
 \alias{MCMC}
 \alias{Metropolis-Hastings}
+\alias{MCMC.mcmc}
+\alias{MCMC.mcmc.list}
+\alias{MCMC.default}
 \title{Markov Chain Monte Carlo}
 \usage{
-MCMC(fun, ..., initial, nsteps, nchains = 1L, thin = 1L,
+MCMC(initial, fun, nsteps, ..., nchains = 1L, thin = 1L,
   kernel = kernel_normal(), burnin = 0L, multicore = FALSE,
   conv_checker = NULL, cl = NULL)
+
+\method{MCMC}{mcmc}(initial, fun, nsteps, ..., nchains = 1L, thin = 1L,
+  kernel = kernel_normal(), burnin = 0L, multicore = FALSE,
+  conv_checker = NULL, cl = NULL)
+
+\method{MCMC}{mcmc.list}(initial, fun, nsteps, ..., nchains = 1L,
+  thin = 1L, kernel = kernel_normal(), burnin = 0L,
+  multicore = FALSE, conv_checker = NULL, cl = NULL)
+
+\method{MCMC}{default}(initial, fun, nsteps, ..., nchains = 1L,
+  thin = 1L, kernel = kernel_normal(), burnin = 0L,
+  multicore = FALSE, conv_checker = NULL, cl = NULL)
 }
 \arguments{
-\item{fun}{A function. Returns the log-likelihood.}
-
-\item{...}{Further arguments passed to \code{fun}.}
-
-\item{initial}{A numeric vector or matrix with as many rows as chains with
+\item{initial}{Either a numeric matrix or vector, or an object of class \link[coda:mcmc]{coda::mcmc}
+or \link[coda:mcmc.list]{coda::mcmc.list} (see details).
 initial values of the parameters for each chain (See details).}
 
+\item{fun}{A function. Returns the log-likelihood.}
+
 \item{nsteps}{Integer scalar. Length of each chain.}
+
+\item{...}{Further arguments passed to \code{fun}.}
 
 \item{nchains}{Integer scalar. Number of chains to run (in parallel).}
 
@@ -34,9 +50,6 @@ initial values of the parameters for each chain (See details).}
 and returns a logical value with \code{TRUE} indicating convergence.}
 
 \item{cl}{A \code{cluster} object passed to \link[parallel:clusterApply]{parallel::clusterApply}.}
-
-\item{autostop}{Integer scalar. Controls the frequency with which convergence
-is checked (see details).}
 }
 \value{
 An object of class \link[coda:mcmc]{coda::mcmc} from the \CRANpkg{coda}
@@ -54,7 +67,24 @@ it allows easy parallel implementation running multiple chains in parallel. In
 addition, we incorporate a variety of convergence diagnostics, alternatively
 the user can specify their own (see \link{convergence-checker}).
 
-We now give details of the various options included in the function.#'
+We now give details of the various options included in the function.
+}
+\section{Starting point}{
+
+
+By default, if \code{initial} is of class \code{mcmc}, \code{MCMC} will take the last \code{nchains}
+points from the chain as starting point for the new sequence. If \code{initial} is
+of class \code{mcmc.list}, the number of chains in \code{initial} must match the \code{nchains}
+parameter.
+
+If \code{initial} is a vector, then it must be of length equal to the number of
+parameters used in the model. When using multiple chains, if \code{initial} is not
+an object of class \code{mcmc} or \code{mcmc.list}, then it must be a numeric matrix
+with as many rows as chains, and as many columns as parameters in the model.
+}
+
+\section{Multiple chains}{
+
 
 When \code{nchains > 1}, the function will run multiple chains. Furthermore,
 if \code{cl} is not passed, \code{MCMC} will create a \code{PSOCK} cluster
@@ -86,6 +116,7 @@ chains. If \code{initial} is a vector and \code{nchains > 1}, the value is recyc
 all chains start from the same point (not recommended, the function throws a
 warning message).
 }
+
 \section{Automatic stop}{
 
 
@@ -161,8 +192,8 @@ fun <- function(pars) {
 
 # Calling MCMC
 ans <- MCMC(
-  fun,
   initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
+  fun,
   kernel  = kernel_reflective(
     lb    = c(-10, -10, .01, -5, .01),
     ub    = 5
@@ -195,8 +226,8 @@ fun <- function(pars, D) {
 
 # Two chains
 ans <- MCMC(
-  fun,
   initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
+  fun,
   nchains = 2,
   kernel  = kernel_reflective(
     lb    = c(-10, -10, .01, -5, .01),

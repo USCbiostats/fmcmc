@@ -10,7 +10,7 @@
 \alias{kernel_reflective}
 \title{Various kernel functions for MCMC}
 \usage{
-kernel_new(proposal, logratio, ...)
+kernel_new(proposal, logratio = NULL, ...)
 
 \method{print}{fmcmc_kernel}(x, ...)
 
@@ -21,11 +21,7 @@ kernel_reflective(mu = 0, scale = 1, lb = -.Machine$double.xmax,
 }
 \arguments{
 \item{proposal, logratio}{Functions. The function receives a single argument, an environment.
-This function is later called in \link{MCMC}}
-
-\item{logratio}{Function. This function receives a single argument, an environment.
-This function is called after a new state has been proposed, and is used to
-compute the log of the hastings ratio.}
+This functions are called later within \link{MCMC} (see details).}
 
 \item{...}{In the case of \code{kernel_new}, further arguments to be stored with
 the kernel.}
@@ -52,6 +48,10 @@ on the current state. The function must return a vector of length equal
 to the number of parameters in the model.
 \item \code{logration}: This function is called after a new state has been proposed,
 and is used to compute the log of the hastings ratio.
+
+In the case that the \code{logratio} function is not specified, then it is assumed
+that the transition kernel is symmetric, this is, logratio is then implemented
+as \code{function(env) {env$f1 - env$f0}}
 \item \code{...}: Further objects that are used within those functions.
 }
 
@@ -97,6 +97,8 @@ of code is how this is actually implemented in the package:\preformatted{for (i 
   
 }
 }
+
+For an extended example see the vignette "Personalized kernel functions".
 }
 \section{Creating your own kernels}{
 
@@ -125,23 +127,28 @@ kernel).
 \examples{
 \dontrun{
 # Example creating a multivariate normal kernel using the mvtnorm R package
+# for a bivariate normal distribution
 library(mvtnorm)
 
 # Define your Sigma
-sigma <- ...
+
+# How does it looks like?
+     [,1] [,2]
+[1,]  1.0  0.2
+[2,]  0.2  1.0
 
 # Create the kernel
-mvn_kernel <- kernel_new(
+kernel_mvn <- kernel_new(
   proposal = function(env) {
-  env$theta0 + as.vector(mvtnorm::rmvnorm(1, mean = 0, sigma = sigma, ...))
+  env$theta0 + as.vector(mvtnorm::rmvnorm(1, mean = 0, sigma = sigma.))
   },
-  logratio = function(env) {
-    env$f1 - env$f0 +
-      log(mvtnorm::pmvnorm(upper = env$theta0 - env$theta1)) -
-      log(mvtnorm::pmvnorm(upper = env$theta1 - env$theta0))
-  },
-  sigma = sigma
+  sigma. = sigma
 )
+
+# As you can see, in the previous call we passed sigma as it will be used by
+# the proposal function
+# The logaratio function was not necesary to be passed since this kernel is
+# symmetric.
 
 }
 }

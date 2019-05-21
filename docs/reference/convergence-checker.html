@@ -92,6 +92,9 @@ in a context other than the MCMC function." />
     <li>
       <a href="../articles/fmcmc-a-flexible-mcmc-estimation-framework.html">Workflow with the MCMC function</a>
     </li>
+    <li>
+      <a href="../articles/integer-kernel.html">Personalized kernel functions</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -128,18 +131,23 @@ in a context other than the <code>MCMC</code> function.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>convergence_gelman</span>(<span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>1.1</span>, <span class='kw'>check_invariant</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>autoburnin</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>convergence_gelman</span>(<span class='kw'>freq</span> <span class='kw'>=</span> <span class='fl'>1000L</span>, <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>1.1</span>,
+  <span class='kw'>check_invariant</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>autoburnin</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)
 
-<span class='fu'>convergence_geweke</span>(<span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>0.025</span>, <span class='kw'>check_invariant</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)
+<span class='fu'>convergence_geweke</span>(<span class='kw'>freq</span> <span class='kw'>=</span> <span class='fl'>1000L</span>, <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>0.025</span>,
+  <span class='kw'>check_invariant</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)
 
-<span class='fu'>convergence_heildel</span>(<span class='no'>...</span>, <span class='kw'>check_invariant</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='fu'>convergence_heildel</span>(<span class='kw'>freq</span> <span class='kw'>=</span> <span class='fl'>1000L</span>, <span class='no'>...</span>, <span class='kw'>check_invariant</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
-<span class='fu'>convergence_auto</span>()</pre>
+<span class='fu'>convergence_auto</span>(<span class='kw'>freq</span> <span class='kw'>=</span> <span class='fl'>1000L</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>freq</th>
+      <td><p>Integer scalar. Frequency of checking.</p></td>
+    </tr>
     <tr>
       <th>threshold</th>
       <td><p>Numeric value. A Gelman statistic below the threshold
