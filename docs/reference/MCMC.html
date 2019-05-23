@@ -127,23 +127,23 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>MCMC</span>(<span class='no'>initial</span>, <span class='no'>fun</span>, <span class='no'>nsteps</span>, <span class='no'>...</span>, <span class='kw'>nchains</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
-  <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='fu'><a href='kernels.html'>kernel_normal</a></span>(), <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>multicore</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>conv_checker</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+    <pre class="usage"><span class='fu'>MCMC</span>(<span class='no'>initial</span>, <span class='no'>fun</span>, <span class='no'>nsteps</span>, <span class='no'>...</span>, <span class='kw'>nchains</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
+  <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='fu'><a href='kernels.html'>kernel_normal</a></span>(), <span class='kw'>multicore</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>conv_checker</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
 <span class='co'># S3 method for mcmc</span>
-<span class='fu'>MCMC</span>(<span class='no'>initial</span>, <span class='no'>fun</span>, <span class='no'>nsteps</span>, <span class='no'>...</span>, <span class='kw'>nchains</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
-  <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='fu'><a href='kernels.html'>kernel_normal</a></span>(), <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>multicore</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>conv_checker</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+<span class='fu'>MCMC</span>(<span class='no'>initial</span>, <span class='no'>fun</span>, <span class='no'>nsteps</span>, <span class='no'>...</span>, <span class='kw'>nchains</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
+  <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='fu'><a href='kernels.html'>kernel_normal</a></span>(),
+  <span class='kw'>multicore</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>conv_checker</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
 <span class='co'># S3 method for mcmc.list</span>
 <span class='fu'>MCMC</span>(<span class='no'>initial</span>, <span class='no'>fun</span>, <span class='no'>nsteps</span>, <span class='no'>...</span>, <span class='kw'>nchains</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
-  <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='fu'><a href='kernels.html'>kernel_normal</a></span>(), <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>0L</span>,
+  <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='fu'><a href='kernels.html'>kernel_normal</a></span>(),
   <span class='kw'>multicore</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>conv_checker</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
 <span class='co'># S3 method for default</span>
 <span class='fu'>MCMC</span>(<span class='no'>initial</span>, <span class='no'>fun</span>, <span class='no'>nsteps</span>, <span class='no'>...</span>, <span class='kw'>nchains</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
-  <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='fu'><a href='kernels.html'>kernel_normal</a></span>(), <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>0L</span>,
+  <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='fu'><a href='kernels.html'>kernel_normal</a></span>(),
   <span class='kw'>multicore</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>conv_checker</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -172,17 +172,17 @@ initial values of the parameters for each chain (See details).</p></td>
       <td><p>Integer scalar. Number of chains to run (in parallel).</p></td>
     </tr>
     <tr>
+      <th>burnin</th>
+      <td><p>Integer scalar. Length of burn-in. Passed to
+<a href='https://www.rdocumentation.org/packages/coda/topics/mcmc'>coda::mcmc</a> as <code>start</code>.</p></td>
+    </tr>
+    <tr>
       <th>thin</th>
       <td><p>Integer scalar. Passed to <a href='https://www.rdocumentation.org/packages/coda/topics/mcmc'>coda::mcmc</a>.</p></td>
     </tr>
     <tr>
       <th>kernel</th>
       <td><p>An object of class <a href='kernels.html'>fmcmc_kernel</a>.</p></td>
-    </tr>
-    <tr>
-      <th>burnin</th>
-      <td><p>Integer scalar. Length of burn-in. Passed to
-<a href='https://www.rdocumentation.org/packages/coda/topics/mcmc'>coda::mcmc</a> as <code>start</code>.</p></td>
     </tr>
     <tr>
       <th>multicore</th>

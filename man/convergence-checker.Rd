@@ -10,7 +10,7 @@
 \title{Convergence Monitoring}
 \usage{
 convergence_gelman(freq = 1000L, threshold = 1.1,
-  check_invariant = TRUE, autoburnin = FALSE, ...)
+  check_invariant = TRUE, ...)
 
 convergence_geweke(freq = 1000L, threshold = 0.025,
   check_invariant = TRUE, ...)
@@ -27,10 +27,6 @@ will return \code{TRUE}.}
 
 \item{check_invariant}{Logical. When \code{TRUE} the function only computes
 the gelman diagnostic using variables with greater than \code{1e-10} variance.}
-
-\item{autoburnin}{Logical. Passed to \link[coda:gelman.diag]{coda::gelman.diag}. By default this
-option is set to \code{FALSE} since the \link{MCMC} function already a first chunk of
-steps via the argument \code{burnin}.}
 
 \item{...}{Further arguments passed to the method.}
 }

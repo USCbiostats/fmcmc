@@ -8,20 +8,20 @@
 \alias{MCMC.default}
 \title{Markov Chain Monte Carlo}
 \usage{
-MCMC(initial, fun, nsteps, ..., nchains = 1L, thin = 1L,
-  kernel = kernel_normal(), burnin = 0L, multicore = FALSE,
-  conv_checker = NULL, cl = NULL)
+MCMC(initial, fun, nsteps, ..., nchains = 1L, burnin = 0L, thin = 1L,
+  kernel = kernel_normal(), multicore = FALSE, conv_checker = NULL,
+  cl = NULL)
 
-\method{MCMC}{mcmc}(initial, fun, nsteps, ..., nchains = 1L, thin = 1L,
-  kernel = kernel_normal(), burnin = 0L, multicore = FALSE,
-  conv_checker = NULL, cl = NULL)
+\method{MCMC}{mcmc}(initial, fun, nsteps, ..., nchains = 1L,
+  burnin = 0L, thin = 1L, kernel = kernel_normal(),
+  multicore = FALSE, conv_checker = NULL, cl = NULL)
 
 \method{MCMC}{mcmc.list}(initial, fun, nsteps, ..., nchains = 1L,
-  thin = 1L, kernel = kernel_normal(), burnin = 0L,
+  burnin = 0L, thin = 1L, kernel = kernel_normal(),
   multicore = FALSE, conv_checker = NULL, cl = NULL)
 
 \method{MCMC}{default}(initial, fun, nsteps, ..., nchains = 1L,
-  thin = 1L, kernel = kernel_normal(), burnin = 0L,
+  burnin = 0L, thin = 1L, kernel = kernel_normal(),
   multicore = FALSE, conv_checker = NULL, cl = NULL)
 }
 \arguments{
@@ -37,12 +37,12 @@ initial values of the parameters for each chain (See details).}
 
 \item{nchains}{Integer scalar. Number of chains to run (in parallel).}
 
+\item{burnin}{Integer scalar. Length of burn-in. Passed to
+\link[coda:mcmc]{coda::mcmc} as \code{start}.}
+
 \item{thin}{Integer scalar. Passed to \link[coda:mcmc]{coda::mcmc}.}
 
 \item{kernel}{An object of class \link{fmcmc_kernel}.}
-
-\item{burnin}{Integer scalar. Length of burn-in. Passed to
-\link[coda:mcmc]{coda::mcmc} as \code{start}.}
 
 \item{multicore}{Logical. If \code{FALSE} then chains will be executed in serial.}
 

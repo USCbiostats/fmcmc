@@ -132,6 +132,8 @@
 <span class='co'># S3 method for fmcmc_kernel</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
+<span class='fu'>kernel_unif</span>(<span class='kw'>lb</span> <span class='kw'>=</span> -<span class='fl'>1</span>, <span class='kw'>ub</span> <span class='kw'>=</span> <span class='fl'>1</span>)
+
 <span class='fu'>kernel_normal</span>(<span class='kw'>mu</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>scale</span> <span class='kw'>=</span> <span class='fl'>1</span>)
 
 <span class='fu'>kernel_reflective</span>(<span class='kw'>mu</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>scale</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>lb</span> <span class='kw'>=</span> -<span class='no'>.Machine</span>$<span class='no'>double.xmax</span>,
@@ -155,13 +157,13 @@ the kernel.</p></td>
       <td><p>An object of class <code>fmcmc_kernel</code>.</p></td>
     </tr>
     <tr>
-      <th>mu, scale</th>
-      <td><p>Either a numeric vector or a scalar. Proposal mean and scale.</p></td>
-    </tr>
-    <tr>
       <th>lb, ub</th>
       <td><p>Either a numeric vector or a scalar. Lower and upper bounds for
 bounded kernels (currently the <code>kernel_reflective</code> only).</p></td>
+    </tr>
+    <tr>
+      <th>mu, scale</th>
+      <td><p>Either a numeric vector or a scalar. Proposal mean and scale.</p></td>
     </tr>
     <tr>
       <th>fixed</th>
@@ -232,6 +234,7 @@ of code is how this is actually implemented in the package:</p><pre>for (i in 1L
   ans[i,] &lt;- theta0
     }
 </pre>
+    <p>For an extended example see the vignette "Personalized kernel functions".</p>
     
     <h2 class="hasAnchor" id="creating-your-own-kernels"><a class="anchor" href="#creating-your-own-kernels"></a>Creating your own kernels</h2>
 
@@ -243,6 +246,8 @@ are the backbone of the <a href='MCMC.html'>MCMC</a> function.</p>
     <h2 class="hasAnchor" id="kernels"><a class="anchor" href="#kernels"></a>Kernels</h2>
 
     
+    <p>The <code>kernel_unif</code> function provides a uniform transition kernel. This (symmetric)
+kernel function by default adds the current status values between [0,1].</p>
     <p>The <code>kernel_normal</code> function provides the cannonical normal kernel
 with symmetric transition probabilities.</p>
     <p>The <code>kernel_reflective</code> implements the normal kernel with reflective

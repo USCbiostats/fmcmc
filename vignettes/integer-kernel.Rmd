@@ -54,7 +54,7 @@ ll <- function(n., p.) {
 Now comes the kernel object. In order to create an `fmcmc_kernel`, we can use the helper function `kernel_new` as follows:
 
 ```{r creating-kernel}
-kernel_unif <- kernel_new(
+kernel_unif_int <- kernel_new(
     proposal = function(env) env$theta0 + sample(-3:3, 1),
     logratio = function(env) env$f1 - env$f0 # We could have skipped this
     )
@@ -66,19 +66,19 @@ Here, the kernel is in the form of $\theta_1 = \theta_0 + R, R\sim \mbox{U}\{-3,
 
 
 ```{r print-kernel}
-kernel_unif
+kernel_unif_int
 ```
 
-The object itself is actually an R environment. If we added more parameters to `kernel_new`, we would have seen those as well. Now that we have our transition kernel, let's give it a first try and see what can we get with this new `kernel_unif` object we just created with the MCMC function.
+The object itself is actually an R environment. If we added more parameters to `kernel_new`, we would have seen those as well. Now that we have our transition kernel, let's give it a first try and see what can we get with this new `kernel_unif_int` object we just created with the MCMC function.
 
 ```{r first-run}
 ans <- MCMC(
-  ll,                    # The log-likleihood function
-  initial = max(y),      # A fair initial guess
-  kernel  = kernel_unif, # Our new kernel function
-  nsteps  = 1000,        # 1,000 MCMC draws
-  thin    = 10,          # We will sample every 10
-  p.      = p            # Passing extra parameters to be used by `ll`.
+  ll,                        # The log-likleihood function
+  initial = max(y),          # A fair initial guess
+  kernel  = kernel_unif_int, # Our new kernel function
+  nsteps  = 1000,            # 1,000 MCMC draws
+  thin    = 10,              # We will sample every 10
+  p.      = p                # Passing extra parameters to be used by `ll`.
   )
 ```
 
@@ -93,11 +93,11 @@ As you can see, the trace pf the parameter started to go up right away and then 
 ```{r second-run}
 ans <- MCMC(
   ll,
-  initial = ans,         # MCMC will use tail(ans, 0) automatically
-  kernel  = kernel_unif, # same as before
-  nsteps  = 10000,       # More steps this time
-  thin    = 10,          # same as before
-  p.      = p            # same as before
+  initial = ans,             # MCMC will use tail(ans, 0) automatically
+  kernel  = kernel_unif_int, # same as before
+  nsteps  = 10000,           # More steps this time
+  thin    = 10,              # same as before
+  p.      = p                # same as before
 )
 ```
 

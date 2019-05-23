@@ -155,6 +155,19 @@ print.fmcmc_kernel <- function(x, ...) {
 #' @export
 #' @rdname kernels
 #' @section Kernels:
+#' The `kernel_unif` function provides a uniform transition kernel. This (symmetric)
+#' kernel function by default adds the current status values between \[0,1\].
+kernel_unif <- function(lb = -1.0, ub = 1.0) {
+  kernel_new(
+    proposal = function(env) env$theta0 + runif(1, lb, ub),
+    lb = lb,
+    ub = ub
+  )
+}
+
+#' @export
+#' @rdname kernels
+#' @section Kernels:
 #' The `kernel_normal` function provides the cannonical normal kernel
 #' with symmetric transition probabilities.
 kernel_normal <- function(mu = 0, scale = 1) {
@@ -188,6 +201,8 @@ kernel_reflective <- function(
   fixed = FALSE
   ) {
   
+  k <- NULL
+  
   kernel_new(
     proposal = function(env) {
       
@@ -198,9 +213,9 @@ kernel_reflective <- function(
       # We also want to restart k in the first run. Since it is based on
       # environments, the user may move this around... so it is better to just
       # restart this every time that the MCMC function starts from scratch.
-      if (env$i == 1L | !length(environment(proposal)[["k"]])) {
+      if (env$i == 1L | is.null(k)) {
         
-        assign("k", length(env$theta0), envir = environment(proposal))
+        k <<- length(env$theta0)
         
         # Checking boundaries
         if (length(ub) > 1 && (k != length(ub)))
@@ -237,7 +252,8 @@ kernel_reflective <- function(
     scale    = scale, 
     ub       = ub, 
     lb       = lb, 
-    fixed    = fixed
+    fixed    = fixed,
+    k        = k
   )
   
 }

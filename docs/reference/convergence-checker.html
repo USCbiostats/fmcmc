@@ -132,7 +132,7 @@ in a context other than the <code>MCMC</code> function.</p>
     </div>
 
     <pre class="usage"><span class='fu'>convergence_gelman</span>(<span class='kw'>freq</span> <span class='kw'>=</span> <span class='fl'>1000L</span>, <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>1.1</span>,
-  <span class='kw'>check_invariant</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>autoburnin</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)
+  <span class='kw'>check_invariant</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)
 
 <span class='fu'>convergence_geweke</span>(<span class='kw'>freq</span> <span class='kw'>=</span> <span class='fl'>1000L</span>, <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>0.025</span>,
   <span class='kw'>check_invariant</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)
@@ -157,12 +157,6 @@ will return <code>TRUE</code>.</p></td>
       <th>check_invariant</th>
       <td><p>Logical. When <code>TRUE</code> the function only computes
 the gelman diagnostic using variables with greater than <code>1e-10</code> variance.</p></td>
-    </tr>
-    <tr>
-      <th>autoburnin</th>
-      <td><p>Logical. Passed to <a href='https://www.rdocumentation.org/packages/coda/topics/gelman.diag'>coda::gelman.diag</a>. By default this
-option is set to <code>FALSE</code> since the <a href='MCMC.html'>MCMC</a> function already a first chunk of
-steps via the argument <code>burnin</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>

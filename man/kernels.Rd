@@ -6,6 +6,7 @@
 \alias{fmcmc-kernel}
 \alias{kernel_new}
 \alias{print.fmcmc_kernel}
+\alias{kernel_unif}
 \alias{kernel_normal}
 \alias{kernel_reflective}
 \title{Various kernel functions for MCMC}
@@ -13,6 +14,8 @@
 kernel_new(proposal, logratio = NULL, ...)
 
 \method{print}{fmcmc_kernel}(x, ...)
+
+kernel_unif(lb = -1, ub = 1)
 
 kernel_normal(mu = 0, scale = 1)
 
@@ -28,10 +31,10 @@ the kernel.}
 
 \item{x}{An object of class \code{fmcmc_kernel}.}
 
-\item{mu, scale}{Either a numeric vector or a scalar. Proposal mean and scale.}
-
 \item{lb, ub}{Either a numeric vector or a scalar. Lower and upper bounds for
 bounded kernels (currently the \code{kernel_reflective} only).}
+
+\item{mu, scale}{Either a numeric vector or a scalar. Proposal mean and scale.}
 
 \item{fixed}{Logical scalar or vector. When \code{TRUE} fixes the corresponding
 parameter, avoiding new proposals.}
@@ -108,6 +111,10 @@ are the backbone of the \link{MCMC} function.
 }
 
 \section{Kernels}{
+
+The \code{kernel_unif} function provides a uniform transition kernel. This (symmetric)
+kernel function by default adds the current status values between [0,1].
+
 
 The \code{kernel_normal} function provides the cannonical normal kernel
 with symmetric transition probabilities.

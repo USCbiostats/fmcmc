@@ -207,9 +207,9 @@ MCMC <- function(
   nsteps,
   ...,
   nchains      = 1L,
+  burnin       = 0L,
   thin         = 1L,
   kernel       = kernel_normal(),
-  burnin       = 0L,
   multicore    = FALSE,
   conv_checker = NULL, 
   cl           = NULL
@@ -223,9 +223,9 @@ MCMC.mcmc <- function(
   nsteps,
   ...,
   nchains      = 1L,
+  burnin       = 0L,
   thin         = 1L,
   kernel       = kernel_normal(),
-  burnin       = 0L,
   multicore    = FALSE,
   conv_checker = NULL, 
   cl           = NULL
@@ -237,9 +237,9 @@ MCMC.mcmc <- function(
     nsteps       = nsteps,
     ...,     
     nchains      = nchains,
+    burnin       = burnin,
     thin         = thin,
     kernel       = kernel,
-    burnin       = burnin,
     multicore    = multicore,
     conv_checker = conv_checker,
     cl           = cl
@@ -255,9 +255,9 @@ MCMC.mcmc.list <- function(
   nsteps,
   ...,
   nchains      = 1L,
+  burnin       = 0L,
   thin         = 1L,
   kernel       = kernel_normal(),
-  burnin       = 0L,
   multicore    = FALSE,
   conv_checker = NULL, 
   cl           = NULL
@@ -275,9 +275,9 @@ MCMC.mcmc.list <- function(
     nsteps       = nsteps,
     ...,     
     nchains      = nchains,
+    burnin       = burnin,
     thin         = thin,
     kernel       = kernel,
-    burnin       = burnin,
     multicore    = multicore,
     conv_checker = conv_checker,
     cl           = cl
@@ -295,9 +295,9 @@ MCMC.default <- function(
   nsteps,
   ...,
   nchains      = 1L,
+  burnin       = 0L,
   thin         = 1L,
   kernel       = kernel_normal(),
-  burnin       = 0L,
   multicore    = FALSE,
   conv_checker = NULL, 
   cl           = NULL
@@ -361,9 +361,9 @@ MCMC.default <- function(
             ...,
             initial      = initial.[i, , drop = FALSE],
             nsteps       = nsteps.,
+            burnin       = burnin.,
             thin         = thin.,
             kernel       = kernel.,
-            burnin       = burnin.,
             nchains      = 1L,
             multicore    = FALSE,
             cl           = NULL,
@@ -374,9 +374,11 @@ MCMC.default <- function(
         fun.     = quote(fun),
         initial. = quote(initial),
         nsteps.  = quote(nsteps),
+        burnin.  = quote(burnin),
         thin.    = quote(thin),
         kernel.  = quote(kernel),
-        burnin.  = quote(burnin), quote(...))
+        quote(...)
+        )
       )
     )
     

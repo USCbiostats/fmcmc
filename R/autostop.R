@@ -36,17 +36,12 @@ rm_invariant <- function(x) {
   x
 }
 
-#' @export
-#' @param autoburnin Logical. Passed to [coda::gelman.diag]. By default this
-#' option is set to `FALSE` since the [MCMC] function already a first chunk of
-#' steps via the argument `burnin`.
-#' 
+#' @export 
 #' @rdname convergence-checker
 convergence_gelman <- function(
   freq            = 1000L,
   threshold       = 1.10,
   check_invariant = TRUE,
-  autoburnin      = FALSE,
   ...
   ) {
 
@@ -59,7 +54,7 @@ convergence_gelman <- function(
         x <- rm_invariant(x)
         
       # Computing gelman test
-      d <- tryCatch(coda::gelman.diag(x, autoburnin = autoburnin, ...), error = function(e) e)
+      d <- tryCatch(coda::gelman.diag(x, ...), error = function(e) e)
       
       if (inherits(d, "error")) {
         
@@ -261,8 +256,8 @@ with_autostop <- function(expr, conv_checker) {
     
     if ((converged <- conv_checker(ans))) {
       message(
-        "Convergence has been reached with ", sum(bulks[1:i]), " steps. (",
-        coda::niter(ans), " final count of observations)."
+        "Convergence has been reached with ", sum(bulks[1:i]), " steps (",
+        coda::niter(ans), " final count of samples)."
         )
       break
     }
@@ -271,7 +266,8 @@ with_autostop <- function(expr, conv_checker) {
   
   # Did it converged?
   if (!is.null(conv_checker) && (i == length(bulks) & !converged))
-    warning("No convergence reached.", call. = FALSE)
+    message("No convergence reached after ", sum(bulks[1:i]), " steps (",
+            coda::niter(ans), " final count of samples).")
   
   # Returning
   return(ans)
