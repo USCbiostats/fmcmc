@@ -8,6 +8,7 @@
 #' will return `TRUE`.
 #' @param check_invariant Logical. When `TRUE` the function only computes
 #' the gelman diagnostic using variables with greater than `1e-10` variance.
+#' @param freq Integer scalar. Frequency of checking.
 #' @param ... Further arguments passed to the method.
 #' @return A function passed to [MCMC] to check automatic convergence.
 #' @name convergence-checker
@@ -18,7 +19,9 @@ NULL
 #' @noRd
 rm_invariant <- function(x) {
   
-  variances <- which(stats::sd(do.call(rbind, x))^2 < 1e-10)
+  variances <- which(stats::sd(
+    if (is.list(x)) do.call(rbind, x) else x
+    )^2 < 1e-10)
   
   if (length(variances) > 0) {
     
@@ -33,15 +36,16 @@ rm_invariant <- function(x) {
   x
 }
 
-#' @export
-#' @param autoburnin Logical. Passed to [coda::gelman.diag]. By default this
-#' option is set to `FALSE` since the [MCMC] function already a first chunk of
-#' steps via the argument `burnin`.
-#' 
+#' @export 
 #' @rdname convergence-checker
-convergence_gelman <- function(threshold = 1.10, check_invariant=TRUE, autoburnin=FALSE,...) {
+convergence_gelman <- function(
+  freq            = 1000L,
+  threshold       = 1.10,
+  check_invariant = TRUE,
+  ...
+  ) {
 
-  function(x) {
+  structure(function(x) {
     
     if (coda::nchain(x) > 1L) {
       
@@ -50,7 +54,7 @@ convergence_gelman <- function(threshold = 1.10, check_invariant=TRUE, autoburni
         x <- rm_invariant(x)
         
       # Computing gelman test
-      d <- tryCatch(coda::gelman.diag(x, autoburnin = autoburnin, ...), error = function(e) e)
+      d <- tryCatch(coda::gelman.diag(x, ...), error = function(e) e)
       
       if (inherits(d, "error")) {
         
@@ -76,7 +80,7 @@ convergence_gelman <- function(threshold = 1.10, check_invariant=TRUE, autoburni
       
     }
     
-  }
+  }, freq = freq)
   
 }
 
@@ -91,10 +95,10 @@ convergence_gelman <- function(threshold = 1.10, check_invariant=TRUE, autoburni
 #' return true if and only if the test fails to reject the null for all the
 #' parameters.
 #' @export
-convergence_geweke <- function(threshold=.025, check_invariant=TRUE,...) {
+convergence_geweke <- function(freq = 1000L, threshold=.025, check_invariant=TRUE,...) {
   
   
-  function(x) {
+  structure(function(x) {
     
     if (coda::nchain(x) > 1L) 
       stop("The `geweke` convergence check is only available with runs of a single chain.",
@@ -104,7 +108,7 @@ convergence_geweke <- function(threshold=.025, check_invariant=TRUE,...) {
     if (check_invariant) 
       x <- rm_invariant(x)
     
-    d <- tryCatch(coda::geweke.diag(x, ...)[[1]]$z, error = function(e) e)
+    d <- tryCatch(coda::geweke.diag(x, ...)$z, error = function(e) e)
     
     if (inherits(d, "error")) {
       
@@ -122,7 +126,7 @@ convergence_geweke <- function(threshold=.025, check_invariant=TRUE,...) {
       return(FALSE)
     
     all(d > threshold)
-  }
+  }, freq=freq)
   
 }
 
@@ -131,9 +135,9 @@ convergence_geweke <- function(threshold=.025, check_invariant=TRUE,...) {
 #' @details
 #' For the `convergence_heildel`, see [coda::heidel.diag] for details.
 #' @export
-convergence_heildel <- function(..., check_invariant=TRUE) {
+convergence_heildel <- function(freq = 1000L, ..., check_invariant=TRUE) {
   
-  function(x) {
+  structure(function(x) {
     
     if (coda::nchain(x) > 1L) 
       stop("The `heidel` convergence check is only available with runs of a single chain.",
@@ -160,7 +164,7 @@ convergence_heildel <- function(..., check_invariant=TRUE) {
     
     # The tests return a 1
     all(d == 1)
-  }
+  }, freq = freq)
   
 }
 
@@ -171,12 +175,12 @@ convergence_heildel <- function(..., check_invariant=TRUE) {
 #' `nchains` in `MCMC` is greater than one--in which case it will use the Gelman
 #' test--or not--in which case it will use the Geweke test.
 #' @export
-convergence_auto <- function() {
+convergence_auto <- function(freq = 1000L) {
   
-  gelman_conv <- convergence_gelman()
-  geweke_conv <- convergence_geweke()
+  gelman_conv <- convergence_gelman(freq)
+  geweke_conv <- convergence_geweke(freq)
   
-  function(x) {
+  structure(function(x) {
     
     if (as.character(sys.call(-1L)[[1]]) != "with_autostop") {
       warning("This function should not be used in a context other than ",
@@ -192,7 +196,7 @@ convergence_auto <- function() {
     else
       geweke_conv(x)
     
-  }
+  }, freq = freq)
   
 }
 
@@ -203,37 +207,30 @@ convergence_auto <- function() {
 with_autostop <- function(expr, conv_checker) {
   
   # Getting the parent environment
+  freq   <- attr(conv_checker, "freq")
   parenv <- parent.frame()
   
   # Retrieving parameters from the MCMC call
   nsteps    <- parenv$nsteps
   nchains   <- parenv$nchains
-  autostop  <- parenv$autostop
 
-  # Correcting the autostop
-  if (autostop*2 > nsteps) {
-    autostop <- 0L
-    parenv$autostop <- 0L
-  }
+  # Correcting the freq
+  if (freq*2 > nsteps) 
+    freq <- 0L
 
   # Capturing the expression
   expr <- sys.call()[[2]]
   
   # Calculating lengths. The bulk vector sets what will be
   # nsteps in each call. This excludes burnin
-  if (autostop > 0L) {
-    bulks <- rep(autostop, (nsteps - parenv$burnin) %/% autostop)
-    if ((nsteps - parenv$burnin) %% autostop)
-      bulks <- c(bulks, (nsteps - parenv$burnin) - sum(bulks))
-    
-    # We need to add the burnin to the first
-    bulks[1] <- bulks[1] + parenv$burnin
-    
-  } else
-    # If there's no autostop, then no need to split
-    bulks <- nsteps
+  bulks <- rep(freq, (nsteps - parenv$burnin) %/% freq)
+  if ((nsteps - parenv$burnin) %% freq)
+    bulks <- c(bulks, (nsteps - parenv$burnin) - sum(bulks))
   
-    # Do while no convergence
+  # We need to add the burnin to the first
+  bulks[1] <- bulks[1] + parenv$burnin
+  
+  # Do while no convergence
   converged <- FALSE
   i         <- 0L
   ans       <- NULL
@@ -241,10 +238,12 @@ with_autostop <- function(expr, conv_checker) {
     
     # Updating the nsteps argument
     parenv$nsteps <- bulks[i]
-    
+
     if (i > 1) {
       parenv$burnin  <- 0L
-      parenv$initial <- do.call(rbind, ans[coda::niter(ans),])
+      parenv$initial <- ans[coda::niter(ans),]
+      if (coda::is.mcmc.list(ans))
+        parenv$initial <- do.call(rbind, parenv$initial)
     }
       
     # Running the MCMC and adding it to the tail
@@ -255,10 +254,10 @@ with_autostop <- function(expr, conv_checker) {
     # Appending retults
     ans <- append_chains(ans, tmp)
     
-    if ((autostop > 0L) && (converged <- conv_checker(ans))) {
+    if ((converged <- conv_checker(ans))) {
       message(
-        "Convergence has been reached with ", sum(bulks[1:i]), " steps. (",
-        coda::niter(ans), " final count of observations)."
+        "Convergence has been reached with ", sum(bulks[1:i]), " steps (",
+        coda::niter(ans), " final count of samples)."
         )
       break
     }
@@ -266,12 +265,12 @@ with_autostop <- function(expr, conv_checker) {
   }
   
   # Did it converged?
-  if (autostop && (i == length(bulks) & !converged))
-    warning("No convergence reached.", call. = FALSE)
+  if (!is.null(conv_checker) && (i == length(bulks) & !converged))
+    message("No convergence reached after ", sum(bulks[1:i]), " steps (",
+            coda::niter(ans), " final count of samples).")
   
   # Returning
   return(ans)
   
 }
 
-# autostop(1 + 1)

@@ -10,8 +10,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="A friendly MCMC framework">
-<meta property="og:description" content="Provides functionality for doing MCMC including automatic stop using
-  convergence checkers and personalized transition kernel functions.">
+<meta property="og:description" content="Provides a flexible Markov Chain Monte Carlo (MCMC) framework for
+  implementing Metropolis-Hastings algorithm in a modular way allowing users
+  to specify automatic convergence checker, personalized transition kernels, 
+  and out-of-the-box MCMC chains using parallel computing.">
 <meta property="og:image" content="/logo.png">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -57,6 +59,9 @@
 <li>
       <a href="articles/fmcmc-a-flexible-mcmc-estimation-framework.html">Workflow with the MCMC function</a>
     </li>
+    <li>
+      <a href="articles/integer-kernel.html">Personalized kernel functions</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -87,14 +92,29 @@
 <a href="#fmcmc-a-friendly-mcmc-framework" class="anchor"></a>fmcmc: A friendly MCMC framework <img src="reference/figures/logo.png" align="right" height="140">
 </h1></div>
 
-<p>The <code>fmcmc</code> R package implements a flexible</p>
-<p>Current features:</p>
+<div id="what" class="section level2">
+<h2 class="hasAnchor">
+<a href="#what" class="anchor"></a>What</h2>
+<p>The <code>fmcmc</code> R package provides a lightweight general framework for implementing Markov Chain Monte Carlo methods based on the Metropolis-Hasing algorithm. This implementation’s main purpose lies in the fact that the user can incorporate the following in a flexible way:</p>
 <ol style="list-style-type: decimal">
-<li><p>Automatic stop using convergence checker.</p></li>
-<li><p>Parallel chains using <code>parallel</code></p></li>
-<li><p>Flexible framework to specify different transition kernels.</p></li>
-<li><p>Implements the Normal (random walk) with reflective boundaries kernel.</p></li>
+<li><p><strong>Automatic convergence checker</strong>: The algorithm splits the MCMC runs according to the frequency with which it needs to check convergence. Users can use either one of the included functions (<code>convergence_gelman</code>, <code>convergence_geweke</code>, etc.), or provide their own.</p></li>
+<li><p><strong>Run multiple chains in parallel fashion</strong>: Using either a <code>PSOCK</code> cluster (default), or providing a personalized cluster object like the ones in the <code>parallel</code> R package.</p></li>
+<li><p><strong>User defined transition kernels</strong>: Besides of canonical Gaussian Kernel, users can specify their own or use one of the included in the package, for example: <code>kernel_normal</code>, <code>kernel_unif</code>, or <code>kernel_reflective</code>.</p></li>
 </ol>
+<p>All the above without requiring compiled code.</p>
+</div>
+<div id="who-is-this-for" class="section level2">
+<h2 class="hasAnchor">
+<a href="#who-is-this-for" class="anchor"></a>Who is this for?</h2>
+<p>While a lot of users rely on MCMC tools such as Stan (via the <a href="https://cran.r-project.org/package=rstan">rstan</a> package) or WinBUGS (via <a href="https://cran.r-project.org/package=R2WinBUGS">rstan</a>), in several settings either these tools are not enough or provide too much for things that do not need that much. So, this tool is for you if:</p>
+<ul>
+<li><p>You have a simple model to estimate with Metropolis-Hastings.</p></li>
+<li><p>You want to run multiple chains of your model using out-of-the-box parallel computing.</p></li>
+<li><p>You don’t want (or cannot) rely on external tools (so you just need good-old base R only for your models).</p></li>
+<li><p>You want to implement a model in which your model parameters are either bounded (like a standard error, for example), or are not, say, continuous (e.g., a size variable in a Binomial distribution), so you need your own transition kernel.</p></li>
+</ul>
+<p>In any other case, you may want to take a look at the previously mentioned R packages, or check out the <a href="https://cran.r-project.org/package=mcmc">mcmc</a> R package, which also implements the Metropolis-Hastings algorithm (although with not all the features that this R package has), the <a href="https://cran.r-project.org/package=adaptMCMC">adaptMCMC</a> R package, or the <a href="https://cran.r-project.org/package=MCMCpack">MCMCpack</a> R package.</p>
+</div>
 </div>
 <div id="installing" class="section level1">
 <h1 class="hasAnchor">
@@ -102,88 +122,129 @@
 <p>From github:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"USCbiostats/fmcmc"</span>)</a></code></pre></div>
 </div>
-<div id="example" class="section level1">
+<div id="example-linear-regression-model" class="section level1">
 <h1 class="hasAnchor">
-<a href="#example" class="anchor"></a>Example</h1>
-<p>Linear regression model</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(fmcmc)</a>
-<a class="sourceLine" id="cb2-2" title="2"></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="co"># Simulating data</span></a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">78845</span>)</a>
-<a class="sourceLine" id="cb2-5" title="5">n &lt;-<span class="st"> </span><span class="dv">1000</span></a>
-<a class="sourceLine" id="cb2-6" title="6">X &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n)</a>
-<a class="sourceLine" id="cb2-7" title="7">y &lt;-<span class="st"> </span><span class="dv">3</span> <span class="op">+</span><span class="st"> </span><span class="dv">2</span><span class="op">*</span>X <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n, <span class="dt">sd =</span> <span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb2-8" title="8"></a>
-<a class="sourceLine" id="cb2-9" title="9"><span class="co"># Loglikelihood function</span></a>
-<a class="sourceLine" id="cb2-10" title="10">ll &lt;-<span class="st"> </span><span class="cf">function</span>(par, X., y.) {</a>
-<a class="sourceLine" id="cb2-11" title="11">  </a>
-<a class="sourceLine" id="cb2-12" title="12">  ans &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>((y. <span class="op">-</span><span class="st"> </span>(par[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>X.<span class="op">*</span>par[<span class="dv">2</span>]))<span class="op">/</span>par[<span class="dv">3</span>])<span class="op">/</span>par[<span class="dv">3</span>]))</a>
-<a class="sourceLine" id="cb2-13" title="13">  </a>
-<a class="sourceLine" id="cb2-14" title="14">  <span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/is.finite">is.finite</a></span>(ans))</a>
-<a class="sourceLine" id="cb2-15" title="15">    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(<span class="op">-</span><span class="ot">Inf</span>)</a>
-<a class="sourceLine" id="cb2-16" title="16">  </a>
-<a class="sourceLine" id="cb2-17" title="17">  ans</a>
-<a class="sourceLine" id="cb2-18" title="18">}</a></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co"># Running the MCMC</span></a>
-<a class="sourceLine" id="cb3-2" title="2">ans &lt;-<span class="st"> </span><span class="kw"><a href="reference/MCMC.html">MCMC</a></span>(</a>
-<a class="sourceLine" id="cb3-3" title="3">  ll, <span class="dt">X. =</span> X, <span class="dt">y. =</span> y,</a>
-<a class="sourceLine" id="cb3-4" title="4">  <span class="dt">initial =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>),</a>
-<a class="sourceLine" id="cb3-5" title="5">  <span class="co"># It allows to specify different kernels</span></a>
-<a class="sourceLine" id="cb3-6" title="6">  <span class="dt">kernel   =</span> <span class="kw"><a href="reference/kernels.html">kernel_reflective</a></span>(</a>
-<a class="sourceLine" id="cb3-7" title="7">    <span class="dt">lb    =</span> <span class="fl">.00001</span>,</a>
-<a class="sourceLine" id="cb3-8" title="8">    <span class="dt">ub    =</span> <span class="dv">100</span>,</a>
-<a class="sourceLine" id="cb3-9" title="9">    <span class="dt">scale =</span> <span class="fl">.1</span></a>
-<a class="sourceLine" id="cb3-10" title="10">  ),</a>
-<a class="sourceLine" id="cb3-11" title="11">  <span class="co"># As well as convergence checkers</span></a>
-<a class="sourceLine" id="cb3-12" title="12">  <span class="dt">conv_checker =</span> <span class="kw"><a href="reference/convergence-checker.html">convergence_gelman</a></span>(<span class="dt">threshold =</span> <span class="fl">1.05</span>),</a>
-<a class="sourceLine" id="cb3-13" title="13">  <span class="dt">nsteps   =</span> <span class="fl">2e5</span>,</a>
-<a class="sourceLine" id="cb3-14" title="14">  <span class="dt">thin     =</span> <span class="dv">10</span>,</a>
-<a class="sourceLine" id="cb3-15" title="15">  <span class="dt">autostop =</span> <span class="fl">2e3</span>,</a>
-<a class="sourceLine" id="cb3-16" title="16">  <span class="dt">burnin   =</span> <span class="fl">1e4</span>,</a>
-<a class="sourceLine" id="cb3-17" title="17">  <span class="co"># As well as parallel chains</span></a>
-<a class="sourceLine" id="cb3-18" title="18">  <span class="dt">nchains  =</span> 4L,</a>
-<a class="sourceLine" id="cb3-19" title="19">  <span class="dt">multicore =</span> <span class="ot">TRUE</span></a>
-<a class="sourceLine" id="cb3-20" title="20">  )</a></code></pre></div>
-<pre><code>## Warning: While using multiple chains, a single initial point has been
-## passed via `initial`: c(1, 1, 1). The values will be recycled. Ideally you
-## would want to start each chain from different locations.</code></pre>
-<pre><code>## Convergence has been reached with 12000 steps. (200 final count of observations).</code></pre>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(coda)</a>
-<a class="sourceLine" id="cb6-2" title="2"></a>
-<a class="sourceLine" id="cb6-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(ans)</a></code></pre></div>
+<a href="#example-linear-regression-model" class="anchor"></a>Example: Linear regression model</h1>
+<div id="first-run" class="section level2">
+<h2 class="hasAnchor">
+<a href="#first-run" class="anchor"></a>First run</h2>
+<p>In the following we show how to use the package for estimating parameters in a linear regression model. First, let’s simulate some data to use:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">78845</span>)</a>
+<a class="sourceLine" id="cb2-2" title="2">n &lt;-<span class="st"> </span><span class="dv">1000</span></a>
+<a class="sourceLine" id="cb2-3" title="3">X &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n)</a>
+<a class="sourceLine" id="cb2-4" title="4">y &lt;-<span class="st"> </span><span class="fl">3.0</span> <span class="op">+</span><span class="st"> </span><span class="fl">2.0</span><span class="op">*</span>X <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n, <span class="dt">sd =</span> <span class="dv">4</span>)</a></code></pre></div>
+<p>As you can see, in this case we have three parameters to estimate, the constant (2.0), the <span class="math inline">\(\beta\)</span> coefficient (2.0), and the standard deviation parameter of the error (1.5).</p>
+<p>To estimate this model, we can either maximize the log-likelihood function–which is what is usually done–or we could do it using MCMC. In either case, we need to specify the log(unnormalized some times)-likelihood function:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">ll &lt;-<span class="st"> </span><span class="cf">function</span>(p, X., y.) {</a>
+<a class="sourceLine" id="cb3-2" title="2">  </a>
+<a class="sourceLine" id="cb3-3" title="3">  joint_ll &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>(y. <span class="op">-</span><span class="st"> </span>(p[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>X.<span class="op">*</span>p[<span class="dv">2</span>]), <span class="dt">sd =</span> p[<span class="dv">3</span>], <span class="dt">log =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb3-4" title="4">  joint_ll &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(joint_ll)</a>
+<a class="sourceLine" id="cb3-5" title="5">  </a>
+<a class="sourceLine" id="cb3-6" title="6">  <span class="co"># If is undefined, then we explicitly return infinte (instead of NaN, for</span></a>
+<a class="sourceLine" id="cb3-7" title="7">  <span class="co"># example)</span></a>
+<a class="sourceLine" id="cb3-8" title="8">  <span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/is.finite">is.finite</a></span>(joint_ll))</a>
+<a class="sourceLine" id="cb3-9" title="9">    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(<span class="op">-</span><span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb3-10" title="10">  </a>
+<a class="sourceLine" id="cb3-11" title="11">  joint_ll</a>
+<a class="sourceLine" id="cb3-12" title="12">}</a></code></pre></div>
+<p>Notice that the function has more than 1 argument, in this case, <code>p</code>, which is the vector of parameters, <code>X.</code> and <code>y.</code>, which hold the data of our model.</p>
+<p>Let’s do a first run of the MCMC algorithm using the function of the same name (first, load the package, of course):</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(fmcmc)</a>
+<a class="sourceLine" id="cb4-2" title="2"></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="co"># Running the MCMC (we set the seed first)</span></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">1215</span>)</a>
+<a class="sourceLine" id="cb4-5" title="5">ans &lt;-<span class="st"> </span><span class="kw"><a href="reference/MCMC.html">MCMC</a></span>(</a>
+<a class="sourceLine" id="cb4-6" title="6">  ll,</a>
+<a class="sourceLine" id="cb4-7" title="7">  <span class="dt">initial =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/sd">sd</a></span>(y)),</a>
+<a class="sourceLine" id="cb4-8" title="8">  <span class="dt">nsteps  =</span> <span class="dv">5000</span>,</a>
+<a class="sourceLine" id="cb4-9" title="9">  <span class="dt">X.      =</span> X,</a>
+<a class="sourceLine" id="cb4-10" title="10">  <span class="dt">y.      =</span> y</a>
+<a class="sourceLine" id="cb4-11" title="11">  )</a></code></pre></div>
+<p>As the output object is an object of class <code>mcmc</code> from the <code>coda</code> R package, we can use all the functions from it on our output:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(coda)</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(ans)</a></code></pre></div>
+<p><img src="reference/figures/first-diagnostics-1.png" width="700"></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(ans)</a></code></pre></div>
 <pre><code>## 
-## Iterations = 10010:12000
-## Thinning interval = 10 
-## Number of chains = 4 
-## Sample size per chain = 200 
+## Iterations = 1:5000
+## Thinning interval = 1 
+## Number of chains = 1 
+## Sample size per chain = 5000 
 ## 
 ## 1. Empirical mean and standard deviation for each variable,
 ##    plus standard error of the mean:
 ## 
-##       Mean      SD Naive SE Time-series SE
-## par1 3.069 0.06742 0.002384       0.002910
-## par2 1.990 0.06542 0.002313       0.002350
-## par3 2.049 0.04779 0.001690       0.002064
+##       Mean     SD Naive SE Time-series SE
+## par1 3.126 0.1893 0.002677        0.03128
+## par2 1.943 0.1234 0.001746        0.04176
+## par3 4.093 0.0930 0.001315        0.01168
 ## 
 ## 2. Quantiles for each variable:
 ## 
 ##       2.5%   25%   50%   75% 97.5%
-## par1 2.930 3.025 3.069 3.116 3.197
-## par2 1.862 1.942 1.990 2.037 2.110
-## par3 1.963 2.018 2.048 2.081 2.141</code></pre>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(ans)</a></code></pre></div>
+## par1 2.951 3.013 3.112 3.172 3.511
+## par2 1.763 1.892 1.956 2.026 2.171
+## par3 3.979 4.064 4.106 4.134 4.186</code></pre>
+<p>While the summary statistics look very good (we got very close to the original parameters), the trace of the parameters looks vary bad (poor mixing). We can re-run the algorithm changing the scale parameter in the <code>kernel_normal</code> function. In order to do so, we can simply pass <code>ans</code> as the <code>initial</code> argument so that the function starts from the last point of that chain:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">ans &lt;-<span class="st"> </span><span class="kw"><a href="reference/MCMC.html">MCMC</a></span>(</a>
+<a class="sourceLine" id="cb8-2" title="2">  ll,</a>
+<a class="sourceLine" id="cb8-3" title="3">  <span class="dt">initial =</span> ans,</a>
+<a class="sourceLine" id="cb8-4" title="4">  <span class="dt">nsteps  =</span> <span class="dv">5000</span>,</a>
+<a class="sourceLine" id="cb8-5" title="5">  <span class="dt">X.      =</span> X,</a>
+<a class="sourceLine" id="cb8-6" title="6">  <span class="dt">y.      =</span> y,</a>
+<a class="sourceLine" id="cb8-7" title="7">  <span class="dt">kernel  =</span> <span class="kw"><a href="reference/kernels.html">kernel_normal</a></span>(<span class="dt">scale =</span> <span class="fl">.05</span>) <span class="co"># We can set the scale parameter like this</span></a>
+<a class="sourceLine" id="cb8-8" title="8">  )</a>
+<a class="sourceLine" id="cb8-9" title="9"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(ans)</a></code></pre></div>
 <p><img src="reference/figures/summary-and-plot1-1.png" width="700"></p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/coda/topics/gelman.diag">gelman.diag</a></span>(ans)</a></code></pre></div>
-<pre><code>## Potential scale reduction factors:
-## 
-##      Point est. Upper C.I.
-## par1       1.00       1.01
-## par2       1.01       1.02
-## par3       1.00       1.00
-## 
-## Multivariate psrf
-## 
-## 1.01</code></pre>
+<p>Much better!</p>
+</div>
+<div id="automatic-stop" class="section level2">
+<h2 class="hasAnchor">
+<a href="#automatic-stop" class="anchor"></a>Automatic stop</h2>
+<p>Now, suppose that the algorithm actually takes a lot of time to actually reach stationary state, then it would be nice to actually sample from the posterior distribution once convergence has been reached. In the following example we use multiple chains and the Gelman diagnostic to check for convergence of the chain:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">1215</span>) <span class="co"># Same seed as before</span></a>
+<a class="sourceLine" id="cb9-2" title="2">ans &lt;-<span class="st"> </span><span class="kw"><a href="reference/MCMC.html">MCMC</a></span>(</a>
+<a class="sourceLine" id="cb9-3" title="3">  ll,</a>
+<a class="sourceLine" id="cb9-4" title="4">  <span class="dt">initial =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/sd">sd</a></span>(y)),</a>
+<a class="sourceLine" id="cb9-5" title="5">  <span class="dt">nsteps  =</span> <span class="dv">5000</span>,</a>
+<a class="sourceLine" id="cb9-6" title="6">  <span class="dt">X.      =</span> X,</a>
+<a class="sourceLine" id="cb9-7" title="7">  <span class="dt">y.      =</span> y,</a>
+<a class="sourceLine" id="cb9-8" title="8">  <span class="dt">kernel  =</span> <span class="kw"><a href="reference/kernels.html">kernel_normal</a></span>(<span class="dt">scale =</span> <span class="fl">.05</span>),</a>
+<a class="sourceLine" id="cb9-9" title="9">  <span class="dt">nchains =</span> <span class="dv">2</span>,                           <span class="co"># Multiple chains</span></a>
+<a class="sourceLine" id="cb9-10" title="10">  <span class="dt">conv_checker =</span> <span class="kw"><a href="reference/convergence-checker.html">convergence_gelman</a></span>(<span class="dv">50</span>) <span class="co"># Checking for conv. every 200 steps</span></a>
+<a class="sourceLine" id="cb9-11" title="11">  )</a></code></pre></div>
+<pre><code>## Convergence has been reached with 1000 steps (1000 final count of samples).</code></pre>
+<p>As a difference from the previous case, now we didn’t had to wait until the 5,000 steps were done, but the algorithm stopped for us, allowing us to start generating the desired sample much quicker.</p>
+</div>
+<div id="kernels-making-sure-that-we-get-positive-values" class="section level2">
+<h2 class="hasAnchor">
+<a href="#kernels-making-sure-that-we-get-positive-values" class="anchor"></a>Kernels: Making sure that we get positive values</h2>
+<p>For this final example, we will use the <code>kernel</code> argument and provide what corresponds to a transition kernel which makes proposals within certain boundaries, in particular, we want the algorithm to propose only positive values for the <code>sd</code> parameter, which we now must be positive.</p>
+<p>More over, since we now from a fact that we will only get positive values, we can go further and modify <code>ll</code> skipping the check for finite values:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">ll &lt;-<span class="st"> </span><span class="cf">function</span>(p, X., y.) {</a>
+<a class="sourceLine" id="cb11-2" title="2">  </a>
+<a class="sourceLine" id="cb11-3" title="3">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>(y. <span class="op">-</span><span class="st"> </span>(p[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>X.<span class="op">*</span>p[<span class="dv">2</span>]), <span class="dt">sd =</span> p[<span class="dv">3</span>], <span class="dt">log =</span> <span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb11-4" title="4"></a>
+<a class="sourceLine" id="cb11-5" title="5">}</a></code></pre></div>
+<p>Much simpler function! Let’s do the call of the MCMC function specifying the right transition kernel to increase the acceptance rate. In this example, we will set the max of all parameters to be 5.0, and the min to be -5.0 for the constant and 0 for the beta coefficient and the variance parameter, all this using the <code>kernel_reflective</code> (which implements a normal kernel with boundaries) function:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">1215</span>) <span class="co"># Same seed as before</span></a>
+<a class="sourceLine" id="cb12-2" title="2">ans &lt;-<span class="st"> </span><span class="kw"><a href="reference/MCMC.html">MCMC</a></span>(</a>
+<a class="sourceLine" id="cb12-3" title="3">  ll,</a>
+<a class="sourceLine" id="cb12-4" title="4">  <span class="dt">initial =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/sd">sd</a></span>(y)),</a>
+<a class="sourceLine" id="cb12-5" title="5">  <span class="dt">nsteps  =</span> <span class="dv">5000</span>,</a>
+<a class="sourceLine" id="cb12-6" title="6">  <span class="dt">X.      =</span> X,</a>
+<a class="sourceLine" id="cb12-7" title="7">  <span class="dt">y.      =</span> y,</a>
+<a class="sourceLine" id="cb12-8" title="8">  <span class="dt">kernel  =</span> <span class="kw"><a href="reference/kernels.html">kernel_reflective</a></span>(</a>
+<a class="sourceLine" id="cb12-9" title="9">    <span class="dt">ub    =</span> <span class="fl">5.0</span>,               <span class="co"># All parameters have the same upper bound</span></a>
+<a class="sourceLine" id="cb12-10" title="10">    <span class="dt">lb    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="op">-</span><span class="fl">5.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>), <span class="co"># But lower bound is specified per parameter</span></a>
+<a class="sourceLine" id="cb12-11" title="11">    <span class="dt">scale =</span> <span class="fl">0.05</span>               <span class="co"># This is the same scale as before</span></a>
+<a class="sourceLine" id="cb12-12" title="12">    ),</a>
+<a class="sourceLine" id="cb12-13" title="13">  <span class="dt">nchains =</span> <span class="dv">2</span>,                           </a>
+<a class="sourceLine" id="cb12-14" title="14">  <span class="dt">conv_checker =</span> <span class="kw"><a href="reference/convergence-checker.html">convergence_gelman</a></span>(<span class="dv">50</span>)</a>
+<a class="sourceLine" id="cb12-15" title="15">  )</a></code></pre></div>
+<pre><code>## Convergence has been reached with 550 steps (550 final count of samples).</code></pre>
+<p>Again, as the proposal kernel has lower and upper bounds, then we are guaranteed that all proposed states are within the support of the parameter space.</p>
+</div>
 </div>
 <div id="other-tools" class="section level1">
 <h1 class="hasAnchor">

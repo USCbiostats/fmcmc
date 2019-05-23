@@ -9,25 +9,24 @@
 \alias{convergence_auto}
 \title{Convergence Monitoring}
 \usage{
-convergence_gelman(threshold = 1.1, check_invariant = TRUE,
-  autoburnin = FALSE, ...)
+convergence_gelman(freq = 1000L, threshold = 1.1,
+  check_invariant = TRUE, ...)
 
-convergence_geweke(threshold = 0.025, check_invariant = TRUE, ...)
+convergence_geweke(freq = 1000L, threshold = 0.025,
+  check_invariant = TRUE, ...)
 
-convergence_heildel(..., check_invariant = TRUE)
+convergence_heildel(freq = 1000L, ..., check_invariant = TRUE)
 
-convergence_auto()
+convergence_auto(freq = 1000L)
 }
 \arguments{
+\item{freq}{Integer scalar. Frequency of checking.}
+
 \item{threshold}{Numeric value. A Gelman statistic below the threshold
 will return \code{TRUE}.}
 
 \item{check_invariant}{Logical. When \code{TRUE} the function only computes
 the gelman diagnostic using variables with greater than \code{1e-10} variance.}
-
-\item{autoburnin}{Logical. Passed to \link[coda:gelman.diag]{coda::gelman.diag}. By default this
-option is set to \code{FALSE} since the \link{MCMC} function already a first chunk of
-steps via the argument \code{burnin}.}
 
 \item{...}{Further arguments passed to the method.}
 }

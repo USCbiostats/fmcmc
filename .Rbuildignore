@@ -1,3 +1,5 @@
+^Meta$
+^docs$
 ^LICENSE\.md$
 ^README_files$
 ^_pkgdown\.yml$
@@ -10,5 +12,4 @@
 ^codecov\.yml$
 ^appveyor\.yml$
 ^playground$
-^docs$
 ^paper$
