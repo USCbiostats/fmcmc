@@ -3,9 +3,11 @@ Title: A friendly MCMC framework
 Version: 0.1-0
 Authors@R: c(person("George", "Vega Yon", email = "g.vegayon@gmail.com", role = c("aut", "cre"),
   comment = c(ORCID = "0000-0002-3171-0844")),
-  person("Paul", "Marjoram", email = "pmarjora@usc.edu", role = c("ctb"),
+  person("Paul", "Marjoram", email = "pmarjora@usc.edu", role = c("ctb", "ths"),
   comment = c(ORCID = "0000-0003-0824-7449")),
-  person("National Cancer Institute (NCI)", role = "fnd", comment = "Grant Number 5P01CA196569-02"))
+  person("National Cancer Institute (NCI)", role = "fnd", comment = "Grant Number 5P01CA196569-02"),
+  person("Fabian", "Scheipl", role = "rev", comment = c(what = "JOSS reviewer", ORCID="0000-0001-8172-3603"))
+  )
 Description: Provides a flexible Markov Chain Monte Carlo (MCMC) framework for
   implementing Metropolis-Hastings algorithm in a modular way allowing users
   to specify automatic convergence checker, personalized transition kernels, 

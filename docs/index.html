@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A friendly MCMC framework • fmcmc</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="A friendly MCMC framework">
 <meta property="og:description" content="Provides a flexible Markov Chain Monte Carlo (MCMC) framework for
   implementing Metropolis-Hastings algorithm in a modular way allowing users
@@ -42,7 +43,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -68,7 +69,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/USCbiostats/fmcmc">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -81,6 +82,7 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     
@@ -120,7 +122,7 @@
 <h1 class="hasAnchor">
 <a href="#installing" class="anchor"></a>Installing</h1>
 <p>From github:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"USCbiostats/fmcmc"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/reexports.html">install_github</a></span>(<span class="st">"USCbiostats/fmcmc"</span>)</a></code></pre></div>
 </div>
 <div id="example-linear-regression-model" class="section level1">
 <h1 class="hasAnchor">
@@ -129,42 +131,42 @@
 <h2 class="hasAnchor">
 <a href="#first-run" class="anchor"></a>First run</h2>
 <p>In the following we show how to use the package for estimating parameters in a linear regression model. First, let’s simulate some data to use:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">78845</span>)</a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">78845</span>)</a>
 <a class="sourceLine" id="cb2-2" title="2">n &lt;-<span class="st"> </span><span class="dv">1000</span></a>
-<a class="sourceLine" id="cb2-3" title="3">X &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n)</a>
-<a class="sourceLine" id="cb2-4" title="4">y &lt;-<span class="st"> </span><span class="fl">3.0</span> <span class="op">+</span><span class="st"> </span><span class="fl">2.0</span><span class="op">*</span>X <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n, <span class="dt">sd =</span> <span class="dv">4</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb2-3" title="3">X &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(n)</a>
+<a class="sourceLine" id="cb2-4" title="4">y &lt;-<span class="st"> </span><span class="fl">3.0</span> <span class="op">+</span><span class="st"> </span><span class="fl">2.0</span><span class="op">*</span>X <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(n, <span class="dt">sd =</span> <span class="dv">4</span>)</a></code></pre></div>
 <p>As you can see, in this case we have three parameters to estimate, the constant (2.0), the <span class="math inline">\(\beta\)</span> coefficient (2.0), and the standard deviation parameter of the error (1.5).</p>
 <p>To estimate this model, we can either maximize the log-likelihood function–which is what is usually done–or we could do it using MCMC. In either case, we need to specify the log(unnormalized some times)-likelihood function:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">ll &lt;-<span class="st"> </span><span class="cf">function</span>(p, X., y.) {</a>
 <a class="sourceLine" id="cb3-2" title="2">  </a>
-<a class="sourceLine" id="cb3-3" title="3">  joint_ll &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>(y. <span class="op">-</span><span class="st"> </span>(p[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>X.<span class="op">*</span>p[<span class="dv">2</span>]), <span class="dt">sd =</span> p[<span class="dv">3</span>], <span class="dt">log =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb3-4" title="4">  joint_ll &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(joint_ll)</a>
+<a class="sourceLine" id="cb3-3" title="3">  joint_ll &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span>(y. <span class="op">-</span><span class="st"> </span>(p[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>X.<span class="op">*</span>p[<span class="dv">2</span>]), <span class="dt">sd =</span> p[<span class="dv">3</span>], <span class="dt">log =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb3-4" title="4">  joint_ll &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(joint_ll)</a>
 <a class="sourceLine" id="cb3-5" title="5">  </a>
 <a class="sourceLine" id="cb3-6" title="6">  <span class="co"># If is undefined, then we explicitly return infinte (instead of NaN, for</span></a>
 <a class="sourceLine" id="cb3-7" title="7">  <span class="co"># example)</span></a>
-<a class="sourceLine" id="cb3-8" title="8">  <span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/is.finite">is.finite</a></span>(joint_ll))</a>
-<a class="sourceLine" id="cb3-9" title="9">    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(<span class="op">-</span><span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb3-8" title="8">  <span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/is.finite.html">is.finite</a></span>(joint_ll))</a>
+<a class="sourceLine" id="cb3-9" title="9">    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="op">-</span><span class="ot">Inf</span>)</a>
 <a class="sourceLine" id="cb3-10" title="10">  </a>
 <a class="sourceLine" id="cb3-11" title="11">  joint_ll</a>
 <a class="sourceLine" id="cb3-12" title="12">}</a></code></pre></div>
 <p>Notice that the function has more than 1 argument, in this case, <code>p</code>, which is the vector of parameters, <code>X.</code> and <code>y.</code>, which hold the data of our model.</p>
 <p>Let’s do a first run of the MCMC algorithm using the function of the same name (first, load the package, of course):</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(fmcmc)</a>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(fmcmc)</a>
 <a class="sourceLine" id="cb4-2" title="2"></a>
 <a class="sourceLine" id="cb4-3" title="3"><span class="co"># Running the MCMC (we set the seed first)</span></a>
-<a class="sourceLine" id="cb4-4" title="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">1215</span>)</a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">1215</span>)</a>
 <a class="sourceLine" id="cb4-5" title="5">ans &lt;-<span class="st"> </span><span class="kw"><a href="reference/MCMC.html">MCMC</a></span>(</a>
 <a class="sourceLine" id="cb4-6" title="6">  ll,</a>
-<a class="sourceLine" id="cb4-7" title="7">  <span class="dt">initial =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/sd">sd</a></span>(y)),</a>
+<a class="sourceLine" id="cb4-7" title="7">  <span class="dt">initial =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="kw"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span>(y)),</a>
 <a class="sourceLine" id="cb4-8" title="8">  <span class="dt">nsteps  =</span> <span class="dv">5000</span>,</a>
 <a class="sourceLine" id="cb4-9" title="9">  <span class="dt">X.      =</span> X,</a>
 <a class="sourceLine" id="cb4-10" title="10">  <span class="dt">y.      =</span> y</a>
 <a class="sourceLine" id="cb4-11" title="11">  )</a></code></pre></div>
 <p>As the output object is an object of class <code>mcmc</code> from the <code>coda</code> R package, we can use all the functions from it on our output:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(coda)</a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(ans)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(coda)</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(ans)</a></code></pre></div>
 <p><img src="reference/figures/first-diagnostics-1.png" width="700"></p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(ans)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(ans)</a></code></pre></div>
 <pre><code>## 
 ## Iterations = 1:5000
 ## Thinning interval = 1 
@@ -194,7 +196,7 @@
 <a class="sourceLine" id="cb8-6" title="6">  <span class="dt">y.      =</span> y,</a>
 <a class="sourceLine" id="cb8-7" title="7">  <span class="dt">kernel  =</span> <span class="kw"><a href="reference/kernels.html">kernel_normal</a></span>(<span class="dt">scale =</span> <span class="fl">.05</span>) <span class="co"># We can set the scale parameter like this</span></a>
 <a class="sourceLine" id="cb8-8" title="8">  )</a>
-<a class="sourceLine" id="cb8-9" title="9"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(ans)</a></code></pre></div>
+<a class="sourceLine" id="cb8-9" title="9"><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(ans)</a></code></pre></div>
 <p><img src="reference/figures/summary-and-plot1-1.png" width="700"></p>
 <p>Much better!</p>
 </div>
@@ -202,10 +204,10 @@
 <h2 class="hasAnchor">
 <a href="#automatic-stop" class="anchor"></a>Automatic stop</h2>
 <p>Now, suppose that the algorithm actually takes a lot of time to actually reach stationary state, then it would be nice to actually sample from the posterior distribution once convergence has been reached. In the following example we use multiple chains and the Gelman diagnostic to check for convergence of the chain:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">1215</span>) <span class="co"># Same seed as before</span></a>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">1215</span>) <span class="co"># Same seed as before</span></a>
 <a class="sourceLine" id="cb9-2" title="2">ans &lt;-<span class="st"> </span><span class="kw"><a href="reference/MCMC.html">MCMC</a></span>(</a>
 <a class="sourceLine" id="cb9-3" title="3">  ll,</a>
-<a class="sourceLine" id="cb9-4" title="4">  <span class="dt">initial =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/sd">sd</a></span>(y)),</a>
+<a class="sourceLine" id="cb9-4" title="4">  <span class="dt">initial =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="kw"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span>(y)),</a>
 <a class="sourceLine" id="cb9-5" title="5">  <span class="dt">nsteps  =</span> <span class="dv">5000</span>,</a>
 <a class="sourceLine" id="cb9-6" title="6">  <span class="dt">X.      =</span> X,</a>
 <a class="sourceLine" id="cb9-7" title="7">  <span class="dt">y.      =</span> y,</a>
@@ -223,20 +225,20 @@
 <p>More over, since we now from a fact that we will only get positive values, we can go further and modify <code>ll</code> skipping the check for finite values:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">ll &lt;-<span class="st"> </span><span class="cf">function</span>(p, X., y.) {</a>
 <a class="sourceLine" id="cb11-2" title="2">  </a>
-<a class="sourceLine" id="cb11-3" title="3">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>(y. <span class="op">-</span><span class="st"> </span>(p[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>X.<span class="op">*</span>p[<span class="dv">2</span>]), <span class="dt">sd =</span> p[<span class="dv">3</span>], <span class="dt">log =</span> <span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb11-3" title="3">  <span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span>(y. <span class="op">-</span><span class="st"> </span>(p[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>X.<span class="op">*</span>p[<span class="dv">2</span>]), <span class="dt">sd =</span> p[<span class="dv">3</span>], <span class="dt">log =</span> <span class="ot">TRUE</span>))</a>
 <a class="sourceLine" id="cb11-4" title="4"></a>
 <a class="sourceLine" id="cb11-5" title="5">}</a></code></pre></div>
 <p>Much simpler function! Let’s do the call of the MCMC function specifying the right transition kernel to increase the acceptance rate. In this example, we will set the max of all parameters to be 5.0, and the min to be -5.0 for the constant and 0 for the beta coefficient and the variance parameter, all this using the <code>kernel_reflective</code> (which implements a normal kernel with boundaries) function:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">1215</span>) <span class="co"># Same seed as before</span></a>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">1215</span>) <span class="co"># Same seed as before</span></a>
 <a class="sourceLine" id="cb12-2" title="2">ans &lt;-<span class="st"> </span><span class="kw"><a href="reference/MCMC.html">MCMC</a></span>(</a>
 <a class="sourceLine" id="cb12-3" title="3">  ll,</a>
-<a class="sourceLine" id="cb12-4" title="4">  <span class="dt">initial =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/sd">sd</a></span>(y)),</a>
+<a class="sourceLine" id="cb12-4" title="4">  <span class="dt">initial =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="kw"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span>(y)),</a>
 <a class="sourceLine" id="cb12-5" title="5">  <span class="dt">nsteps  =</span> <span class="dv">5000</span>,</a>
 <a class="sourceLine" id="cb12-6" title="6">  <span class="dt">X.      =</span> X,</a>
 <a class="sourceLine" id="cb12-7" title="7">  <span class="dt">y.      =</span> y,</a>
 <a class="sourceLine" id="cb12-8" title="8">  <span class="dt">kernel  =</span> <span class="kw"><a href="reference/kernels.html">kernel_reflective</a></span>(</a>
 <a class="sourceLine" id="cb12-9" title="9">    <span class="dt">ub    =</span> <span class="fl">5.0</span>,               <span class="co"># All parameters have the same upper bound</span></a>
-<a class="sourceLine" id="cb12-10" title="10">    <span class="dt">lb    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="op">-</span><span class="fl">5.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>), <span class="co"># But lower bound is specified per parameter</span></a>
+<a class="sourceLine" id="cb12-10" title="10">    <span class="dt">lb    =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="op">-</span><span class="fl">5.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>), <span class="co"># But lower bound is specified per parameter</span></a>
 <a class="sourceLine" id="cb12-11" title="11">    <span class="dt">scale =</span> <span class="fl">0.05</span>               <span class="co"># This is the same scale as before</span></a>
 <a class="sourceLine" id="cb12-12" title="12">    ),</a>
 <a class="sourceLine" id="cb12-13" title="13">  <span class="dt">nchains =</span> <span class="dv">2</span>,                           </a>
@@ -286,10 +288,16 @@
 <li><small><a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
+<div class="community">
+<h2>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
+</ul>
+</div>
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
-<li>George Vega Yon <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3171-0844" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID" height="16"></a> </li>
+<li>George Vega Yon <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3171-0844" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID"></a> </li>
 <li>National Cancer Institute (NCI) <br><small class="roles"> Funder </small>  <br><small>(Grant Number 5P01CA196569-02)</small>
 </li>
 <li><a href="authors.html">All authors...</a></li>
@@ -312,17 +320,20 @@
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by George Vega Yon, National Cancer Institute (NCI).</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9100.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>
