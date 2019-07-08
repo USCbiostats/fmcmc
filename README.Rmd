@@ -244,6 +244,9 @@ that all proposed states are within the support of the parameter space.
 
 # Contributing to `fmcmc`
 
+We welcome contributions to `fmcmc`. Whether it is reporting a bug, starting a discussion by asking a question, or proposing/requesting a new feature, please go by creating a new issue [here](https://github.com/USCbiostats/fmcmc/issues) so that we can talk about it.
+
+
 Please note that the 'fmcmc' project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project, you agree to abide by its terms.
 
 # Funding
