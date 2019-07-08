@@ -33,7 +33,7 @@ Markov Chain Monte Carlo (MCMC) is used in a variety of statistical and computat
 
 *  Automatic stop using convergence monitoring.
 
-In the case of transition kernels, users can either use one of the transition kernels shipped with the package (e.g. the gaussian kernel and its bounded version, the gaussian kernel with reflective boundaries), this allows a degree of flexibility that is not possible with existing MCMC packages.
+In the case of transition kernels, users can either use one of the transition kernels shipped with the package (e.g. the Gaussian kernel and its bounded version, the Gaussian kernel with reflective boundaries), this allows a degree of flexibility that is not possible with existing MCMC packages.
 
 The main function automatically checks convergence during execution, and stop the MCMC run once convergence has been reached, rather than having to pre-determine a fixed number of iterations. Users can either use one of the convergence monitoring checking functions that are part of the package, for example: The Gelman and Rubin's [@Gelman1992], Geweke's [@Geweke1991], etc. Or build their own to be used within the framework.
 
