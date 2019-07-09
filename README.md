@@ -12,7 +12,7 @@ Status](https://img.shields.io/codecov/c/github/USCbiostats/fmcmc/master.svg)](h
 status](https://www.r-pkg.org/badges/version/fmcmc)](https://cran.r-project.org/package=fmcmc)
 [![status](http://joss.theoj.org/papers/2e86b709451443990c1c6776ebb7f756/status.svg)](http://joss.theoj.org/papers/2e86b709451443990c1c6776ebb7f756)
 
-\#\# Introduction
+## What
 
 The `fmcmc` R package provides a lightweight general framework for
 implementing Markov Chain Monte Carlo methods based on the
@@ -71,6 +71,31 @@ From github:
 
 ``` r
 devtools::install_github("USCbiostats/fmcmc")
+```
+
+# Citation
+
+``` 
+
+To cite fmcmc in publications use:
+
+  Vega Yon et al., (2019). fmcmc: A friendly MCMC framework.
+  Journal of Open Source Software, 4(39), 1427,
+  https://doi.org/10.21105/joss.01427
+
+A BibTeX entry for LaTeX users is
+
+  @Article{,
+    title = {fmcmc: A friendly MCMC framework},
+    author = {George {Vega Yon} and Paul Marjoram},
+    journal = {The Journal of Open Source Software},
+    year = {2019},
+    month = {jul},
+    volume = {4},
+    number = {39},
+    doi = {10.21105/joss.01427},
+    url = {https://doi.org/10.21105/joss.01427},
+  }
 ```
 
 # Example: Linear regression model
@@ -280,6 +305,12 @@ parameter space.
   - <https://cran.r-project.org/web/packages/elhmc/elhmc.pdf>
 
 # Contributing to `fmcmc`
+
+We welcome contributions to `fmcmc`. Whether it is reporting a bug,
+starting a discussion by asking a question, or proposing/requesting a
+new feature, please go by creating a new issue
+[here](https://github.com/USCbiostats/fmcmc/issues) so that we can talk
+about it.
 
 Please note that the ‘fmcmc’ project is released with a [Contributor
 Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,

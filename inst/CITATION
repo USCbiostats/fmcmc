@@ -1,0 +1,22 @@
+citHeader("To cite fmcmc in publications use:")
+
+citEntry(
+  entry  = "Article",
+  title = "fmcmc: A friendly MCMC framework",
+  author = c(
+    person("George", "Vega Yon", email = "g.vegayon@gmail.com", role = c("aut", "cre"), comment  = c(ORCID = "0000-0002-3171-0844")),
+    person("Paul", "Marjoram", email = "pmarjora@usc.edu", role = c("ctb", "ths"), comment = c(ORCID = "0000-0003-0824-7449"))
+    ),
+  journal = "The Journal of Open Source Software",
+  year    = 2019,
+  month   = "jul",
+  volume  = 4,
+  number  = 39,
+  doi     = "10.21105/joss.01427",
+  url     = "https://doi.org/10.21105/joss.01427",
+  textVersion = paste(
+    "Vega Yon et al., (2019). fmcmc: A friendly MCMC framework.",
+    "Journal of Open Source Software, 4(39), 1427,",
+    "https://doi.org/10.21105/joss.01427"
+  )
+)
