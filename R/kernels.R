@@ -258,6 +258,116 @@ kernel_reflective <- function(
   
 }
 
+#' @export 
+#' @rdname kernels
+#' @param order In the case of `kernel_reflective_1by1`, the order in which 
+#' the parameters are updated.
+#' @section Kernels:
+#' The `kernel_reflective_1by1` is the same as `kernel_reflective` but it makes
+#' proposals one variable at a time either following a fix sequence or randomly
+#' selecting which variable to update each time.
+#' 
+#' In this case, the transition probability is symmetric (just like the normal
+#' kernel).
+kernel_reflective_1by1 <- function(
+  mu    = 0,
+  scale = 1,
+  lb    = -.Machine$double.xmax,
+  ub    = .Machine$double.xmax,
+  fixed = FALSE,
+  order = c("random", "fixed")
+) {
+  
+  k <- NULL
+  
+  kernel_new(
+    proposal = function(env) {
+      
+      # Checking whether k exists. We should do this only once. When doing this
+      # we have to make sure that the length of lb and ub are according to the
+      # length of model parameter.
+      #
+      # We also want to restart k in the first run. Since it is based on
+      # environments, the user may move this around... so it is better to just
+      # restart this every time that the MCMC function starts from scratch.
+      if (env$i == 1L | is.null(k)) {
+        
+        k <<- length(env$theta0)
+        
+        # Checking boundaries
+        if (length(ub) > 1 && (k != length(ub)))
+          stop("Incorrect length of -ub-", call. = FALSE)
+        
+        if (length(lb) > 1 && (k != length(lb)))
+          stop("Incorrect length of -lb-", call. = FALSE)
+        
+        # Repeating boundaries
+        if (length(ub) == 1)
+          ub <<- rep(ub, k)
+        
+        if (length(lb) == 1)
+          lb <<- rep(lb, k)
+        
+        if (any(ub <= lb))
+          stop("-ub- cannot be <= than -lb-.", call. = FALSE)
+        
+        # mu, scale and fixed according to the number of parameters in the
+        # model if needed. 
+        if (length(mu) == 1)
+          mu <<- rep(mu, k)
+        if (length(scale) == 1)
+          scale <<- rep(scale, k)
+        if (length(fixed) == 1)
+          fixed <<- rep(fixed, k)
+        
+        # Setting the order in which the variables will be updated
+        if (order == "fixed") {
+          
+          update_sequence <- matrix(TRUE, nrow = env$nsteps, ncol = k)
+          update_sequence[cbind(1:env$nsteps, which(!fixed))] <- FALSE
+          update_sequence <<- update_sequence
+          
+        } else if (order == "random") {
+          
+          update_sequence <- matrix(TRUE, nrow = env$nsteps, ncol = k)
+          update_sequence[cbind(
+            1:env$nsteps,
+            sample(which(!fixed), env$nsteps, TRUE))
+            ] <- FALSE
+          update_sequence <<- update_sequence
+          
+        } else {
+          
+          stop("-order- update must be either 'fixed' or 'random'.", call. = FALSE)
+          
+        }
+        
+      }
+      
+      # Which to update (only whichever is to be updated in the sequence)
+      # of updates.
+      normal_reflective(
+        env$theta0,
+        lb,
+        ub,
+        mu,
+        scale,
+        update_sequence[env$i, ] 
+        )
+    },
+    logratio = function(env) env$f1 - env$f0,
+    mu       = mu,
+    scale    = scale, 
+    ub       = ub, 
+    lb       = lb, 
+    fixed    = fixed,
+    k        = k,
+    order    = order,
+    update_sequence = NULL
+  )
+  
+}
+
 normal_reflective <- function(
   x,
   lb, ub,
@@ -276,6 +386,9 @@ normal_reflective <- function(
   
   if (length(test_above)) {
     
+    # Putting in context
+    test_above <- notfixed[test_above]
+    
     # Direction of update
     d_above <- x[test_above] - ub[test_above]
     odd     <- (d_above %/% d[test_above]) %% 2
@@ -286,6 +399,9 @@ normal_reflective <- function(
   } 
   
   if (length(test_below)) {
+    
+    # Putting in context
+    test_below <- notfixed[test_below]
     
     # Direction of update
     d_below <- lb[test_below] - x[test_below]

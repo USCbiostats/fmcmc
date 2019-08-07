@@ -9,6 +9,7 @@
 \alias{kernel_unif}
 \alias{kernel_normal}
 \alias{kernel_reflective}
+\alias{kernel_reflective_1by1}
 \title{Various kernel functions for MCMC}
 \usage{
 kernel_new(proposal, logratio = NULL, ...)
@@ -21,6 +22,10 @@ kernel_normal(mu = 0, scale = 1)
 
 kernel_reflective(mu = 0, scale = 1, lb = -.Machine$double.xmax,
   ub = .Machine$double.xmax, fixed = FALSE)
+
+kernel_reflective_1by1(mu = 0, scale = 1, lb = -.Machine$double.xmax,
+  ub = .Machine$double.xmax, fixed = FALSE, order = c("random",
+  "fixed"))
 }
 \arguments{
 \item{proposal, logratio}{Functions. The function receives a single argument, an environment.
@@ -38,6 +43,9 @@ bounded kernels (currently the \code{kernel_reflective} only).}
 
 \item{fixed}{Logical scalar or vector. When \code{TRUE} fixes the corresponding
 parameter, avoiding new proposals.}
+
+\item{order}{In the case of \code{kernel_reflective_1by1}, the order in which
+the parameters are updated.}
 }
 \description{
 Various kernel functions for MCMC
@@ -126,6 +134,14 @@ if the proposed \eqn{\theta'} is greater than the \code{ub}, then \eqn{\theta' -
 is substracted from \eqn{ub}. At the same time, if it is less than \code{lb}, then
 \eqn{lb - \theta'} is added to \code{lb} iterating until \eqn{\theta} is within
 \code{[lb, ub]}.
+
+In this case, the transition probability is symmetric (just like the normal
+kernel).
+
+
+The \code{kernel_reflective_1by1} is the same as \code{kernel_reflective} but it makes
+proposals one variable at a time either following a fix sequence or randomly
+selecting which variable to update each time.
 
 In this case, the transition probability is symmetric (just like the normal
 kernel).

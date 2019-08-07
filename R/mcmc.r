@@ -499,8 +499,10 @@ MCMC.default <- function(
     # Checking f(theta1) (it must be a number, can be Inf)
     if (is.nan(f1) | is.na(f1) | is.null(f1)) 
       stop(
-        "fun(par) is undefined (", f1, ")",
-        "Check either -fun- or the -lb- and -ub- parameters.",
+        "fun(par) is undefined (", f1, "). ",
+        "Check either -fun- or the -lb- and -ub- parameters. ",
+        "This error ocurred during step i = ", i, " and proposal parameters ",
+        "theta1 = \n", sprintf(" %10s: %.4f\n", names(theta1), theta1), "\n",
         call. = FALSE
       )
     
