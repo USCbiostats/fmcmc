@@ -35,7 +35,8 @@ following in a flexible way:
 
 3.  **User defined transition kernels**: Besides of canonical Gaussian Kernel,
     users can specify their own or use one of the included in the package, for
-    example: `kernel_normal`, `kernel_unif`, or `kernel_reflective`.
+    example: `kernel_normal`, `kernel_normal_reflective`, `kernel_unif`, or
+    `kernel_unif_reflective`.
     
 All the above without requiring compiled code.
 
@@ -217,7 +218,7 @@ Much simpler function! Let's do the call of the MCMC function specifying the
 right transition kernel to increase the acceptance rate. In this example, we will
 set the max of all parameters to be 5.0, and the min to be -5.0 for the constant
 and 0 for the beta coefficient and the variance parameter, all this using the
-`kernel_reflective` (which implements a normal kernel with boundaries) function:
+`kernel_normal_reflective` (which implements a normal kernel with boundaries) function:
 
 ```{r mcmc3}
 set.seed(1215) # Same seed as before
@@ -227,7 +228,7 @@ ans <- MCMC(
   nsteps  = 5000,
   X.      = X,
   y.      = y,
-  kernel  = kernel_reflective(
+  kernel  = kernel_normal_reflective(
     ub    = 5.0,               # All parameters have the same upper bound
     lb    = c(-5.0, 0.0, 0.0), # But lower bound is specified per parameter
     scale = 0.05               # This is the same scale as before

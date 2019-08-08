@@ -1,8 +1,55 @@
+#' Checks the dimensions of the parameter according to k.
+#' @noRd
+check_dimensions <- function(x, k) {
+  
+  # Getting the name of the variable
+  name <- deparse(match.call()$x)
+  
+  if (length(x) > 1L &&  length(x) != k)
+    stop("Incorrect length of -", name, "-.", call. = FALSE)
+  
+  if (length(x) == 1L && k > 1L)
+    return(rep(x, k))
+  
+  return(x)
+  
+  
+}
+
+#' Generates a update sequence accordignly
+#' @noRd
+plan_update_sequence <- function(k, nsteps, fixed, order) {
+  
+  # Setting the order in which the variables will be updated
+  if (order == "fixed") {
+    
+    update_sequence <- matrix(TRUE, nrow = nsteps, ncol = k)
+    update_sequence[cbind(1:nsteps, which(!fixed))] <- FALSE
+    
+  } else if (order == "random") {
+    
+    update_sequence <- matrix(TRUE, nrow = nsteps, ncol = k)
+    update_sequence[cbind(
+      1:nsteps,
+      sample(which(!fixed), nsteps, TRUE))
+      ] <- FALSE
+    update_sequence <- update_sequence
+    
+  } else {
+    
+    stop("-order- update must be either 'fixed' or 'random'.", call. = FALSE)
+    
+  }
+  
+  return(update_sequence)
+  
+}
+
 #' Various kernel functions for MCMC
 #' 
 #' @param mu,scale Either a numeric vector or a scalar. Proposal mean and scale.
 #' @param lb,ub Either a numeric vector or a scalar. Lower and upper bounds for
-#' bounded kernels (currently the `kernel_reflective` only).
+#' bounded kernels.
 #' @param fixed Logical scalar or vector. When `TRUE` fixes the corresponding
 #' parameter, avoiding new proposals.
 #' @details
@@ -154,14 +201,194 @@ print.fmcmc_kernel <- function(x, ...) {
 
 #' @export
 #' @rdname kernels
+#' @param min.,max. Passed to [stats::runif].
 #' @section Kernels:
 #' The `kernel_unif` function provides a uniform transition kernel. This (symmetric)
-#' kernel function by default adds the current status values between \[0,1\].
-kernel_unif <- function(lb = -1.0, ub = 1.0) {
+#' kernel function by default adds the current status values between \[-1,1\].
+kernel_unif <- function(
+  min.  = -1.0,
+  max.  = 1.0,
+  fixed = FALSE
+  ) {
+  
+  k <- NULL
+  
   kernel_new(
-    proposal = function(env) env$theta0 + runif(1, lb, ub),
-    lb = lb,
-    ub = ub
+    proposal = function(env) {
+      
+      if (env$i == 1 | is.null(k)) {
+        k <<- length(env$theta0)
+        
+        # Checking boundaries
+        min.  <<- check_dimensions(min., k)
+        max.  <<- check_dimensions(max., k)
+        fixed <<- check_dimensions(fixed, k)
+        
+        if (any(max. <= min.))
+          stop("-max.- cannot be <= than -min.-.", call. = FALSE)
+        
+        # We can only update as much as not fixed
+        k <<- sum(!fixed)
+        
+        # It is easier to negate fixed right away
+        fixed <<- !fixed
+        
+      }
+      
+      theta1 <- env$theta0
+      theta1[fixed] <- env$theta0[fixed] + stats::runif(k, min.[fixed], max.[fixed])
+      theta1
+    },
+    min.  = min.,
+    max.  = max.,
+    fixed = fixed,
+    k     = k
+  )
+}
+
+#' @export
+#' @rdname kernels
+#' @section Kernels:
+#' The `kernel_unif_1by1` is similar to `kernel_unif` with the main difference
+#' that implements proposals one variable at a time.
+kernel_unif_1by1 <- function(
+  min.  = -1.0,
+  max.  = 1.0,
+  fixed = FALSE,
+  order = "random"
+  ) {
+  
+  k               <- NULL
+  update_sequence <- NULL
+  
+  kernel_new(
+    proposal = function(env) {
+      
+      if (env$i == 1L | is.null(k)) {
+        
+        k <<- length(env$theta0)
+        
+        # Checking boundaries
+        min.  <<- check_dimensions(min., k)
+        max.  <<- check_dimensions(max., k)
+        fixed <<- check_dimensions(fixed, k)
+        
+        if (any(max. <= min.))
+          stop("-max.- cannot be <= than -min.-.", call. = FALSE)
+        
+        # Setting the order in which the variables will be updated
+        update_sequence <<- plan_update_sequence(
+          k      = k,
+          nsteps = env$nsteps,
+          fixed  = fixed,
+          order  = order
+          )
+        
+        # It is easier to do the updates accordignly
+        k <<- sum(!update_sequence[1,])
+        update_sequence[] <- !update_sequence
+        update_sequence <<- update_sequence
+        
+        if (k == 0L)
+          stop("The number of parameters to update, i.e. not fixed, cannot be ",
+               "zero. Check the value -fixed- in the kernel initialization.", 
+               call. = FALSE)
+        
+      }
+      
+      theta1 <- env$theta0
+      theta1[update_sequence[env$i,]] <- env$theta0[update_sequence[env$i,]] +
+        stats::runif(k, min.[update_sequence[env$i,]], max.[update_sequence[env$i,]])
+      theta1
+    },
+    min.  = min.,
+    max.  = max.,
+    fixed = fixed,
+    k     = k,
+    order = order,
+    update_sequence = update_sequence
+  )
+}
+
+#' @export
+#' @rdname kernels
+#' @section Kernels:
+#' The `kernel_unif_reflective_1by1` is similar to `kernel_unif_1by1` with the
+#' main difference that proposals are bounded.
+kernel_unif_reflective_1by1 <- function(
+  min.  = -1.0,
+  max.  = 1.0,
+  lb    = min.,
+  ub    = max.,
+  fixed = FALSE,
+  order = "random"
+) {
+  
+  k               <- NULL
+  update_sequence <- NULL
+  
+  kernel_new(
+    proposal = function(env) {
+      
+      if (env$i == 1L | is.null(k)) {
+        
+        k <<- length(env$theta0)
+        
+        # Checking boundaries
+        min.  <<- check_dimensions(min., k)
+        max.  <<- check_dimensions(max., k)
+        ub    <<- check_dimensions(ub, k)
+        lb    <<- check_dimensions(lb, k)
+        fixed <<- check_dimensions(fixed, k)
+        
+        if (any(ub <= lb))
+          stop("-ub- cannot be <= than -lb-.", call. = FALSE)
+        if (any(max. <= min.))
+          stop("-max.- cannot be <= than -min.-.", call. = FALSE)
+        
+        # Setting the order in which the variables will be updated
+        update_sequence <<- plan_update_sequence(
+          k      = k,
+          nsteps = env$nsteps,
+          fixed  = fixed,
+          order  = order
+        )
+        
+        # It is easier to do the updates accordignly
+        k <<- sum(!update_sequence[1,])
+        update_sequence[] <- !update_sequence
+        update_sequence <<- update_sequence
+        
+        if (k == 0L)
+          stop("The number of parameters to update, i.e. not fixed, cannot be ",
+               "zero. Check the value -fixed- in the kernel initialization.", 
+               call. = FALSE)
+        
+      }
+      
+      # normal_reflective(env$theta0, lb, ub, mu, scale, fixed)
+      any_reflective(
+        randfun = stats::runif,
+        # Parameters for rnorm
+        n       = k,
+        min     = min.,
+        max     = max.,
+        x       = env$theta0,
+        # Parameters for the function
+        lb      = lb,
+        ub      = ub,
+        fixed   = fixed
+      )
+      
+    },
+    lb    = lb,
+    ub    = ub,
+    min.  = min.,
+    max.  = max.,
+    fixed = fixed,
+    k     = k,
+    order = order,
+    update_sequence = update_sequence
   )
 }
 
@@ -184,7 +411,7 @@ kernel_normal <- function(mu = 0, scale = 1) {
 #' @export 
 #' @rdname kernels
 #' @section Kernels:
-#' The `kernel_reflective` implements the normal kernel with reflective
+#' The `kernel_normal_reflective` implements the normal kernel with reflective
 #' boundaries. Lower and upper bounds are treated using reflecting boundaries, this is, 
 #' if the proposed \eqn{\theta'} is greater than the \code{ub}, then \eqn{\theta' - ub}
 #' is substracted from \eqn{ub}. At the same time, if it is less than \code{lb}, then
@@ -193,7 +420,7 @@ kernel_normal <- function(mu = 0, scale = 1) {
 #' 
 #' In this case, the transition probability is symmetric (just like the normal
 #' kernel).
-kernel_reflective <- function(
+kernel_normal_reflective <- function(
   mu    = 0,
   scale = 1,
   lb    = -.Machine$double.xmax,
@@ -218,34 +445,35 @@ kernel_reflective <- function(
         k <<- length(env$theta0)
         
         # Checking boundaries
-        if (length(ub) > 1 && (k != length(ub)))
-          stop("Incorrect length of -ub-", call. = FALSE)
-        
-        if (length(lb) > 1 && (k != length(lb)))
-          stop("Incorrect length of -lb-", call. = FALSE)
-        
-        # Repeating boundaries
-        if (length(ub) == 1)
-          ub <<- rep(ub, k)
-        
-        if (length(lb) == 1)
-          lb <<- rep(lb, k)
+        ub    <<- check_dimensions(ub, k)
+        lb    <<- check_dimensions(lb, k)
+        mu    <<- check_dimensions(mu, k)
+        scale <<- check_dimensions(scale, k)
+        fixed <<- check_dimensions(fixed, k)
         
         if (any(ub <= lb))
           stop("-ub- cannot be <= than -lb-.", call. = FALSE)
         
-        # mu, scale and fixed according to the number of parameters in the
-        # model if needed. 
-        if (length(mu) == 1)
-          mu <<- rep(mu, k)
-        if (length(scale) == 1)
-          scale <<- rep(scale, k)
-        if (length(fixed) == 1)
-          fixed <<- rep(fixed, k)
+        if (sum(!fixed) == 0L)
+          stop("The number of parameters to update, i.e. not fixed, cannot be ",
+               "zero. Check the value -fixed- in the kernel initialization.", 
+               call. = FALSE)
         
       }
       
-      normal_reflective(env$theta0, lb, ub, mu, scale, fixed)
+      # normal_reflective(env$theta0, lb, ub, mu, scale, fixed)
+      any_reflective(
+        randfun = stats::rnorm,
+        # Parameters for rnorm
+        n       = k,
+        mean    = mu,
+        sd      = scale,
+        x       = env$theta0,
+        # Parameters for the function
+        lb      = lb,
+        ub      = ub,
+        fixed   = fixed
+      )
       },
     logratio = function(env) env$f1 - env$f0,
     mu       = mu,
@@ -260,25 +488,27 @@ kernel_reflective <- function(
 
 #' @export 
 #' @rdname kernels
-#' @param order In the case of `kernel_reflective_1by1`, the order in which 
-#' the parameters are updated.
+#' @param order In the case of `*_1by1`, the order in which  the parameters are
+#' updated. Possible values are `"fixed"`, which will update the parameters in 
+#' whatever order these where provided intially, or `"random"`.
 #' @section Kernels:
-#' The `kernel_reflective_1by1` is the same as `kernel_reflective` but it makes
+#' The `kernel_normal_reflective_1by1` is the same as `kernel_normal_reflective` but it makes
 #' proposals one variable at a time either following a fix sequence or randomly
 #' selecting which variable to update each time.
 #' 
 #' In this case, the transition probability is symmetric (just like the normal
 #' kernel).
-kernel_reflective_1by1 <- function(
+kernel_normal_reflective_1by1 <- function(
   mu    = 0,
   scale = 1,
   lb    = -.Machine$double.xmax,
   ub    = .Machine$double.xmax,
   fixed = FALSE,
-  order = c("random", "fixed")
+  order = "random"
 ) {
   
-  k <- NULL
+  update_sequence <- NULL
+  k               <- NULL
   
   kernel_new(
     proposal = function(env) {
@@ -295,64 +525,44 @@ kernel_reflective_1by1 <- function(
         k <<- length(env$theta0)
         
         # Checking boundaries
-        if (length(ub) > 1 && (k != length(ub)))
-          stop("Incorrect length of -ub-", call. = FALSE)
-        
-        if (length(lb) > 1 && (k != length(lb)))
-          stop("Incorrect length of -lb-", call. = FALSE)
-        
-        # Repeating boundaries
-        if (length(ub) == 1)
-          ub <<- rep(ub, k)
-        
-        if (length(lb) == 1)
-          lb <<- rep(lb, k)
-        
+        ub    <<- check_dimensions(ub, k)
+        lb    <<- check_dimensions(lb, k)
+        mu    <<- check_dimensions(mu, k)
+        scale <<- check_dimensions(scale, k)
+        fixed <<- check_dimensions(fixed, k)
+
         if (any(ub <= lb))
           stop("-ub- cannot be <= than -lb-.", call. = FALSE)
         
-        # mu, scale and fixed according to the number of parameters in the
-        # model if needed. 
-        if (length(mu) == 1)
-          mu <<- rep(mu, k)
-        if (length(scale) == 1)
-          scale <<- rep(scale, k)
-        if (length(fixed) == 1)
-          fixed <<- rep(fixed, k)
-        
         # Setting the order in which the variables will be updated
-        if (order == "fixed") {
-          
-          update_sequence <- matrix(TRUE, nrow = env$nsteps, ncol = k)
-          update_sequence[cbind(1:env$nsteps, which(!fixed))] <- FALSE
-          update_sequence <<- update_sequence
-          
-        } else if (order == "random") {
-          
-          update_sequence <- matrix(TRUE, nrow = env$nsteps, ncol = k)
-          update_sequence[cbind(
-            1:env$nsteps,
-            sample(which(!fixed), env$nsteps, TRUE))
-            ] <- FALSE
-          update_sequence <<- update_sequence
-          
-        } else {
-          
-          stop("-order- update must be either 'fixed' or 'random'.", call. = FALSE)
-          
-        }
+        update_sequence <<- plan_update_sequence(
+          k      = k,
+          nsteps = env$nsteps,
+          fixed  = fixed,
+          order  = order
+        )
+        
+        if (sum(!fixed) == 0L)
+          stop("The number of parameters to update, i.e. not fixed, cannot be ",
+               "zero. Check the value -fixed- in the kernel initialization.", 
+               call. = FALSE)
         
       }
       
       # Which to update (only whichever is to be updated in the sequence)
       # of updates.
-      normal_reflective(
-        env$theta0,
-        lb,
-        ub,
-        mu,
-        scale,
-        update_sequence[env$i, ] 
+      ids <- which(!update_sequence[env$i, ])
+      any_reflective(
+        randfun = stats::rnorm,
+        # Parameters for rnorm
+        n       = 1L,
+        mean    = mu[ids],
+        sd      = scale[ids],
+        x       = env$theta0,
+        # Parameters for the function
+        lb      = lb,
+        ub      = ub,
+        fixed   = update_sequence[env$i, ] 
         )
     },
     logratio = function(env) env$f1 - env$f0,
@@ -363,21 +573,22 @@ kernel_reflective_1by1 <- function(
     fixed    = fixed,
     k        = k,
     order    = order,
-    update_sequence = NULL
+    update_sequence = update_sequence
   )
   
 }
 
-normal_reflective <- function(
+any_reflective <- function(
+  randfun,
+  ...,
   x,
-  lb, ub,
-  mu    = rep(0, length(x)),
-  scale = rep(1, length(x)),
-  fixed = rep(FALSE, length(x))
+  lb,
+  ub,
+  fixed
 ) {
   
   notfixed <- which(!fixed)
-  x[notfixed] <- x[notfixed] + stats::rnorm(length(notfixed), mu) * scale[notfixed]
+  x[notfixed] <- x[notfixed] + randfun(...)
   
   test_above <- which(x[notfixed] > ub[notfixed])
   test_below <- which(x[notfixed] < lb[notfixed])

@@ -7,25 +7,34 @@
 \alias{kernel_new}
 \alias{print.fmcmc_kernel}
 \alias{kernel_unif}
+\alias{kernel_unif_1by1}
+\alias{kernel_unif_reflective_1by1}
 \alias{kernel_normal}
-\alias{kernel_reflective}
-\alias{kernel_reflective_1by1}
+\alias{kernel_normal_reflective}
+\alias{kernel_normal_reflective_1by1}
 \title{Various kernel functions for MCMC}
 \usage{
 kernel_new(proposal, logratio = NULL, ...)
 
 \method{print}{fmcmc_kernel}(x, ...)
 
-kernel_unif(lb = -1, ub = 1)
+kernel_unif(min. = -1, max. = 1, fixed = FALSE)
+
+kernel_unif_1by1(min. = -1, max. = 1, fixed = FALSE,
+  order = "random")
+
+kernel_unif_reflective_1by1(min. = -1, max. = 1, lb = min.,
+  ub = max., fixed = FALSE, order = "random")
 
 kernel_normal(mu = 0, scale = 1)
 
-kernel_reflective(mu = 0, scale = 1, lb = -.Machine$double.xmax,
-  ub = .Machine$double.xmax, fixed = FALSE)
+kernel_normal_reflective(mu = 0, scale = 1,
+  lb = -.Machine$double.xmax, ub = .Machine$double.xmax,
+  fixed = FALSE)
 
-kernel_reflective_1by1(mu = 0, scale = 1, lb = -.Machine$double.xmax,
-  ub = .Machine$double.xmax, fixed = FALSE, order = c("random",
-  "fixed"))
+kernel_normal_reflective_1by1(mu = 0, scale = 1,
+  lb = -.Machine$double.xmax, ub = .Machine$double.xmax,
+  fixed = FALSE, order = "random")
 }
 \arguments{
 \item{proposal, logratio}{Functions. The function receives a single argument, an environment.
@@ -36,16 +45,19 @@ the kernel.}
 
 \item{x}{An object of class \code{fmcmc_kernel}.}
 
-\item{lb, ub}{Either a numeric vector or a scalar. Lower and upper bounds for
-bounded kernels (currently the \code{kernel_reflective} only).}
-
-\item{mu, scale}{Either a numeric vector or a scalar. Proposal mean and scale.}
+\item{min., max.}{Passed to \link[stats:runif]{stats::runif}.}
 
 \item{fixed}{Logical scalar or vector. When \code{TRUE} fixes the corresponding
 parameter, avoiding new proposals.}
 
-\item{order}{In the case of \code{kernel_reflective_1by1}, the order in which
-the parameters are updated.}
+\item{order}{In the case of \code{*_1by1}, the order in which  the parameters are
+updated. Possible values are \code{"fixed"}, which will update the parameters in
+whatever order these where provided intially, or \code{"random"}.}
+
+\item{lb, ub}{Either a numeric vector or a scalar. Lower and upper bounds for
+bounded kernels.}
+
+\item{mu, scale}{Either a numeric vector or a scalar. Proposal mean and scale.}
 }
 \description{
 Various kernel functions for MCMC
@@ -121,14 +133,22 @@ are the backbone of the \link{MCMC} function.
 \section{Kernels}{
 
 The \code{kernel_unif} function provides a uniform transition kernel. This (symmetric)
-kernel function by default adds the current status values between [0,1].
+kernel function by default adds the current status values between [-1,1].
+
+
+The \code{kernel_unif_1by1} is similar to \code{kernel_unif} with the main difference
+that implements proposals one variable at a time.
+
+
+The \code{kernel_unif_reflective_1by1} is similar to \code{kernel_unif_1by1} with the
+main difference that proposals are bounded.
 
 
 The \code{kernel_normal} function provides the cannonical normal kernel
 with symmetric transition probabilities.
 
 
-The \code{kernel_reflective} implements the normal kernel with reflective
+The \code{kernel_normal_reflective} implements the normal kernel with reflective
 boundaries. Lower and upper bounds are treated using reflecting boundaries, this is,
 if the proposed \eqn{\theta'} is greater than the \code{ub}, then \eqn{\theta' - ub}
 is substracted from \eqn{ub}. At the same time, if it is less than \code{lb}, then
@@ -139,7 +159,7 @@ In this case, the transition probability is symmetric (just like the normal
 kernel).
 
 
-The \code{kernel_reflective_1by1} is the same as \code{kernel_reflective} but it makes
+The \code{kernel_normal_reflective_1by1} is the same as \code{kernel_normal_reflective} but it makes
 proposals one variable at a time either following a fix sequence or randomly
 selecting which variable to update each time.
 
