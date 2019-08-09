@@ -94,6 +94,7 @@ plan_update_sequence <- function(k, nsteps, fixed, order) {
 #' bounded kernels.
 #' @param fixed Logical scalar or vector. When `TRUE` fixes the corresponding
 #' parameter, avoiding new proposals.
+#' @param order Order in which proposals are made (see details).
 #' @details
 #' The objects `fmcmc_kernels` are environments that in general contain the 
 #' following objects:
@@ -157,8 +158,22 @@ plan_update_sequence <- function(k, nsteps, fixed, order) {
 #' }
 #' ```
 #' 
+#' @section Proposal scheme:
+#' 
 #' For an extended example see the vignette "Personalized kernel functions".
 #' 
+#' The parameter `order` present on the currently available kernels sets the way
+#' in which proposals are made. By default, `order = "joint"`, proposals are done
+#' jointly, this is, at each step of the chain we are proposing new states for
+#' each parameter of the model. When `order = "fixed"`, a sequential update schema
+#' is followed, in which, at each step of the chain, proposals are made one
+#' variable at a time, If `order = "random"`, proposals are also made one
+#' variable at a time but in a random order.
+#' 
+#' Finally, users can specify their own sequence of proposals for the variables
+#' by passing a numeric vector to `order`, for example, if the user wants to make
+#' sequential proposals following the order 2, 1, 3, then order must be set to
+#' be `order = c(2, 1, 3)`.
 #' 
 #' @name kernels
 #' @aliases fmcmc_kernel fmcmc-kernel

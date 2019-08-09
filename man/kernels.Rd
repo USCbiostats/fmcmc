@@ -41,6 +41,8 @@ the kernel.}
 \item{fixed}{Logical scalar or vector. When \code{TRUE} fixes the corresponding
 parameter, avoiding new proposals.}
 
+\item{order}{Order in which proposals are made (see details).}
+
 \item{lb, ub}{Either a numeric vector or a scalar. Lower and upper bounds for
 bounded kernels.}
 
@@ -107,9 +109,26 @@ of code is how this is actually implemented in the package:\preformatted{for (i 
   
 }
 }
+}
+\section{Proposal scheme}{
+
 
 For an extended example see the vignette "Personalized kernel functions".
+
+The parameter \code{order} present on the currently available kernels sets the way
+in which proposals are made. By default, \code{order = "joint"}, proposals are done
+jointly, this is, at each step of the chain we are proposing new states for
+each parameter of the model. When \code{order = "fixed"}, a sequential update schema
+is followed, in which, at each step of the chain, proposals are made one
+variable at a time, If \code{order = "random"}, proposals are also made one
+variable at a time but in a random order.
+
+Finally, users can specify their own sequence of proposals for the variables
+by passing a numeric vector to \code{order}, for example, if the user wants to make
+sequential proposals following the order 2, 1, 3, then order must be set to
+be \code{order = c(2, 1, 3)}.
 }
+
 \section{Creating your own kernels}{
 
 The function \code{kernel_new} is a helper function that allows creating
