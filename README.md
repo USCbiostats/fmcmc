@@ -1,6 +1,7 @@
 
 # fmcmc: A friendly MCMC framework <img src="man/figures/logo.png" align="right" height="140"/>
 
+[![DOI](http://joss.theoj.org/papers/10.21105/joss.01427/status.svg)](https://doi.org/10.21105/joss.01427)
 [![Travis-CI Build
 Status](https://travis-ci.org/USCbiostats/fmcmc.svg?branch=master)](https://travis-ci.org/USCbiostats/fmcmc)
 [![Build
@@ -10,7 +11,6 @@ Status](https://img.shields.io/codecov/c/github/USCbiostats/fmcmc/master.svg)](h
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/fmcmc)](https://cran.r-project.org/package=fmcmc)
-[![status](http://joss.theoj.org/papers/2e86b709451443990c1c6776ebb7f756/status.svg)](http://joss.theoj.org/papers/2e86b709451443990c1c6776ebb7f756)
 
 ## What
 
@@ -31,8 +31,9 @@ the fact that the user can incorporate the following in a flexible way:
 
 3.  **User defined transition kernels**: Besides of canonical Gaussian
     Kernel, users can specify their own or use one of the included in
-    the package, for example: `kernel_normal`, `kernel_unif`, or
-    `kernel_reflective`.
+    the package, for example: `kernel_normal`,
+    `kernel_normal_reflective`, `kernel_unif`, or
+    `kernel_unif_reflective`.
 
 All the above without requiring compiled code.
 
@@ -267,8 +268,8 @@ Much simpler function\! Let’s do the call of the MCMC function
 specifying the right transition kernel to increase the acceptance rate.
 In this example, we will set the max of all parameters to be 5.0, and
 the min to be -5.0 for the constant and 0 for the beta coefficient and
-the variance parameter, all this using the `kernel_reflective` (which
-implements a normal kernel with boundaries) function:
+the variance parameter, all this using the `kernel_normal_reflective`
+(which implements a normal kernel with boundaries) function:
 
 ``` r
 set.seed(1215) # Same seed as before
@@ -278,7 +279,7 @@ ans <- MCMC(
   nsteps  = 5000,
   X.      = X,
   y.      = y,
-  kernel  = kernel_reflective(
+  kernel  = kernel_normal_reflective(
     ub    = 5.0,               # All parameters have the same upper bound
     lb    = c(-5.0, 0.0, 0.0), # But lower bound is specified per parameter
     scale = 0.05               # This is the same scale as before
@@ -318,4 +319,4 @@ you agree to abide by its terms.
 
 # Funding
 
-Supported by National Cancer Institute Grant \#1P01CA196596. cd
+Supported by National Cancer Institute Grant \#1P01CA196596.

@@ -7,34 +7,25 @@
 \alias{kernel_new}
 \alias{print.fmcmc_kernel}
 \alias{kernel_unif}
-\alias{kernel_unif_1by1}
-\alias{kernel_unif_reflective_1by1}
+\alias{kernel_unif_reflective}
 \alias{kernel_normal}
 \alias{kernel_normal_reflective}
-\alias{kernel_normal_reflective_1by1}
 \title{Various kernel functions for MCMC}
 \usage{
 kernel_new(proposal, logratio = NULL, ...)
 
 \method{print}{fmcmc_kernel}(x, ...)
 
-kernel_unif(min. = -1, max. = 1, fixed = FALSE)
+kernel_unif(min. = -1, max. = 1, fixed = FALSE, order = "joint")
 
-kernel_unif_1by1(min. = -1, max. = 1, fixed = FALSE,
-  order = "random")
+kernel_unif_reflective(min. = -1, max. = 1, lb = min., ub = max.,
+  fixed = FALSE, order = "joint")
 
-kernel_unif_reflective_1by1(min. = -1, max. = 1, lb = min.,
-  ub = max., fixed = FALSE, order = "random")
-
-kernel_normal(mu = 0, scale = 1)
+kernel_normal(mu = 0, scale = 1, fixed = FALSE, order = "joint")
 
 kernel_normal_reflective(mu = 0, scale = 1,
   lb = -.Machine$double.xmax, ub = .Machine$double.xmax,
-  fixed = FALSE)
-
-kernel_normal_reflective_1by1(mu = 0, scale = 1,
-  lb = -.Machine$double.xmax, ub = .Machine$double.xmax,
-  fixed = FALSE, order = "random")
+  fixed = FALSE, order = "joint")
 }
 \arguments{
 \item{proposal, logratio}{Functions. The function receives a single argument, an environment.
@@ -49,10 +40,6 @@ the kernel.}
 
 \item{fixed}{Logical scalar or vector. When \code{TRUE} fixes the corresponding
 parameter, avoiding new proposals.}
-
-\item{order}{In the case of \code{*_1by1}, the order in which  the parameters are
-updated. Possible values are \code{"fixed"}, which will update the parameters in
-whatever order these where provided intially, or \code{"random"}.}
 
 \item{lb, ub}{Either a numeric vector or a scalar. Lower and upper bounds for
 bounded kernels.}
@@ -136,12 +123,8 @@ The \code{kernel_unif} function provides a uniform transition kernel. This (symm
 kernel function by default adds the current status values between [-1,1].
 
 
-The \code{kernel_unif_1by1} is similar to \code{kernel_unif} with the main difference
-that implements proposals one variable at a time.
-
-
-The \code{kernel_unif_reflective_1by1} is similar to \code{kernel_unif_1by1} with the
-main difference that proposals are bounded.
+The \code{kernel_unif_reflective} is similar to \code{kernel_unif} with the
+main difference that proposals are bounded to be within \code{[lb, ub]}.
 
 
 The \code{kernel_normal} function provides the cannonical normal kernel
@@ -154,14 +137,6 @@ if the proposed \eqn{\theta'} is greater than the \code{ub}, then \eqn{\theta' -
 is substracted from \eqn{ub}. At the same time, if it is less than \code{lb}, then
 \eqn{lb - \theta'} is added to \code{lb} iterating until \eqn{\theta} is within
 \code{[lb, ub]}.
-
-In this case, the transition probability is symmetric (just like the normal
-kernel).
-
-
-The \code{kernel_normal_reflective_1by1} is the same as \code{kernel_normal_reflective} but it makes
-proposals one variable at a time either following a fix sequence or randomly
-selecting which variable to update each time.
 
 In this case, the transition probability is symmetric (just like the normal
 kernel).

@@ -13,6 +13,7 @@ set.seed(1)
 ans <- local({
   theta0 <- 0
   theta1 <- 0
+  nsteps <- N
   f <- function(p) dunif(p, log=TRUE, min = lb, max = ub)
   for (i in 1:N) {
     ans[i] <- k$proposal(environment())
@@ -33,6 +34,7 @@ set.seed(1)
 ans <- local({
   theta0 <- c(0, 0, 0)
   theta1 <- c(0, 0, 0)
+  nsteps <- N
   f <- function(p) sum(dunif(p, log=TRUE, min = lb, max = ub))
   for (i in 1:N) {
     ans[i,] <- k$proposal(environment())
@@ -44,12 +46,12 @@ ans <- local({
 expect_true(all(ans[,2] == 0))
 expect_equal(colMeans(ans), c((lb + ub)/2, 0, (lb + ub)/2), .025)
 
-# kernel_unif_1by1 -------------------------------------------------------------
+# kernel_unif ------------------------------------------------------------------
 
 # Wild
 lb <- -1
 ub <- .5
-k  <- kernel_unif_1by1(min. = lb, max. = ub, order = "fixed")
+k  <- kernel_unif(min. = lb, max. = ub, order = "fixed")
 N  <- 5e3
 
 ans <- numeric(N)
@@ -70,7 +72,7 @@ ans <- local({
 expect_equal(mean(ans), (lb + ub)/2, .025)
 
 # Fixed parameters
-k  <- kernel_unif_1by1(min. = lb, max. = ub, fixed = c(FALSE, TRUE, FALSE),
+k  <- kernel_unif(min. = lb, max. = ub, fixed = c(FALSE, TRUE, FALSE),
                        order = "fixed")
 
 ans <- matrix(nrow = N, ncol = 3)
@@ -108,6 +110,7 @@ set.seed(1)
 ans <- local({
   theta0 <- 0
   theta1 <- 0
+  nsteps <- N
   f <- function(p) dunif(p, log=TRUE, min = lb, max = ub)
   for (i in 1:N) {
     ans[i] <- k$proposal(environment())
@@ -131,7 +134,7 @@ set.seed(1)
 ans <- local({
   theta0 <- 0
   theta1 <- 0
-
+  nsteps <- N
   for (i in 1:N) {
     ans[i] <- k$proposal(environment())
   }
@@ -153,7 +156,7 @@ set.seed(1)
 ans <- local({
   theta0 <- c(0,0)
   theta1 <- theta0
-  
+  nsteps <- N
   for (i in 1:N) {
     ans[i,] <- k$proposal(environment())
   }
@@ -167,7 +170,7 @@ expect_equal(range(ans[,1]), c(lb[1], ub[1]), tol = .025)
 # Reflective 1by1
 lb <- c(-1, 0)
 ub <- c(10, 1)
-k  <- kernel_normal_reflective_1by1(mu = 0, scale = 5, lb = lb, ub = ub, order="fixed")
+k  <- kernel_normal_reflective(mu = 0, scale = 5, lb = lb, ub = ub, order="fixed")
 N  <- 2e3
 
 ans <- matrix(nrow = N, ncol = 2)
