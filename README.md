@@ -6,6 +6,8 @@
 Status](https://travis-ci.org/USCbiostats/fmcmc.svg?branch=master)](https://travis-ci.org/USCbiostats/fmcmc)
 [![Build
 status](https://ci.appveyor.com/api/projects/status/3x9qj7imvoijb1vf?svg=true)](https://ci.appveyor.com/project/gvegayon/fmcmc)
+[![Build
+status](https://ci.appveyor.com/api/projects/status/lirawn11ssw9cq07?svg=true)](https://ci.appveyor.com/project/gvegayon/fmcmc)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/USCbiostats/fmcmc/master.svg)](https://codecov.io/github/USCbiostats/fmcmc?branch=master)
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
