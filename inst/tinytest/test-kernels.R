@@ -51,7 +51,7 @@ expect_equal(colMeans(ans), c((lb + ub)/2, 0, (lb + ub)/2), .025)
 # Wild
 lb <- -1
 ub <- .5
-k  <- kernel_unif(min. = lb, max. = ub, order = "fixed")
+k  <- kernel_unif(min. = lb, max. = ub, scheme = "ordered")
 N  <- 5e3
 
 ans <- numeric(N)
@@ -73,7 +73,7 @@ expect_equal(mean(ans), (lb + ub)/2, .025)
 
 # Fixed parameters
 k  <- kernel_unif(min. = lb, max. = ub, fixed = c(FALSE, TRUE, FALSE),
-                       order = "fixed")
+                       scheme = "ordered")
 
 ans <- matrix(nrow = N, ncol = 3)
 
@@ -170,7 +170,7 @@ expect_equal(range(ans[,1]), c(lb[1], ub[1]), tol = .025)
 # Reflective 1by1
 lb <- c(-1, 0)
 ub <- c(10, 1)
-k  <- kernel_normal_reflective(mu = 0, scale = 5, lb = lb, ub = ub, order="fixed")
+k  <- kernel_normal_reflective(mu = 0, scale = 5, lb = lb, ub = ub, scheme = "ordered")
 N  <- 2e3
 
 ans <- matrix(nrow = N, ncol = 2)

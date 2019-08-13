@@ -1,10 +1,10 @@
 ---
-title: "Workflow with the MCMC function"
+title: "Workflow with fmcmc"
 author: "George G. Vega Yon"
 date: "April 19th, 2019"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Workflow with the MCMC function}
+  %\VignetteIndexEntry{Workflow with fmcmc}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

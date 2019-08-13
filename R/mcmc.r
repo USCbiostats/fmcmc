@@ -16,7 +16,8 @@
 #' @param multicore Logical. If `FALSE` then chains will be executed in serial.
 #' @param ... Further arguments passed to \code{fun}.
 #' @param conv_checker A function that receives an object of class [coda::mcmc.list],
-#' and returns a logical value with `TRUE` indicating convergence.
+#' and returns a logical value with `TRUE` indicating convergence. See the
+#' "Automatic stop" section and the [convergence-checker] manual.
 #' 
 #' @details This function implements MCMC using the Metropolis-Hastings ratio with
 #' flexible transition kernels. Users can specify either one of the available
@@ -479,14 +480,7 @@ MCMC.default <- function(
   
   # The updates can be done jointly or sequentially
   klogratio <- kernel$logratio(environment())
-  if (length(klogratio) > 1L) {
-    joint_rate <- FALSE
-    R   <- matrix(stats::runif(nsteps * length(initial)), nrow = nsteps)
-    R[] <- log(R)
-  } else {
-    joint_rate <- TRUE
-    R <- matrix(log(stats::runif(nsteps)), nrow = nsteps)
-  }
+  R <- matrix(log(stats::runif(nsteps)), nrow = nsteps)
   
   ans <- matrix(ncol = length(initial), nrow = nsteps,
                 dimnames = list(1:nsteps, cnames))
@@ -508,21 +502,12 @@ MCMC.default <- function(
     
     # Step 2. Hastings ratio
     klogratio <- kernel$logratio(environment())
-    if (joint_rate) {
-      
-      if (R[i] < klogratio) {
-        theta0 <- theta1
-        f0     <- f1
-      }
-      
-    } else {
-      
-      klogratio <- (R[i, ] < klogratio)
-      theta0[klogratio] <- theta1[klogratio]
-      
+
+    if (R[i] < klogratio) {
+      theta0 <- theta1
+      f0     <- f1
     }
-    
-    
+      
     # Step 3. Saving the state
     ans[i,] <- theta0
     

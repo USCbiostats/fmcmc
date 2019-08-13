@@ -16,16 +16,16 @@ kernel_new(proposal, logratio = NULL, ...)
 
 \method{print}{fmcmc_kernel}(x, ...)
 
-kernel_unif(min. = -1, max. = 1, fixed = FALSE, order = "joint")
+kernel_unif(min. = -1, max. = 1, fixed = FALSE, scheme = "joint")
 
 kernel_unif_reflective(min. = -1, max. = 1, lb = min., ub = max.,
-  fixed = FALSE, order = "joint")
+  fixed = FALSE, scheme = "joint")
 
-kernel_normal(mu = 0, scale = 1, fixed = FALSE, order = "joint")
+kernel_normal(mu = 0, scale = 1, fixed = FALSE, scheme = "joint")
 
 kernel_normal_reflective(mu = 0, scale = 1,
   lb = -.Machine$double.xmax, ub = .Machine$double.xmax,
-  fixed = FALSE, order = "joint")
+  fixed = FALSE, scheme = "joint")
 }
 \arguments{
 \item{proposal, logratio}{Functions. The function receives a single argument, an environment.
@@ -41,7 +41,7 @@ the kernel.}
 \item{fixed}{Logical scalar or vector. When \code{TRUE} fixes the corresponding
 parameter, avoiding new proposals.}
 
-\item{order}{Order in which proposals are made (see details).}
+\item{scheme}{scheme in which proposals are made (see details).}
 
 \item{lb, ub}{Either a numeric vector or a scalar. Lower and upper bounds for
 bounded kernels.}
@@ -73,15 +73,17 @@ the function \link{environment}. The passed
 environment is actually the environemnt in which the \code{MCMC} function is running,
 in particular, this environment contains the following objects:
 
-\tabular{ll}{
-\code{i} \tab Integer. The current iteration. \cr
-\code{theta1} \tab Numeric vector. The last proposed state. \cr
-\code{theta0} \tab Numeric vector. The current state \cr
-\code{f} \tab The log-unnormalized posterior function (a wrapper of \code{fun} passed
+\tabular{lcl}{
+\strong{Object} \tab \tab \strong{Description} \cr
+\code{i} \tab \tab Integer. The current iteration. \cr
+\code{theta1} \tab \tab Numeric vector. The last proposed state. \cr
+\code{theta0} \tab \tab Numeric vector. The current state \cr
+\code{f}\tab \tab The log-unnormalized posterior function (a wrapper of \code{fun} passed
 to \link{MCMC}). \cr
-\code{f1} \tab The last value of \code{f(theta1)} \cr
-\code{f0} \tab The last value of \code{f(theta0)} \cr
-\code{kernel} \tab The actual \code{fmcmc_kernel} object.
+\code{f1} \tab \tab The last value of \code{f(theta1)} \cr
+\code{f0} \tab \tab The last value of \code{f(theta0)} \cr
+\code{kernel} \tab \tab The actual \code{fmcmc_kernel} object. \cr
+\code{ans} \tab \tab The matrix of samples defined up to \code{i - 1}.
 }
 
 These are the core component of the \code{MCMC} function. The following block
@@ -109,24 +111,24 @@ of code is how this is actually implemented in the package:\preformatted{for (i 
   
 }
 }
+
+For more defails see the vignnete \code{vignette("user-defined-kernels", "fmcmc")}.
 }
 \section{Proposal scheme}{
 
 
-For an extended example see the vignette "Personalized kernel functions".
-
-The parameter \code{order} present on the currently available kernels sets the way
-in which proposals are made. By default, \code{order = "joint"}, proposals are done
+The parameter \code{scheme} present on the currently available kernels sets the way
+in which proposals are made. By default, \code{scheme = "joint"}, proposals are done
 jointly, this is, at each step of the chain we are proposing new states for
-each parameter of the model. When \code{order = "fixed"}, a sequential update schema
+each parameter of the model. When \code{scheme = "ordered"}, a sequential update schema
 is followed, in which, at each step of the chain, proposals are made one
-variable at a time, If \code{order = "random"}, proposals are also made one
-variable at a time but in a random order.
+variable at a time, If \code{scheme = "random"}, proposals are also made one
+variable at a time but in a random scheme.
 
 Finally, users can specify their own sequence of proposals for the variables
-by passing a numeric vector to \code{order}, for example, if the user wants to make
-sequential proposals following the order 2, 1, 3, then order must be set to
-be \code{order = c(2, 1, 3)}.
+by passing a numeric vector to \code{scheme}, for example, if the user wants to make
+sequential proposals following the scheme 2, 1, 3, then scheme must be set to
+be \code{scheme = c(2, 1, 3)}.
 }
 
 \section{Creating your own kernels}{
@@ -168,8 +170,10 @@ kernel).
 library(mvtnorm)
 
 # Define your Sigma
+sigma <- matrix(c(1, .2, .2, 1), ncol = 2)
 
 # How does it looks like?
+sigma
      [,1] [,2]
 [1,]  1.0  0.2
 [2,]  0.2  1.0

@@ -6,5 +6,24 @@
 \alias{fmcmc-package}
 \title{A friendly MCMC framework}
 \description{
-A friendly MCMC framework
+The \code{fmcmc} package provides a flexible framework for implementing MCMC models
+using a lightweight in terms of dependencies. Among its main features, \code{fmcmc}
+allows:
+}
+\details{
+\itemize{
+\item Implementing arbitrary transition kernels.
+\item Incorporating convergence monitors for automatic stop.
+\item Out-of-the-box parallel computing implementation for running multiple chains
+simultaneously.
+}
+
+For more information see the packages vignettes:\preformatted{vignette("workflow-with-fmcmc", "fmcmc")
+
+vignette("user-defined-kernels", "fmcmc")
+}
+}
+\references{
+Vega Yon et al., (2019). fmcmc: A friendly MCMC framework. Journal of Open
+Source Software, 4(39), 1427, \doi{10.21105/joss.01427}
 }

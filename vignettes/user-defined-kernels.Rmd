@@ -1,10 +1,10 @@
 ---
-title: "Personalized kernel functions"
+title: "User-defined kernels"
 author: "George G. Vega Yon"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Personalized kernel functions}
+  %\VignetteIndexEntry{User-defined kernels}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -47,7 +47,8 @@ initial values of the parameters for each chain (See details).}
 \item{multicore}{Logical. If \code{FALSE} then chains will be executed in serial.}
 
 \item{conv_checker}{A function that receives an object of class \link[coda:mcmc.list]{coda::mcmc.list},
-and returns a logical value with \code{TRUE} indicating convergence.}
+and returns a logical value with \code{TRUE} indicating convergence. See the
+"Automatic stop" section and the \link{convergence-checker} manual.}
 
 \item{cl}{A \code{cluster} object passed to \link[parallel:clusterApply]{parallel::clusterApply}.}
 }

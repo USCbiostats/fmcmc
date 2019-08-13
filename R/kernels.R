@@ -18,22 +18,22 @@ check_dimensions <- function(x, k) {
 
 #' Generates a update sequence accordignly
 #' @noRd
-plan_update_sequence <- function(k, nsteps, fixed, order) {
+plan_update_sequence <- function(k, nsteps, fixed, scheme) {
   
-  # Setting the order in which the variables will be updated
-  if (length(order) > 1L && is.numeric(order)) {
+  # Setting the scheme in which the variables will be updated
+  if (length(scheme) > 1L && is.numeric(scheme)) {
     
     # Is it the right length?
-    if (length(order) != sum(!fixed))
+    if (length(scheme) != sum(!fixed))
       stop(
-        "When setting the update order, it should have the same length ",
+        "When setting the update scheme, it should have the same length ",
         "as the number of variables that will not be fixed. ",
-        "Right now length(order) = ", length(order), " while sum(!fixed) = ",
+        "Right now length(scheme) = ", length(scheme), " while sum(!fixed) = ",
         sum(!fixed),".", call. = FALSE
         )
     
     # Is the full sequence included?
-    test <- which(!(which(!fixed) %in% order))
+    test <- which(!(which(!fixed) %in% scheme))
     if (length(test))
       stop(
         "One or more variables was not included in the ordering sequence. ",
@@ -43,22 +43,22 @@ plan_update_sequence <- function(k, nsteps, fixed, order) {
         )
     
     update_sequence <- matrix(FALSE, nrow = nsteps, ncol = k)
-    suppressWarnings(update_sequence[cbind(1:nsteps, order)] <- TRUE)
+    suppressWarnings(update_sequence[cbind(1:nsteps, scheme)] <- TRUE)
     
     
-  } else if (order == "joint") {
+  } else if (scheme == "joint") {
     
     update_sequence <- matrix(TRUE, nrow = nsteps, ncol = k)
     
     for (j in which(fixed))
       update_sequence[, j] <- FALSE
   
-  } else if (order == "fixed") {
+  } else if (scheme == "ordered") {
     
     update_sequence <- matrix(FALSE, nrow = nsteps, ncol = k)
     suppressWarnings(update_sequence[cbind(1:nsteps, which(!fixed))] <- TRUE)
     
-  } else if (order == "random") {
+  } else if (scheme == "random") {
     
     update_sequence <- matrix(FALSE, nrow = nsteps, ncol = k)
     update_sequence[cbind(
@@ -70,7 +70,7 @@ plan_update_sequence <- function(k, nsteps, fixed, order) {
   } else {
     
     stop(
-      "-order- update must be either an integer sequence, 'joint', 'fixed', ",
+      "-scheme- update must be either an integer sequence, 'joint', 'ordered', ",
       "or 'random'.",
       call. = FALSE
       )
@@ -94,7 +94,7 @@ plan_update_sequence <- function(k, nsteps, fixed, order) {
 #' bounded kernels.
 #' @param fixed Logical scalar or vector. When `TRUE` fixes the corresponding
 #' parameter, avoiding new proposals.
-#' @param order Order in which proposals are made (see details).
+#' @param scheme scheme in which proposals are made (see details).
 #' @details
 #' The objects `fmcmc_kernels` are environments that in general contain the 
 #' following objects:
@@ -118,15 +118,17 @@ plan_update_sequence <- function(k, nsteps, fixed, order) {
 #' environment is actually the environemnt in which the `MCMC` function is running,
 #' in particular, this environment contains the following objects:
 #' 
-#' \tabular{ll}{
-#' `i` \tab Integer. The current iteration. \cr
-#' `theta1` \tab Numeric vector. The last proposed state. \cr
-#' `theta0` \tab Numeric vector. The current state \cr
-#' `f` \tab The log-unnormalized posterior function (a wrapper of `fun` passed 
+#' \tabular{lcl}{
+#' \strong{Object} \tab \tab \strong{Description} \cr
+#' `i` \tab \tab Integer. The current iteration. \cr
+#' `theta1` \tab \tab Numeric vector. The last proposed state. \cr
+#' `theta0` \tab \tab Numeric vector. The current state \cr
+#' `f`\tab \tab The log-unnormalized posterior function (a wrapper of `fun` passed 
 #' to [MCMC]). \cr
-#' `f1` \tab The last value of `f(theta1)` \cr
-#' `f0` \tab The last value of `f(theta0)` \cr
-#' `kernel` \tab The actual `fmcmc_kernel` object.
+#' `f1` \tab \tab The last value of `f(theta1)` \cr
+#' `f0` \tab \tab The last value of `f(theta0)` \cr
+#' `kernel` \tab \tab The actual `fmcmc_kernel` object. \cr
+#' `ans` \tab \tab The matrix of samples defined up to `i - 1`.
 #' }
 #' 
 #' These are the core component of the `MCMC` function. The following block
@@ -158,22 +160,22 @@ plan_update_sequence <- function(k, nsteps, fixed, order) {
 #' }
 #' ```
 #' 
+#' For more defails see the vignnete `vignette("user-defined-kernels", "fmcmc")`.
+#' 
 #' @section Proposal scheme:
-#' 
-#' For an extended example see the vignette "Personalized kernel functions".
-#' 
-#' The parameter `order` present on the currently available kernels sets the way
-#' in which proposals are made. By default, `order = "joint"`, proposals are done
+#'  
+#' The parameter `scheme` present on the currently available kernels sets the way
+#' in which proposals are made. By default, `scheme = "joint"`, proposals are done
 #' jointly, this is, at each step of the chain we are proposing new states for
-#' each parameter of the model. When `order = "fixed"`, a sequential update schema
+#' each parameter of the model. When `scheme = "ordered"`, a sequential update schema
 #' is followed, in which, at each step of the chain, proposals are made one
-#' variable at a time, If `order = "random"`, proposals are also made one
-#' variable at a time but in a random order.
+#' variable at a time, If `scheme = "random"`, proposals are also made one
+#' variable at a time but in a random scheme.
 #' 
 #' Finally, users can specify their own sequence of proposals for the variables
-#' by passing a numeric vector to `order`, for example, if the user wants to make
-#' sequential proposals following the order 2, 1, 3, then order must be set to
-#' be `order = c(2, 1, 3)`.
+#' by passing a numeric vector to `scheme`, for example, if the user wants to make
+#' sequential proposals following the scheme 2, 1, 3, then scheme must be set to
+#' be `scheme = c(2, 1, 3)`.
 #' 
 #' @name kernels
 #' @aliases fmcmc_kernel fmcmc-kernel
@@ -184,10 +186,10 @@ plan_update_sequence <- function(k, nsteps, fixed, order) {
 #' library(mvtnorm)
 #' 
 #' # Define your Sigma
-# sigma <- matrix(c(1, .2, .2, 1), ncol = 2)
+#' sigma <- matrix(c(1, .2, .2, 1), ncol = 2)
 #' 
 #' # How does it looks like?
-# sigma
+#' sigma
 #'      [,1] [,2]
 #' [1,]  1.0  0.2
 #' [2,]  0.2  1.0
@@ -266,7 +268,7 @@ kernel_unif <- function(
   min.  = -1.0,
   max.  = 1.0,
   fixed = FALSE,
-  order = "joint"
+  scheme = "joint"
   ) {
   
   k               <- NULL
@@ -287,12 +289,12 @@ kernel_unif <- function(
         if (any(max. <= min.))
           stop("-max.- cannot be <= than -min.-.", call. = FALSE)
         
-        # Setting the order in which the variables will be updated
+        # Setting the scheme in which the variables will be updated
         update_sequence <<- plan_update_sequence(
           k      = k,
           nsteps = env$nsteps,
           fixed  = fixed,
-          order  = order
+          scheme  = scheme
           )
         
         # It is easier to do the updates accordignly
@@ -310,7 +312,7 @@ kernel_unif <- function(
     max.  = max.,
     fixed = fixed,
     k     = k,
-    order = order,
+    scheme = scheme,
     update_sequence = update_sequence
   )
 }
@@ -326,7 +328,7 @@ kernel_unif_reflective <- function(
   lb    = min.,
   ub    = max.,
   fixed = FALSE,
-  order = "joint"
+  scheme = "joint"
 ) {
   
   k               <- NULL
@@ -351,12 +353,12 @@ kernel_unif_reflective <- function(
         if (any(max. <= min.))
           stop("-max.- cannot be <= than -min.-.", call. = FALSE)
         
-        # Setting the order in which the variables will be updated
+        # Setting the scheme in which the variables will be updated
         update_sequence <<- plan_update_sequence(
           k      = k,
           nsteps = env$nsteps,
           fixed  = fixed,
-          order  = order
+          scheme  = scheme
         )
         
         # It is easier to do the updates accordignly
@@ -386,7 +388,7 @@ kernel_unif_reflective <- function(
     max.  = max.,
     fixed = fixed,
     k     = k,
-    order = order,
+    scheme = scheme,
     update_sequence = update_sequence
   )
 }
@@ -400,7 +402,7 @@ kernel_normal <- function(
   mu    = 0,
   scale = 1,
   fixed = FALSE,
-  order = "joint"
+  scheme = "joint"
   ) {
   
   k               <- NULL
@@ -418,18 +420,20 @@ kernel_normal <- function(
         scale <<- check_dimensions(scale, k)
         fixed <<- check_dimensions(fixed, k)
         
-        # Setting the order in which the variables will be updated
+        # Setting the scheme in which the variables will be updated
         update_sequence <<- plan_update_sequence(
           k      = k,
           nsteps = env$nsteps,
           fixed  = fixed,
-          order  = order
+          scheme  = scheme
         )
         
         if (sum(!fixed) == 0L)
           stop("The number of parameters to update, i.e. not fixed, cannot be ",
                "zero. Check the value -fixed- in the kernel initialization.", 
                call. = FALSE)
+        
+        k <<- sum(update_sequence[1,])
         
       }
       
@@ -448,7 +452,7 @@ kernel_normal <- function(
     k        = k,
     fixed    = fixed,
     update_sequence = update_sequence,
-    order    = order
+    scheme    = scheme
     )
 }
 
@@ -470,7 +474,7 @@ kernel_normal_reflective <- function(
   lb    = -.Machine$double.xmax,
   ub    = .Machine$double.xmax,
   fixed = FALSE,
-  order = "joint"
+  scheme = "joint"
 ) {
   
   k               <- NULL
@@ -500,12 +504,12 @@ kernel_normal_reflective <- function(
         if (any(ub <= lb))
           stop("-ub- cannot be <= than -lb-.", call. = FALSE)
         
-        # Setting the order in which the variables will be updated
+        # Setting the scheme in which the variables will be updated
         update_sequence <<- plan_update_sequence(
           k      = k,
           nsteps = env$nsteps,
           fixed  = fixed,
-          order  = order
+          scheme  = scheme
         )
         
         k <<- sum(update_sequence[1, ])
@@ -535,7 +539,7 @@ kernel_normal_reflective <- function(
     lb       = lb, 
     fixed    = fixed,
     k        = k,
-    order    = order,
+    scheme    = scheme,
     update_sequence = update_sequence
   )
   
