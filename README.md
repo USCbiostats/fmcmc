@@ -16,8 +16,9 @@ status](https://www.r-pkg.org/badges/version/fmcmc)](https://cran.r-project.org/
 
 The `fmcmc` R package provides a lightweight general framework for
 implementing Markov Chain Monte Carlo methods based on the
-Metropolis-Hasing algorithm. This implementation’s main purpose lies in
-the fact that the user can incorporate the following in a flexible way:
+Metropolis-Hastings algorithm. This implementation’s main purpose lies
+in the fact that the user can incorporate the following in a flexible
+way:
 
 1.  **Automatic convergence checker**: The algorithm splits the MCMC
     runs according to the frequency with which it needs to check

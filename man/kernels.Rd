@@ -59,7 +59,7 @@ following objects:
 on the current state. The function must return a vector of length equal
 to the number of parameters in the model.
 \item \code{logration}: This function is called after a new state has been proposed,
-and is used to compute the log of the hastings ratio.
+and is used to compute the log of the Hastings ratio.
 
 In the case that the \code{logratio} function is not specified, then it is assumed
 that the transition kernel is symmetric, this is, logratio is then implemented
@@ -112,7 +112,7 @@ of code is how this is actually implemented in the package:\preformatted{for (i 
 }
 }
 
-For more defails see the vignnete \code{vignette("user-defined-kernels", "fmcmc")}.
+For more details see the vignette \code{vignette("user-defined-kernels", "fmcmc")}.
 }
 \section{Proposal scheme}{
 
@@ -148,14 +148,14 @@ The \code{kernel_unif_reflective} is similar to \code{kernel_unif} with the
 main difference that proposals are bounded to be within \code{[lb, ub]}.
 
 
-The \code{kernel_normal} function provides the cannonical normal kernel
+The \code{kernel_normal} function provides the canonical normal kernel
 with symmetric transition probabilities.
 
 
 The \code{kernel_normal_reflective} implements the normal kernel with reflective
 boundaries. Lower and upper bounds are treated using reflecting boundaries, this is,
 if the proposed \eqn{\theta'} is greater than the \code{ub}, then \eqn{\theta' - ub}
-is substracted from \eqn{ub}. At the same time, if it is less than \code{lb}, then
+is subtracted from \eqn{ub}. At the same time, if it is less than \code{lb}, then
 \eqn{lb - \theta'} is added to \code{lb} iterating until \eqn{\theta} is within
 \code{[lb, ub]}.
 

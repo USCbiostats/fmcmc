@@ -104,7 +104,7 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #'    to the number of parameters in the model.
 #'    
 #' -  `logration`: This function is called after a new state has been proposed,
-#'    and is used to compute the log of the hastings ratio.
+#'    and is used to compute the log of the Hastings ratio.
 #'    
 #'    In the case that the `logratio` function is not specified, then it is assumed
 #'    that the transition kernel is symmetric, this is, logratio is then implemented
@@ -160,7 +160,7 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #' }
 #' ```
 #' 
-#' For more defails see the vignnete `vignette("user-defined-kernels", "fmcmc")`.
+#' For more details see the vignette `vignette("user-defined-kernels", "fmcmc")`.
 #' 
 #' @section Proposal scheme:
 #'  
@@ -396,7 +396,7 @@ kernel_unif_reflective <- function(
 #' @export
 #' @rdname kernels
 #' @section Kernels:
-#' The `kernel_normal` function provides the cannonical normal kernel
+#' The `kernel_normal` function provides the canonical normal kernel
 #' with symmetric transition probabilities.
 kernel_normal <- function(
   mu    = 0,
@@ -462,7 +462,7 @@ kernel_normal <- function(
 #' The `kernel_normal_reflective` implements the normal kernel with reflective
 #' boundaries. Lower and upper bounds are treated using reflecting boundaries, this is, 
 #' if the proposed \eqn{\theta'} is greater than the \code{ub}, then \eqn{\theta' - ub}
-#' is substracted from \eqn{ub}. At the same time, if it is less than \code{lb}, then
+#' is subtracted from \eqn{ub}. At the same time, if it is less than \code{lb}, then
 #' \eqn{lb - \theta'} is added to \code{lb} iterating until \eqn{\theta} is within
 #' \code{[lb, ub]}.
 #' 

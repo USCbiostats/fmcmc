@@ -26,7 +26,7 @@ convergence_auto(freq = 1000L)
 will return \code{TRUE}.}
 
 \item{check_invariant}{Logical. When \code{TRUE} the function only computes
-the gelman diagnostic using variables with greater than \code{1e-10} variance.}
+the Gelman diagnostic using variables with greater than \code{1e-10} variance.}
 
 \item{...}{Further arguments passed to the method.}
 }

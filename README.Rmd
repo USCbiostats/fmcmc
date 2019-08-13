@@ -20,7 +20,7 @@ knitr::opts_chunk$set(fig.path = "man/figures/", warning = FALSE)
 ## What
 
 The `fmcmc` R package provides a lightweight general framework for implementing
-Markov Chain Monte Carlo methods based on the Metropolis-Hasing algorithm. This
+Markov Chain Monte Carlo methods based on the Metropolis-Hastings algorithm. This
 implementation's main purpose lies in the fact that the user can incorporate the
 following in a flexible way:
 

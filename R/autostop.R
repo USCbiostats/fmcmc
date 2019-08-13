@@ -7,7 +7,7 @@
 #' @param threshold Numeric value. A Gelman statistic below the threshold
 #' will return `TRUE`.
 #' @param check_invariant Logical. When `TRUE` the function only computes
-#' the gelman diagnostic using variables with greater than `1e-10` variance.
+#' the Gelman diagnostic using variables with greater than `1e-10` variance.
 #' @param freq Integer scalar. Frequency of checking.
 #' @param ... Further arguments passed to the method.
 #' @return A function passed to [MCMC] to check automatic convergence.

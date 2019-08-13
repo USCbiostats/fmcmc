@@ -13,7 +13,9 @@ vignette: >
 knitr::opts_chunk$set(fig.dim=c(9, 9), out.width=600, out.height=600)
 ```
 
-We start by loading the dataset that the `mcmc` package includes. We will use the `logit` data set to obtain a posterior distribution of the model parameters using the `MCMC` function.
+We start by loading the dataset that the `mcmc` package includes. We will use
+the `logit` data set to obtain a posterior distribution of the model parameters
+using the `MCMC` function.
 
 ```{r loading-data, include = TRUE}
 library(fmcmc)
@@ -22,7 +24,10 @@ out <- glm(y ~ x1 + x2 + x3 + x4, data = logit, family = binomial, x = TRUE)
 beta.init <- as.numeric(coefficients(out))
 ```
 
-To be able to use the Metropolis-Hastings MCMC algorithm the function should be (in principle) the log un-normalized posterior. The following block of code, which was extracted from the `mcmc` package vignette "MCMC Package Example" creates the function that we will be using
+To be able to use the Metropolis-Hastings MCMC algorithm the function should be
+(in principle) the log un-normalized posterior. The following block of code,
+which was extracted from the `mcmc` package vignette "MCMC Package Example"
+creates the function that we will be using
 
 ```{r log-unnorm-posterior}
 lupost_factory <- function(x, y) function(beta) {
@@ -36,7 +41,9 @@ lupost_factory <- function(x, y) function(beta) {
 lupost <- lupost_factory(out$x, out$y)
 ```
 
-Let's give it a first try. In this case we will use the beta estimates from the estimated GLM model as a starting point for the algorithm, and we will ask it to sample 1e4 points from the posterior distribution (`nsteps`).
+Let's give it a first try. In this case we will use the beta estimates from the
+estimated GLM model as a starting point for the algorithm, and we will ask it to
+sample 1e4 points from the posterior distribution (`nsteps`).
 
 ```{r estimation1.0}
 # to get reproducible results
@@ -48,14 +55,16 @@ out <- MCMC(
 )
 ```
 
-Since the resulting object is of class `mcmc` (from the `coda` R package), we can use all the functions included in `coda` for model diagnostics:
+Since the resulting object is of class `mcmc` (from the `coda` R package), we
+can use all the functions included in `coda` for model diagnostics:
 
 ```{r post-estimation}
 library(coda)
 plot(out[,1:3])
 ```
 
-So this chain has very poor mixing, so let's try again by using a smaller scale for the normal kernel proposal moving it from 1 (the default value) to .2:
+So this chain has very poor mixing, so let's try again by using a smaller scale
+for the normal kernel proposal moving it from 1 (the default value) to .2:
 
 ```{r estimation1.1}
 # to get reproducible results
@@ -68,13 +77,20 @@ out <- MCMC(
 )
 ```
 
-The `kernel_normal`, which is the default kernel in the `MCMC` function, returns an object of class `fmcmc_kernel`. In principle it consists on a list of two functions that are used by the `MCMC` routine: `proposal`, the proposal kernel function, and `logratio`, the function that returns the log of the Metropolis-Hastings ratio. We will talk more about `fmcmc_kernel` objects later. Now, let's look at the first three variables of our model:
+The `kernel_normal`, which is the default kernel in the `MCMC` function, returns
+an object of class `fmcmc_kernel`. In principle it consists on a list of two
+functions that are used by the `MCMC` routine: `proposal`, the proposal kernel
+function, and `logratio`, the function that returns the log of the
+Metropolis-Hastings ratio. We will talk more about `fmcmc_kernel` objects later.
+Now, let's look at the first three variables of our model:
 
 ```{r}
 plot(out[,1:3])
 ```
 
-Better. Now, ideally we should only be using observations from the stationary distribution. Let's give it another try checking for convergence every 1,000 steps using the `convergence_geweke`:
+Better. Now, ideally we should only be using observations from the stationary
+distribution. Let's give it another try checking for convergence every 1,000
+steps using the `convergence_geweke`:
 
 ```{r estimation1.2}
 # to get reproducible results
@@ -89,9 +105,13 @@ out <- MCMC(
 ```
 
 
-A bit better. As announced by `MCMC`, the chain has reach a stationary state. With this in hand, we can now rerun the algorithm such that we start from the last couple of step of the chain, this time, without convergence monitoring as it is no longer necesary.
+A bit better. As announced by `MCMC`, the chain has reach a stationary state.
+With this in hand, we can now rerun the algorithm such that we start from the
+last couple of step of the chain, this time, without convergence monitoring as
+it is no longer necessary.
 
-We will increase the number of steps (sample size), use 2 chains using parallel computing, and add some thining to reduce autocorrelation:
+We will increase the number of steps (sample size), use 2 chains using parallel
+computing, and add some thinning to reduce autocorrelation:
 
 ```{r estimation2.0}
 # Now we change the seed so we get a different stream of
@@ -109,7 +129,13 @@ out_final <- MCMC(
   )
 ```
 
-Observed that, instead of specifying what are the 2 starting points for each chain, we passed the `out` to the initial set of parameters. By default, if `initial` is of class `mcmc`, `MCMC` will take the last `nchains` points from the chain as starting point for the new sequence. If `initial` is of class `mcmc.list`, the number of chains in `initial` must match the `nchains` parameter. We now see that the output posterior distribution appears to be stationary
+Observed that, instead of specifying what are the 2 starting points for each
+chain, we passed the `out` to the initial set of parameters. By default, if
+`initial` is of class `mcmc`, `MCMC` will take the last `nchains` points from
+the chain as starting point for the new sequence. If `initial` is of class
+`mcmc.list`, the number of chains in `initial` must match the `nchains`
+parameter. We now see that the output posterior distribution appears to be
+stationary
 
 ```{r final-results}
 plot(out_final[, 1:3])
