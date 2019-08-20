@@ -213,7 +213,8 @@ MCMC <- function(
   kernel       = kernel_normal(),
   multicore    = FALSE,
   conv_checker = NULL, 
-  cl           = NULL
+  cl           = NULL,
+  progress     = interactive()
 ) UseMethod("MCMC")
 
 #' @export
@@ -229,7 +230,8 @@ MCMC.mcmc <- function(
   kernel       = kernel_normal(),
   multicore    = FALSE,
   conv_checker = NULL, 
-  cl           = NULL
+  cl           = NULL,
+  progress     = interactive() && !multicore
 ) {
   
   MCMC.default(
@@ -243,7 +245,8 @@ MCMC.mcmc <- function(
     kernel       = kernel,
     multicore    = multicore,
     conv_checker = conv_checker,
-    cl           = cl
+    cl           = cl,
+    progress     = progress
   )
   
 }
@@ -261,7 +264,8 @@ MCMC.mcmc.list <- function(
   kernel       = kernel_normal(),
   multicore    = FALSE,
   conv_checker = NULL, 
-  cl           = NULL
+  cl           = NULL,
+  progress     = interactive() && !multicore
 ) {
   
   if (nchains != length(initial))
@@ -281,7 +285,8 @@ MCMC.mcmc.list <- function(
     kernel       = kernel,
     multicore    = multicore,
     conv_checker = conv_checker,
-    cl           = cl
+    cl           = cl,
+    progress     = progress
   )
   
 }
@@ -301,7 +306,8 @@ MCMC.default <- function(
   kernel       = kernel_normal(),
   multicore    = FALSE,
   conv_checker = NULL, 
-  cl           = NULL
+  cl           = NULL,
+  progress     = interactive() && !multicore
   ) {
   
   # # if the coda package hasn't been loaded, then return a warning

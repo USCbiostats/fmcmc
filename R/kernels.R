@@ -368,14 +368,13 @@ kernel_unif_reflective <- function(
       
       # normal_reflective(env$theta0, lb, ub, mu, scale, fixed)
       which. <- which(update_sequence[env$i, ])
-      any_reflective(
-        randfun = stats::runif,
-        # Parameters for rnorm
-        n       = k,
-        min     = min.[which.],
-        max     = max.[which.],
-        x       = env$theta0,
-        # Parameters for the function
+      theta1 <- env$theta0
+      
+      theta1[which.] <- theta1[which.] +
+        stats::runif(k, min = min.[which.], max = max.[which.])
+      
+      reflect_on_boundaries(
+        x       = theta1,
         lb      = lb,
         ub      = ub,
         which   = which.
@@ -519,14 +518,15 @@ kernel_normal_reflective <- function(
       # Which to update (only whichever is to be updated in the sequence)
       # of updates.
       which. <- which(update_sequence[env$i, ])
-      any_reflective(
-        randfun = stats::rnorm,
-        # Parameters for rnorm
-        n       = k,
-        mean    = mu[which.],
-        sd      = scale[which.],
-        x       = env$theta0,
-        # Parameters for the function
+      theta1 <- env$theta0
+      
+      # Proposal
+      theta1[which.] <- theta1[which.] + 
+        stats::rnorm(k, mean = mu[which.], sd = scale[which.])
+      
+      # Reflecting
+      reflect_on_boundaries(
+        x       = theta1,
         lb      = lb,
         ub      = ub,
         which   = which.
@@ -545,16 +545,24 @@ kernel_normal_reflective <- function(
   
 }
 
-any_reflective <- function(
-  randfun,
-  ...,
+#' Reflective boundaries
+#' 
+#' Adjust a proposal according to its support by reflecting it. This is the workhorse
+#' of [kernel_normal_reflective] and [kernel_uniform_reflective]. It is intended
+#' for internal use only. 
+#' 
+#' @param x A numeric vector. The proposal
+#' @param lb,ub Numberic vectors of length `length(x)`. Lower and upper bounds.
+#' @param which. Integer vector. Index of variables to be updated.
+#' 
+#' @return An adjusted proposal vector.
+#' @export
+reflect_on_boundaries <- function(
   x,
   lb,
   ub,
   which
 ) {
-  
-  x[which] <- x[which] + randfun(...)
   
   test_above <- which(x[which] > ub[which])
   test_below <- which(x[which] < lb[which])

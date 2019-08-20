@@ -10,19 +10,22 @@
 \usage{
 MCMC(initial, fun, nsteps, ..., nchains = 1L, burnin = 0L, thin = 1L,
   kernel = kernel_normal(), multicore = FALSE, conv_checker = NULL,
-  cl = NULL)
+  cl = NULL, progress = interactive())
 
 \method{MCMC}{mcmc}(initial, fun, nsteps, ..., nchains = 1L,
   burnin = 0L, thin = 1L, kernel = kernel_normal(),
-  multicore = FALSE, conv_checker = NULL, cl = NULL)
+  multicore = FALSE, conv_checker = NULL, cl = NULL,
+  progress = interactive())
 
 \method{MCMC}{mcmc.list}(initial, fun, nsteps, ..., nchains = 1L,
   burnin = 0L, thin = 1L, kernel = kernel_normal(),
-  multicore = FALSE, conv_checker = NULL, cl = NULL)
+  multicore = FALSE, conv_checker = NULL, cl = NULL,
+  progress = interactive())
 
 \method{MCMC}{default}(initial, fun, nsteps, ..., nchains = 1L,
   burnin = 0L, thin = 1L, kernel = kernel_normal(),
-  multicore = FALSE, conv_checker = NULL, cl = NULL)
+  multicore = FALSE, conv_checker = NULL, cl = NULL,
+  progress = interactive() && !multicore)
 }
 \arguments{
 \item{initial}{Either a numeric matrix or vector, or an object of class \link[coda:mcmc]{coda::mcmc}
