@@ -15,12 +15,12 @@ MCMC(initial, fun, nsteps, ..., nchains = 1L, burnin = 0L, thin = 1L,
 \method{MCMC}{mcmc}(initial, fun, nsteps, ..., nchains = 1L,
   burnin = 0L, thin = 1L, kernel = kernel_normal(),
   multicore = FALSE, conv_checker = NULL, cl = NULL,
-  progress = interactive())
+  progress = interactive() && !multicore)
 
 \method{MCMC}{mcmc.list}(initial, fun, nsteps, ..., nchains = 1L,
   burnin = 0L, thin = 1L, kernel = kernel_normal(),
   multicore = FALSE, conv_checker = NULL, cl = NULL,
-  progress = interactive())
+  progress = interactive() && !multicore)
 
 \method{MCMC}{default}(initial, fun, nsteps, ..., nchains = 1L,
   burnin = 0L, thin = 1L, kernel = kernel_normal(),
@@ -54,6 +54,8 @@ and returns a logical value with \code{TRUE} indicating convergence. See the
 "Automatic stop" section and the \link{convergence-checker} manual.}
 
 \item{cl}{A \code{cluster} object passed to \link[parallel:clusterApply]{parallel::clusterApply}.}
+
+\item{progress}{Logical scalar (currently ignored).}
 }
 \value{
 An object of class \link[coda:mcmc]{coda::mcmc} from the \CRANpkg{coda}

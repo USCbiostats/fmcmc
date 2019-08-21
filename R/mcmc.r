@@ -18,6 +18,7 @@
 #' @param conv_checker A function that receives an object of class [coda::mcmc.list],
 #' and returns a logical value with `TRUE` indicating convergence. See the
 #' "Automatic stop" section and the [convergence-checker] manual.
+#' @param progress Logical scalar (currently ignored).
 #' 
 #' @details This function implements MCMC using the Metropolis-Hastings ratio with
 #' flexible transition kernels. Users can specify either one of the available

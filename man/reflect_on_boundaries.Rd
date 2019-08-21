@@ -11,13 +11,13 @@ reflect_on_boundaries(x, lb, ub, which)
 
 \item{lb, ub}{Numberic vectors of length \code{length(x)}. Lower and upper bounds.}
 
-\item{which.}{Integer vector. Index of variables to be updated.}
+\item{which}{Integer vector. Index of variables to be updated.}
 }
 \value{
 An adjusted proposal vector.
 }
 \description{
 Adjust a proposal according to its support by reflecting it. This is the workhorse
-of \link{kernel_normal_reflective} and \link{kernel_uniform_reflective}. It is intended
+of \link{kernel_normal_reflective} and \link{kernel_unif_reflective}. It is intended
 for internal use only.
 }

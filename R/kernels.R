@@ -548,12 +548,12 @@ kernel_normal_reflective <- function(
 #' Reflective boundaries
 #' 
 #' Adjust a proposal according to its support by reflecting it. This is the workhorse
-#' of [kernel_normal_reflective] and [kernel_uniform_reflective]. It is intended
+#' of [kernel_normal_reflective] and [kernel_unif_reflective]. It is intended
 #' for internal use only. 
 #' 
 #' @param x A numeric vector. The proposal
 #' @param lb,ub Numberic vectors of length `length(x)`. Lower and upper bounds.
-#' @param which. Integer vector. Index of variables to be updated.
+#' @param which Integer vector. Index of variables to be updated.
 #' 
 #' @return An adjusted proposal vector.
 #' @export
