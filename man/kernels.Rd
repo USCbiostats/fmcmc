@@ -164,7 +164,7 @@ kernel).
 }
 
 \examples{
-\dontrun{
+
 # Example creating a multivariate normal kernel using the mvtnorm R package
 # for a bivariate normal distribution
 library(mvtnorm)
@@ -174,9 +174,9 @@ sigma <- matrix(c(1, .2, .2, 1), ncol = 2)
 
 # How does it looks like?
 sigma
-     [,1] [,2]
-[1,]  1.0  0.2
-[2,]  0.2  1.0
+#      [,1] [,2]
+# [1,]  1.0  0.2
+# [2,]  0.2  1.0
 
 # Create the kernel
 kernel_mvn <- kernel_new(
@@ -191,5 +191,5 @@ kernel_mvn <- kernel_new(
 # The logaratio function was not necesary to be passed since this kernel is
 # symmetric.
 
-}
+
 }

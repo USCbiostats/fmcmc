@@ -28,7 +28,7 @@ check_initial(init, 2)
 
 init <- matrix(1:9, ncol=3)
 check_initial(init, 3)
-\dontrun{
-check_initial(init, 2) # Returns an error
-}
+
+# check_initial(init, 2) # Returns an error
+
 }

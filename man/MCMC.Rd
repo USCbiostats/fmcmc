@@ -171,10 +171,10 @@ plot(apply(as.matrix(ans), 1, fun), type = "l",
 )
 par(oldpar)
 
-\dontrun{
+
 # In this example we estimate the parameter for a dataset with ----------------
 # With 5,000 draws from a MVN() with parameters M and S.
-
+\donttest{
 # Loading the required packages
 library(mvtnorm)
 library(coda)
@@ -202,10 +202,10 @@ ans <- MCMC(
   fun,
   kernel  = kernel_normal_reflective(
     lb    = c(-10, -10, .01, -5, .01),
-    ub    = 5
+    ub    = 5,
     scale = 0.01
   ),
-  nsteps  = 1e5,
+  nsteps  = 1e4,
   thin    = 20,
   burnin  = 5e3
 )
@@ -237,10 +237,10 @@ ans <- MCMC(
   nchains = 2,
   kernel  = kernel_normal_reflective(
     lb    = c(-10, -10, .01, -5, .01),
-    ub    = 5
+    ub    = 5,
     scale = 0.01
   ),
-  nsteps  = 1e5,
+  nsteps  = 1e4,
   thin    = 20,
   burnin  = 5e3,
   D       = D
@@ -249,4 +249,8 @@ ans <- MCMC(
 summary(ans)
 }
 
+}
+\references{
+Brooks, S., Gelman, A., Jones, G. L., & Meng, X. L. (2011). Handbook of
+Markov Chain Monte Carlo. Handbook of Markov Chain Monte Carlo.
 }

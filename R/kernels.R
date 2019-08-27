@@ -180,7 +180,7 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #' @name kernels
 #' @aliases fmcmc_kernel fmcmc-kernel
 #' @examples 
-#' \dontrun{
+#' 
 #' # Example creating a multivariate normal kernel using the mvtnorm R package
 #' # for a bivariate normal distribution
 #' library(mvtnorm)
@@ -190,9 +190,9 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #' 
 #' # How does it looks like?
 #' sigma
-#'      [,1] [,2]
-#' [1,]  1.0  0.2
-#' [2,]  0.2  1.0
+#' #      [,1] [,2]
+#' # [1,]  1.0  0.2
+#' # [2,]  0.2  1.0
 #' 
 #' # Create the kernel
 #' kernel_mvn <- kernel_new(
@@ -207,7 +207,7 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #' # The logaratio function was not necesary to be passed since this kernel is
 #' # symmetric.
 #' 
-#' }
+#' 
 NULL
 
 #' @export

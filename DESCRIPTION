@@ -8,10 +8,12 @@ Authors@R: c(person("George", "Vega Yon", email = "g.vegayon@gmail.com", role =
          Cancer Institute (NCI)", role = "fnd", comment = "Grant Number
          5P01CA196569-02"), person("Fabian", "Scheipl", role = "rev", comment =
          c(what = "JOSS reviewer", ORCID="0000-0001-8172-3603")) )
-Description: Provides a flexible Markov Chain Monte Carlo (MCMC) framework for
-         implementing Metropolis-Hastings algorithm in a modular way allowing
-         users to specify automatic convergence checker, personalized transition
-         kernels, and out-of-the-box MCMC chains using parallel computing.
+Description: Provides a friendly (flexible) Markov Chain Monte Carlo (MCMC)
+         framework for implementing Metropolis-Hastings algorithm in a modular way
+         allowing users to specify automatic convergence checker, personalized
+         transition kernels, and out-of-the-box multiple MCMC chains using
+         parallel computing. Most of the methods implemented in this package can
+         be found in Brooks et al. (2011, ISBN 9781420079425).
 Depends: R (>= 3.3.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
