@@ -10,6 +10,7 @@
 \alias{kernel_unif_reflective}
 \alias{kernel_normal}
 \alias{kernel_normal_reflective}
+\alias{kernel_adapt}
 \title{Various kernel functions for MCMC}
 \usage{
 kernel_new(proposal, logratio = NULL, ...)
@@ -26,6 +27,9 @@ kernel_normal(mu = 0, scale = 1, fixed = FALSE, scheme = "joint")
 kernel_normal_reflective(mu = 0, scale = 1,
   lb = -.Machine$double.xmax, ub = .Machine$double.xmax,
   fixed = FALSE, scheme = "joint")
+
+kernel_adapt(mu = 0, bw = 500L, freq = 100L, warmup = 600L,
+  Sigma = NULL)
 }
 \arguments{
 \item{proposal, logratio}{Functions. The function receives a single argument, an environment.
@@ -47,6 +51,18 @@ parameter, avoiding new proposals.}
 bounded kernels.}
 
 \item{mu, scale}{Either a numeric vector or a scalar. Proposal mean and scale.}
+
+\item{bw}{Integer scalar. The bandwidth, is the number of observations to
+include in the computation of the variance-covariance matrix.}
+
+\item{freq}{Integer scalar. Frequency of updates. How often the
+variance-covariance matrix is updated.}
+
+\item{warmup}{Integer scalar. The number of iterations that the algorithm has
+to wait before starting to do the updates.}
+
+\item{Sigma}{The variance-covariance matrix. By default this will be an
+identity matrix during the warmup period.}
 }
 \description{
 Various kernel functions for MCMC
@@ -161,6 +177,10 @@ is subtracted from \eqn{ub}. At the same time, if it is less than \code{lb}, the
 
 In this case, the transition probability is symmetric (just like the normal
 kernel).
+
+
+\code{kernel_adapt} Implements the adaptive Metropolis (AM) algoriuthm of Haario
+et al. (2001).
 }
 
 \examples{
@@ -191,5 +211,8 @@ kernel_mvn <- kernel_new(
 # The logaratio function was not necesary to be passed since this kernel is
 # symmetric.
 
-
+}
+\references{
+Brooks, S., Gelman, A., Jones, G. L., & Meng, X. L. (2011). Handbook of
+Markov Chain Monte Carlo. Handbook of Markov Chain Monte Carlo.
 }

@@ -22,7 +22,7 @@ LazyData: true
 URL: https://github.com/USCbiostats/fmcmc
 BugReports: https://github.com/USCbiostats/fmcmc/issues
 Suggests: covr, mvtnorm, knitr, rmarkdown, mcmc, tinytest
-Imports: parallel, coda, stats, methods
+Imports: parallel, coda, stats, methods, MASS
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr

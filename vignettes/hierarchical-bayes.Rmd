@@ -1,0 +1,87 @@
+---
+title: "Hierarchical Bayes Model"
+author: "George Vega Yon"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Suppose that you have a dataset in which the observed process follows a normal
+distribution in the form of $N(\mu_c, 1)$, this is, each observation follows
+a normal distribution with paramater $(\mu_c, 1)$, where $\mu_c \sim N(\gamma, 1)$
+and $\gamma \sim \mbox{Unif}(-1,1)$. So for each class of observation, the mean
+was drawn from a normal distribution with unknown mean, and we assume the mean
+is within the [-1,1] range.
+
+Let's simulate some data with this features. For this example, we will fix gamma
+to be 0.3
+
+```{r dgp}
+
+set.seed(12315)
+N     <- 1000
+Nc    <- 20
+theta <- rep(rnorm(Nc, 0.3), N/Nc)
+X     <- rnorm(N, theta)
+```
+
+The posterior probability in this case is
+
+$$
+P(\theta, \gamma | X) \approx P(X | \theta, \gamma)P(\theta|\gamma)P(\gamma)
+$$
+
+```{r posterior}
+lupost <- function(pars) {
+  
+  sum(dnorm(X, pars[1:Nc], log = TRUE)) +
+    sum(dnorm(pars[1:Nc], pars[Nc + 1], log=TRUE)) +
+    dunif(pars[Nc + 1], -1, log=TRUE)
+  
+}
+```
+
+In this case, we will be using an adaptive MCMC transition kernel. The adaptation
+will take place every 100 steps by computing the variance covariance matrix of
+the last 500 steps, and will start from the 2,000 step
+
+```{r adaptive}
+library(fmcmc)
+adaptk <- kernel_new(
+  proposal = function(env) {
+    
+    if ((env$i > 2000) && !(env$i %% 100)) {
+      S <<- cov(env$ans[(env$i - 500):(env$i - 1), , drop=FALSE])*2.38^2/(Nc + 1)
+    }
+    
+    env$theta0 + mvtnorm::rmvnorm(1, mean = Mu, sigma = S)
+    
+  },
+  S  = diag(Nc + 1),
+  Mu = rep(0, Nc + 1)
+)
+```
+
+
+```{r second-try-adaptive}
+ans <- MCMC(
+  rep(0, Nc + 1),
+  lupost, nsteps = 10000, thin = 10,
+  kernel = adaptk
+)
+```
+
+```{r}
+plot(cbind(summary(ans)$statistics[,"Mean"], Theta = c(unique(theta), 0.3)))
+abline(a = 0, b = 1)
+```

@@ -207,7 +207,9 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #' # The logaratio function was not necesary to be passed since this kernel is
 #' # symmetric.
 #' 
-#' 
+#' @references 
+#' Brooks, S., Gelman, A., Jones, G. L., & Meng, X. L. (2011). Handbook of
+#' Markov Chain Monte Carlo. Handbook of Markov Chain Monte Carlo.
 NULL
 
 #' @export
@@ -603,3 +605,60 @@ reflect_on_boundaries <- function(
 }
 
 
+#' @export 
+#' @rdname kernels
+#' @param bw Integer scalar. The bandwidth, is the number of observations to
+#' include in the computation of the variance-covariance matrix.
+#' @param freq Integer scalar. Frequency of updates. How often the
+#' variance-covariance matrix is updated.
+#' @param warmup Integer scalar. The number of iterations that the algorithm has
+#' to wait before starting to do the updates.
+#' @param Sigma The variance-covariance matrix. By default this will be an
+#' identity matrix during the warmup period.
+#' @section Kernels:
+#' `kernel_adapt` Implements the adaptive Metropolis (AM) algoriuthm of Haario
+#' et al. (2001).
+kernel_adapt <- function(
+  mu     = 0,
+  bw     = 500L,
+  freq   = 100L,
+  warmup = 600L,
+  Sigma  = NULL
+) {
+  
+  k     <- NULL
+  Sigma <- NULL
+  
+  if (bw > warmup)
+    stop("The `warmup` parameter must be greater than `bw`.", call. = FALSE)
+  
+  kernel_new(
+    proposal = function(env) {
+      
+      # In the case of the first iteration
+      if (env$i == 1L | is.null(k)) {
+        k     <<- length(env$theta0)
+        Sigma <<- diag(k)
+        mu    <<- check_dimensions(mu, k)
+      }
+        
+      # Updating the scheme
+      if (env$i > warmup && !(env$i %% freq)) {
+        Sigma <<- stats::vcov(env$ans[(env$i - bw + 1L):(env$i - 1L)]) *
+          # 2.38^2
+          5.6643999999999996575 / k
+      }
+      
+      # Making the proposal
+      env$theta0 + MASS::mvrnorm(mu = mu, Sigma = Sigma) *
+        # 2.38^2
+        5.6643999999999996575 / k
+      
+    },
+    k     = k,
+    mu    = mu,
+    freq  = freq,
+    Sigma = Sigma
+  )
+  
+}

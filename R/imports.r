@@ -3,6 +3,7 @@
 #'   clusterApply detectCores clusterSetRNGStream
 #' @importFrom methods formalArgs
 #' @importFrom stats runif plogis
+#' @importFrom MASS mvrnorm
 NULL
 
 #' A friendly MCMC framework
