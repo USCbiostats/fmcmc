@@ -547,6 +547,202 @@ kernel_normal_reflective <- function(
   
 }
 
+#' @export 
+#' @rdname kernels
+#' @param bw Integer scalar. The bandwidth, is the number of observations to
+#' include in the computation of the variance-covariance matrix.
+#' @param freq Integer scalar. Frequency of updates. How often the
+#' variance-covariance matrix is updated.
+#' @param warmup Integer scalar. The number of iterations that the algorithm has
+#' to wait before starting to do the updates.
+#' @param Sigma The variance-covariance matrix. By default this will be an
+#' identity matrix during the warmup period.
+#' @param eps Double scalar. Default size of the initial step (see details).
+#' @param Sd Overall scale for the algorithm. By default, the variance-covariance
+#' is scaled to \eqn{2.4^2/d}, with \eqn{d} the number of dimensions.
+#' @section Kernels:
+#' `kernel_adapt` Implements the adaptive Metropolis (AM) algoriuthm of Haario
+#' et al. (2001). If the value of bw is greater than zero, then the algorithm
+#' folds back AP, a  previous version which is known to have ergodicity problems.
+#' 
+#' The parameter `eps` has two functions. The first one is to set the initial
+#' scale for the multivariate normal kernel, which is replaced after `warmup`
+#' steps with the actual variance-covariance computed by the main algorithm.
+#' The second usage is in the equation that ensures that the variance-covariance
+#' is greater than zero, this is, the \eqn{\varepsilon}{epsilon} parameter in the
+#' original paper.
+#' 
+#' 
+kernel_adapt <- function(
+  mu     = 0,
+  bw     = 0L,
+  lb     = -.Machine$double.xmax,
+  ub     = .Machine$double.xmax,
+  freq   = 50L,
+  warmup = 500L,
+  Sigma  = NULL,
+  Sd     = NULL,
+  eps    = 1e-4,
+  fixed  = FALSE
+) {
+  
+  k      <- NULL
+  sd     <- NULL
+  Ik     <- NULL
+  which. <- NULL
+  
+  if (bw > warmup)
+    stop("The `warmup` parameter must be greater than `bw`.", call. = FALSE)
+  
+  kernel_new(
+    proposal = function(env) {
+      
+      # In the case of the first iteration
+      if (env$i == 1L | is.null(k)) {
+        
+        k     <<- length(env$theta0)
+        Ik    <<- diag(k) * eps
+        
+        if (is.null(Sigma))
+          Sigma <<- Ik
+        
+        mu     <<- check_dimensions(mu, k)
+        ub     <<- check_dimensions(ub, k)
+        lb     <<- check_dimensions(lb, k)
+        fixed  <<- check_dimensions(fixed, k)
+        which. <<- which(!fixed)
+        
+        if (any(ub <= lb))
+          stop("-ub- cannot be <= than -lb-.", call. = FALSE)
+        
+        if (is.null(Sd))
+          Sd <<- 5.76 / length(which.) # 2.38^2
+      }
+      
+      # Updating the scheme
+      if (env$i > warmup && !(env$i %% freq)) {
+        
+        ran <- if (bw <= 0L) 1L:(env$i - 1L) 
+        else (env$i - bw + 1L):(env$i - 1L)
+        
+        Sigma <<- Sd * (stats::cov(env$ans[ran, ]) + Ik)
+      }
+      
+      # Making the proposal
+      theta1 <- env$theta0
+      theta1[which.] <- env$theta0[which.] +
+        MASS::mvrnorm(mu = mu[which.], Sigma = Sigma[which.,][,which.])
+      
+      reflect_on_boundaries(theta1, lb, ub, which.)
+      
+    },
+    mu     = mu,
+    bw     = bw,
+    lb     = lb,
+    ub     = ub,
+    freq   = freq,
+    warmup = warmup,
+    Sigma  = Sigma,
+    Sd     = Sd,
+    eps    = eps,
+    fixed  = fixed,
+    k      = k,
+    Ik     = Ik,
+    which. = which.
+  )
+  
+}
+
+#' @export
+#' @rdname kernels
+#' @param eta A function that receives the MCMC environment. This is to calculate
+#' the scalig factor for the adaptation.
+#' @param arate Numeric scalar. Objective acceptance rate.
+#' @section Kernels: 
+#' 
+#' The `kernel_ram` Implements Vihola (2012)'s Robust Adaptive Metropolis.
+kernel_ram <- function(
+  mu     = 0,
+  eta    = function(i, k) min(c(1.0, i^(-2.0/3.0) * k)),
+  arate  = 0.234,
+  freq   = 50L,
+  warmup = 0L,
+  Sigma  = NULL,
+  eps    = 1e-4,
+  lb     = -.Machine$double.xmax,
+  ub     = .Machine$double.xmax,
+  fixed  = FALSE
+) {
+  
+  k          <- NULL
+  which.     <- NULL
+  Ik         <- NULL
+  
+  kernel_new(
+    proposal = function(env) {
+      
+      # In the case of the first iteration
+      if (env$i == 1L | is.null(k)) {
+        
+        k     <<- length(env$theta0)
+
+        mu     <<- check_dimensions(mu, k)
+        ub     <<- check_dimensions(ub, k)
+        lb     <<- check_dimensions(lb, k)
+        fixed  <<- check_dimensions(fixed, k)
+        which. <<- which(!fixed)
+        
+        k      <<- sum(!fixed)
+        Ik     <<- diag(k)
+        
+        if (is.null(Sigma))
+          Sigma <<- Ik * eps
+        
+        if (any(ub <= lb))
+          stop("-ub- cannot be <= than -lb-.", call. = FALSE)
+        
+      }
+      
+      # Making proposal
+      U      <- stats::rnorm(k)
+      theta1 <- env$theta1
+      theta1[which.] <- env$theta0[which.] + (Sigma %*% U)[,1L]
+      
+      # Updating the scheme
+      if (env$i > warmup && !(env$i %% freq)) {
+        
+        # Computing
+        env$f1 <- env$f(theta1)
+        a_n <- min(1, exp(env$kernel$logratio(env)))
+        Sigma <<- t(chol(Sigma %*% (
+          Ik + eta(env$i, k)*(a_n - arate) * U %*% t(U) /
+            norm(rbind(U), "2")^2
+        ) %*% t(Sigma)))
+        
+        
+      }
+      
+      # Reflecting
+      reflect_on_boundaries(theta1, lb, ub, which.)
+      
+    },
+    mu         = mu,
+    eta        = eta, 
+    arate      = arate,
+    freq       = freq,
+    warmup     = warmup,
+    Sigma      = Sigma,
+    eps        = eps,
+    lb         = lb,
+    ub         = ub,
+    fixed      = fixed,
+    k          = k,
+    which.     = which.,
+    Ik         = Ik
+  )
+  
+}
+
 #' Reflective boundaries
 #' 
 #' Adjust a proposal according to its support by reflecting it. This is the workhorse
@@ -605,60 +801,3 @@ reflect_on_boundaries <- function(
 }
 
 
-#' @export 
-#' @rdname kernels
-#' @param bw Integer scalar. The bandwidth, is the number of observations to
-#' include in the computation of the variance-covariance matrix.
-#' @param freq Integer scalar. Frequency of updates. How often the
-#' variance-covariance matrix is updated.
-#' @param warmup Integer scalar. The number of iterations that the algorithm has
-#' to wait before starting to do the updates.
-#' @param Sigma The variance-covariance matrix. By default this will be an
-#' identity matrix during the warmup period.
-#' @section Kernels:
-#' `kernel_adapt` Implements the adaptive Metropolis (AM) algoriuthm of Haario
-#' et al. (2001).
-kernel_adapt <- function(
-  mu     = 0,
-  bw     = 500L,
-  freq   = 100L,
-  warmup = 600L,
-  Sigma  = NULL
-) {
-  
-  k     <- NULL
-  Sigma <- NULL
-  
-  if (bw > warmup)
-    stop("The `warmup` parameter must be greater than `bw`.", call. = FALSE)
-  
-  kernel_new(
-    proposal = function(env) {
-      
-      # In the case of the first iteration
-      if (env$i == 1L | is.null(k)) {
-        k     <<- length(env$theta0)
-        Sigma <<- diag(k)
-        mu    <<- check_dimensions(mu, k)
-      }
-        
-      # Updating the scheme
-      if (env$i > warmup && !(env$i %% freq)) {
-        Sigma <<- stats::vcov(env$ans[(env$i - bw + 1L):(env$i - 1L)]) *
-          # 2.38^2
-          5.6643999999999996575 / k
-      }
-      
-      # Making the proposal
-      env$theta0 + MASS::mvrnorm(mu = mu, Sigma = Sigma) *
-        # 2.38^2
-        5.6643999999999996575 / k
-      
-    },
-    k     = k,
-    mu    = mu,
-    freq  = freq,
-    Sigma = Sigma
-  )
-  
-}

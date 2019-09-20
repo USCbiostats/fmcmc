@@ -11,6 +11,7 @@
 \alias{kernel_normal}
 \alias{kernel_normal_reflective}
 \alias{kernel_adapt}
+\alias{kernel_ram}
 \title{Various kernel functions for MCMC}
 \usage{
 kernel_new(proposal, logratio = NULL, ...)
@@ -28,8 +29,14 @@ kernel_normal_reflective(mu = 0, scale = 1,
   lb = -.Machine$double.xmax, ub = .Machine$double.xmax,
   fixed = FALSE, scheme = "joint")
 
-kernel_adapt(mu = 0, bw = 500L, freq = 100L, warmup = 600L,
-  Sigma = NULL)
+kernel_adapt(mu = 0, bw = 0L, lb = -.Machine$double.xmax,
+  ub = .Machine$double.xmax, freq = 50L, warmup = 500L,
+  Sigma = NULL, Sd = NULL, eps = 1e-04, fixed = FALSE)
+
+kernel_ram(mu = 0, eta = function(i, k) min(c(1, i^(-2/3) * k)),
+  arate = 0.234, freq = 50L, warmup = 0L, Sigma = NULL,
+  eps = 1e-04, lb = -.Machine$double.xmax, ub = .Machine$double.xmax,
+  fixed = FALSE)
 }
 \arguments{
 \item{proposal, logratio}{Functions. The function receives a single argument, an environment.
@@ -63,6 +70,16 @@ to wait before starting to do the updates.}
 
 \item{Sigma}{The variance-covariance matrix. By default this will be an
 identity matrix during the warmup period.}
+
+\item{Sd}{Overall scale for the algorithm. By default, the variance-covariance
+is scaled to \eqn{2.4^2/d}, with \eqn{d} the number of dimensions.}
+
+\item{eps}{Double scalar. Default size of the initial step (see details).}
+
+\item{eta}{A function that receives the MCMC environment. This is to calculate
+the scalig factor for the adaptation.}
+
+\item{arate}{Numeric scalar. Objective acceptance rate.}
 }
 \description{
 Various kernel functions for MCMC
@@ -180,7 +197,19 @@ kernel).
 
 
 \code{kernel_adapt} Implements the adaptive Metropolis (AM) algoriuthm of Haario
-et al. (2001).
+et al. (2001). If the value of bw is greater than zero, then the algorithm
+folds back AP, a  previous version which is known to have ergodicity problems.
+
+The parameter \code{eps} has two functions. The first one is to set the initial
+scale for the multivariate normal kernel, which is replaced after \code{warmup}
+steps with the actual variance-covariance computed by the main algorithm.
+The second usage is in the equation that ensures that the variance-covariance
+is greater than zero, this is, the \eqn{\varepsilon}{epsilon} parameter in the
+original paper.
+
+
+
+The \code{kernel_ram} Implements Vihola (2012)'s Robust Adaptive Metropolis.
 }
 
 \examples{
