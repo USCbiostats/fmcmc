@@ -218,7 +218,53 @@ plot(ans)
 
 ![](man/figures/summary-and-plot1-1.png)<!-- -->
 
-Much better\!
+Much better\! Now, what if we use Vihola (2012) Robust Adaptive
+Metropolis (which is also implemented in the R package
+[adaptMCMC](https://cran.r-project.org/package=adaptMCMC))
+
+``` r
+ans_RAM <- MCMC(
+  ll,
+  initial = ans,
+  nsteps  = 5000,
+  X.      = X,
+  y.      = y,
+  kernel  = kernel_ram() 
+  )
+plot(ans_RAM)
+```
+
+![](man/figures/summary-and-plot-ram-1.png)<!-- -->
+
+``` r
+1 - rejectionRate(ans_RAM)
+```
+
+    ##      par1      par2      par3 
+    ## 0.9991998 0.9991998 0.9991998
+
+We can also try using Haario et al (2001) Adaptive Metropolis
+
+``` r
+ans_AM <- MCMC(
+  ll,
+  initial = ans,
+  nsteps  = 5000,
+  X.      = X,
+  y.      = y,
+  kernel  = kernel_adapt() 
+  )
+plot(ans_AM)
+```
+
+![](man/figures/summary-and-plot-adapt-1.png)<!-- -->
+
+``` r
+1 - rejectionRate(ans_AM)
+```
+
+    ##      par1      par2      par3 
+    ## 0.3832767 0.3832767 0.3832767
 
 ## Automatic stop
 

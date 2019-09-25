@@ -591,7 +591,7 @@ kernel_adapt <- function(
   Ik     <- NULL
   which. <- NULL
   
-  if (bw > warmup)
+  if (bw > 0L && bw > warmup)
     stop("The `warmup` parameter must be greater than `bw`.", call. = FALSE)
   
   kernel_new(
@@ -620,7 +620,7 @@ kernel_adapt <- function(
       }
       
       # Updating the scheme
-      if (env$i > warmup && !(env$i %% freq)) {
+      if (env$i > warmup && env$i > 2 && !(env$i %% freq)) {
         
         ran <- if (bw <= 0L) 1L:(env$i - 1L) 
         else (env$i - bw + 1L):(env$i - 1L)
@@ -665,7 +665,7 @@ kernel_ram <- function(
   mu     = 0,
   eta    = function(i, k) min(c(1.0, i^(-2.0/3.0) * k)),
   arate  = 0.234,
-  freq   = 50L,
+  freq   = 1L,
   warmup = 0L,
   Sigma  = NULL,
   eps    = 1e-4,
@@ -712,11 +712,13 @@ kernel_ram <- function(
       if (env$i > warmup && !(env$i %% freq)) {
         
         # Computing
-        env$f1 <- env$f(theta1)
-        a_n <- min(1, exp(env$kernel$logratio(env)))
+        a_n <- min(1, exp(env$f(theta1) - env$f0))
+        if (!is.finite(a_n))
+          a_n <- 0.0
+        
         Sigma <<- t(chol(Sigma %*% (
           Ik + eta(env$i, k)*(a_n - arate) * U %*% t(U) /
-            norm(rbind(U), "2")^2
+            norm(rbind(U), "2")
         ) %*% t(Sigma)))
         
         
