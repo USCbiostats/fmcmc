@@ -3,7 +3,6 @@
 \docType{package}
 \name{fmcmc}
 \alias{fmcmc}
-\alias{fmcmc-package}
 \title{A friendly MCMC framework}
 \description{
 The \code{fmcmc} package provides a flexible framework for implementing MCMC models

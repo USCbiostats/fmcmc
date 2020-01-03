@@ -223,8 +223,12 @@ with_autostop <- function(expr, conv_checker) {
   
   # Calculating lengths. The bulk vector sets what will be
   # nsteps in each call. This excludes burnin
-  bulks <- rep(freq, (nsteps - parenv$burnin) %/% freq)
-  if ((nsteps - parenv$burnin) %% freq)
+  bulks <- if (freq > 0L)
+    rep(freq, (nsteps - parenv$burnin) %/% freq)
+  else
+    nsteps
+    
+  if (freq > 0 && (nsteps - parenv$burnin) %% freq)
     bulks <- c(bulks, (nsteps - parenv$burnin) - sum(bulks))
   
   # We need to add the burnin to the first

@@ -625,13 +625,13 @@ kernel_adapt <- function(
         ran <- if (bw <= 0L) 1L:(env$i - 1L) 
         else (env$i - bw + 1L):(env$i - 1L)
         
-        Sigma <<- Sd * (stats::cov(env$ans[ran, ]) + Ik)
+        Sigma <<- Sd * (stats::cov(env$ans[ran, , drop = FALSE]) + Ik)
       }
       
       # Making the proposal
       theta1 <- env$theta0
       theta1[which.] <- env$theta0[which.] +
-        MASS::mvrnorm(mu = mu[which.], Sigma = Sigma[which.,][,which.])
+        MASS::mvrnorm(mu = mu[which.], Sigma = Sigma[which., , drop = FALSE][,which. , drop = FALSE])
       
       reflect_on_boundaries(theta1, lb, ub, which.)
       

@@ -9,11 +9,14 @@
 \alias{convergence_auto}
 \title{Convergence Monitoring}
 \usage{
-convergence_gelman(freq = 1000L, threshold = 1.1,
-  check_invariant = TRUE, ...)
+convergence_gelman(freq = 1000L, threshold = 1.1, check_invariant = TRUE, ...)
 
-convergence_geweke(freq = 1000L, threshold = 0.025,
-  check_invariant = TRUE, ...)
+convergence_geweke(
+  freq = 1000L,
+  threshold = 0.025,
+  check_invariant = TRUE,
+  ...
+)
 
 convergence_heildel(freq = 1000L, ..., check_invariant = TRUE)
 

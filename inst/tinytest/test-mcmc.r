@@ -225,3 +225,21 @@ expect_equivalent(
   c(0, 2), tolerance = 0.1)
   
 # })
+
+# Rerunning a list
+ans_new <- suppressWarnings(
+  MCMC(
+    initial = c(1, 2),
+    fun     = fun,
+    nsteps  = 5e3,
+    burnin  = 500,
+    kernel  = kernel_normal_reflective(ub = 3, lb = c(-3, 0), scale = .25),
+    D.      = D,
+    nchains = 2L,
+    multicore = FALSE
+  )
+)
+
+expect_equivalent(
+  colMeans(do.call(rbind, ans_new)),
+  c(0, 2), tolerance = 0.1)

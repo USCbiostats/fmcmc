@@ -20,23 +20,51 @@ kernel_new(proposal, logratio = NULL, ...)
 
 kernel_unif(min. = -1, max. = 1, fixed = FALSE, scheme = "joint")
 
-kernel_unif_reflective(min. = -1, max. = 1, lb = min., ub = max.,
-  fixed = FALSE, scheme = "joint")
+kernel_unif_reflective(
+  min. = -1,
+  max. = 1,
+  lb = min.,
+  ub = max.,
+  fixed = FALSE,
+  scheme = "joint"
+)
 
 kernel_normal(mu = 0, scale = 1, fixed = FALSE, scheme = "joint")
 
-kernel_normal_reflective(mu = 0, scale = 1,
-  lb = -.Machine$double.xmax, ub = .Machine$double.xmax,
-  fixed = FALSE, scheme = "joint")
+kernel_normal_reflective(
+  mu = 0,
+  scale = 1,
+  lb = -.Machine$double.xmax,
+  ub = .Machine$double.xmax,
+  fixed = FALSE,
+  scheme = "joint"
+)
 
-kernel_adapt(mu = 0, bw = 0L, lb = -.Machine$double.xmax,
-  ub = .Machine$double.xmax, freq = 50L, warmup = 500L,
-  Sigma = NULL, Sd = NULL, eps = 1e-04, fixed = FALSE)
+kernel_adapt(
+  mu = 0,
+  bw = 0L,
+  lb = -.Machine$double.xmax,
+  ub = .Machine$double.xmax,
+  freq = 50L,
+  warmup = 500L,
+  Sigma = NULL,
+  Sd = NULL,
+  eps = 1e-04,
+  fixed = FALSE
+)
 
-kernel_ram(mu = 0, eta = function(i, k) min(c(1, i^(-2/3) * k)),
-  arate = 0.234, freq = 50L, warmup = 0L, Sigma = NULL,
-  eps = 1e-04, lb = -.Machine$double.xmax, ub = .Machine$double.xmax,
-  fixed = FALSE)
+kernel_ram(
+  mu = 0,
+  eta = function(i, k) min(c(1, i^(-2/3) * k)),
+  arate = 0.234,
+  freq = 1L,
+  warmup = 0L,
+  Sigma = NULL,
+  eps = 1e-04,
+  lb = -.Machine$double.xmax,
+  ub = .Machine$double.xmax,
+  fixed = FALSE
+)
 }
 \arguments{
 \item{proposal, logratio}{Functions. The function receives a single argument, an environment.
@@ -120,7 +148,7 @@ to \link{MCMC}). \cr
 }
 
 These are the core component of the \code{MCMC} function. The following block
-of code is how this is actually implemented in the package:\preformatted{for (i in 1L:nsteps) {
+of code is how this is actually implemented in the package:\preformatted{for (i in 1L:nsteps) \{
   # Step 1. Propose
   theta1[] <- kernel$proposal(environment())
   f1       <- f(theta1)
@@ -134,15 +162,15 @@ of code is how this is actually implemented in the package:\preformatted{for (i 
     )
   
   # Step 2. Hastings ratio
-  if (R[i] < kernel$logratio(environment())) {
+  if (R[i] < kernel$logratio(environment())) \{
     theta0 <- theta1
     f0     <- f1
-  }
+  \}
   
   # Step 3. Saving the state
   ans[i,] <- theta0
   
-}
+\}
 }
 
 For more details see the vignette \code{vignette("user-defined-kernels", "fmcmc")}.
@@ -178,7 +206,7 @@ kernel function by default adds the current status values between [-1,1].
 
 
 The \code{kernel_unif_reflective} is similar to \code{kernel_unif} with the
-main difference that proposals are bounded to be within \code{[lb, ub]}.
+main difference that proposals are bounded to be within \verb{[lb, ub]}.
 
 
 The \code{kernel_normal} function provides the canonical normal kernel
