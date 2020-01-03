@@ -10,9 +10,12 @@ status](https://ci.appveyor.com/api/projects/status/3x9qj7imvoijb1vf?svg=true)](
 status](https://ci.appveyor.com/api/projects/status/lirawn11ssw9cq07?svg=true)](https://ci.appveyor.com/project/gvegayon/fmcmc)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/USCbiostats/fmcmc/master.svg)](https://codecov.io/github/USCbiostats/fmcmc?branch=master)
-[![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/fmcmc)](https://cran.r-project.org/package=fmcmc)
+[![CRAN
+downloads](http://cranlogs.r-pkg.org/badges/grand-total/fmcmc)](https://cran.r-project.org/package=fmcmc)
 
 ## What
 
@@ -83,8 +86,8 @@ devtools::install_github("USCbiostats/fmcmc")
 
 To cite fmcmc in publications use:
 
-  Vega Yon et al., (2019). fmcmc: A friendly MCMC framework.
-  Journal of Open Source Software, 4(39), 1427,
+  Vega Yon et al., (2019). fmcmc: A friendly MCMC framework. Journal of
+  Open Source Software, 4(39), 1427,
   https://doi.org/10.21105/joss.01427
 
 A BibTeX entry for LaTeX users is
@@ -241,7 +244,7 @@ plot(ans_RAM)
 ```
 
     ##      par1      par2      par3 
-    ## 0.9991998 0.9991998 0.9991998
+    ## 0.3510702 0.3510702 0.3510702
 
 We can also try using Haario et al (2001) Adaptive Metropolis
 
