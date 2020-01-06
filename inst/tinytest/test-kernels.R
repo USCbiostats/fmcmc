@@ -1,4 +1,3 @@
-
 # kernel_unif baseline ---------------------------------------------------------
 
 # Wild
@@ -276,6 +275,50 @@ expect_lt(
   coda::gelman.diag(ans1)$mpsrf
 )
 
+# kernel_ram -----------------------------------------------------------------
+
+# Better than regular kernel
+set.seed(1)
+ans1 <- suppressWarnings(MCMC(
+  c(.5, .5), f, nsteps = 2000, kernel = kernel_ram(), burnin = 1000,
+  nchains = 2L
+))
+
+mean_ans0 <- summary(ans0)$statistics[,"Mean"]
+mean_ans1 <- summary(ans1)$statistics[,"Mean"]
+
+expect_true(dist(rbind(mean_ans0, c(.1, 2))) < 1)
+expect_true(dist(rbind(mean_ans1, c(.1, 2))) < 1)
+
+expect_lt(
+  coda::gelman.diag(ans0)$mpsrf,
+  coda::gelman.diag(ans1)$mpsrf
+)
+
+# plan_update_sequence ---------------------------------------------------------
+
+set.seed(1)
+expect_error({
+  suppressWarnings(MCMC(
+    c(.5, .5), f, nsteps = 2000,
+    kernel = kernel_normal_reflective(
+      lb = 0, fixed = c(TRUE, FALSE), scheme = c(1, 2)), burnin = 1000,
+    nchains = 2L
+    ))},
+  "not be fixed")
+
+set.seed(1)
+expect_error({
+  suppressWarnings(MCMC(
+    c(.5, .5), f, nsteps = 2000,
+    kernel = kernel_normal_reflective(
+      lb = 0, fixed = c(TRUE, TRUE)), burnin = 1000,
+    nchains = 2L
+  ))},
+  "cannot be zero")
+
+ans0 <- fmcmc:::plan_update_sequence(2, 20000, c(FALSE, FALSE), "random")
+expect_equal(colMeans(ans0), c(.5,.5), tol = .05)
 
 # Testing errors ---------------------------------------------------------------
 

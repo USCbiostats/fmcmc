@@ -1,7 +1,5 @@
-# context("MCMC")
+# Error checks -----------------------------------------------------------------
 
-# test_that("Error checks", {
-  
 f <- function(i) {}
 expect_error(
   MCMC(f, initial = 1, nsteps = 100, burnin = 100),
@@ -26,9 +24,8 @@ expect_error(
   
 # })
 
-# ------------------------------------------------------------------------------
-# test_that("Reasonable values", {
-  
+# Reasonable values ------------------------------------------------------------
+
 # Simulating data
 set.seed(981)
 
@@ -50,11 +47,9 @@ ans0 <- suppressWarnings(
 )
 expect_equal(mean(ans0), mean(D), tolerance = 0.05, scale = 1)
   
-# })
 
-# ------------------------------------------------------------------------------
-# test_that("Reasonable values after changing the scale", {
-  
+# Reasonable values after changing the scale -----------------------------------
+
 # Simulating data
 set.seed(981)
 
@@ -75,12 +70,11 @@ ans0 <- suppressWarnings(
        kernel = kernel_normal(scale = 2))
 )
 expect_equal(mean(ans0), mean(D), tolerance = 0.05, scale = 1)
-  
-# })
 
-# ------------------------------------------------------------------------------
-# test_that("Multiple chains", {
-  # Simulating data
+
+# Multiple chains --------------------------------------------------------------
+
+# Simulating data
 set.seed(981)
 
 D <- rnorm(1000, 0)
@@ -110,9 +104,9 @@ expect_equal(sapply(ans0, mean), rep(mean(D),2), tolerance = 0.1, scale = 1)
 # expect_equal(sapply(ans1, mean), rep(mean(D),2), tolerance = 0.1, scale = 1)
 # })
 
-# ------------------------------------------------------------------------------
-# test_that("Repeating the chains in parallel", {
-  # Simulating data
+# Repeating the chains in parallel ---------------------------------------------
+
+# Simulating data
 set.seed(981)
 
 D <- rnorm(500, 0)
@@ -141,13 +135,9 @@ ans1 <- suppressWarnings(
 )
 
 expect_equal(ans0, ans1)
-  
-# })
 
+# Fixed parameters -------------------------------------------------------------
 
-# ------------------------------------------------------------------------------
-# test_that("Fixed parameters", {
-  
 # Simulating data
 set.seed(981)
 
@@ -170,19 +160,16 @@ ans <- suppressWarnings(
 )
 expect_true(all(ans[,2] == 2))
 expect_equivalent(colMeans(ans), c(0, 2), tolerance = 0.1, scale = 1)
-  
-# })
 
 
-# ------------------------------------------------------------------------------
-# test_that("Passing the data", {
-  
+# Passing the data -------------------------------------------------------------
+
 # Simulating data
 set.seed(91181)
 
 D <- rnorm(1000, 0, 2)
 
-# Serial version -------------------------------------------------------------
+# Serial version ---------------------------------------------------------------
 
 # Preparing function
 fun <- function(x, D.) {
@@ -208,7 +195,7 @@ expect_equivalent(colMeans(ans), c(0, 2), tolerance = 0.1)
 # Parallel version -----------------------------------------------------------
 
 # Running the algorithm and checking expectation
-ans <- suppressWarnings(
+ans0 <- suppressWarnings(
   MCMC(fun,
        initial = c(1, 2),
        nsteps  = 5e3,
@@ -220,16 +207,27 @@ ans <- suppressWarnings(
   )
 )
 
+# Creating multicore
+ans1 <- suppressWarnings(
+  MCMC(fun,
+       initial = c(1, 2),
+       nsteps  = 5e3,
+       burnin  = 500,
+       kernel  = kernel_normal_reflective(ub = 3, lb = c(-3, 0), scale = .25),
+       D.      = D,
+       nchains = 2L,
+       multicore = TRUE
+  )
+)
+
 expect_equivalent(
-  colMeans(do.call(rbind, ans)),
+  colMeans(do.call(rbind, ans0)),
   c(0, 2), tolerance = 0.1)
   
-# })
-
 # Rerunning a list
 ans_new <- suppressWarnings(
   MCMC(
-    initial = c(1, 2),
+    initial = ans0,
     fun     = fun,
     nsteps  = 5e3,
     burnin  = 500,
