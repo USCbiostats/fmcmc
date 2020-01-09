@@ -2,6 +2,11 @@ language: R
 sudo: required
 cache: packages
 
+r:
+  - oldrel
+  - release
+  - devel
+
 os:
   - linux
   - osx
@@ -11,9 +16,6 @@ osx_image: xcode10.2
 env:
  global:
    - CRAN: http://cran.rstudio.com
-
-before_install:
-  - if [ $TRAVIS_OS_NAME == "osx" ]; then curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2 && sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /; rm gfortran-4.8.2-darwin13.tar.bz2 ; fi
 
 after_success:
   - if [ $TRAVIS_OS_NAME == "linux" ]; then Rscript -e 'covr::codecov()'; fi

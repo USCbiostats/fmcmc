@@ -33,6 +33,18 @@ ans0 <- MCMC(
 )
 
 # Gelman autostop convergence
+expect_error({
+  suppressMessages(suppressWarnings(MCMC(
+    ll, initial = rep(5, 3), nsteps = 2000,
+    kernel = kernel_normal_reflective(
+      lb = 0, ub = 10, mu = 0, scale = .1
+    ),
+    thin         = 10,
+    conv_checker = convergence_gelman(500L),
+    nchains      = 1
+  )))
+})
+
 ans1 <- suppressMessages(suppressWarnings(MCMC(
   ll, initial = rep(5, 3), nsteps = 2000,
   kernel = kernel_normal_reflective(
@@ -54,6 +66,16 @@ ans1 <- MCMC(
 )
 
 # Heidel autostop convergence
+expect_error({
+  suppressMessages(suppressWarnings(MCMC(
+    ll, initial = rep(5, 3), nsteps = 2000,
+    kernel = kernel_normal_reflective(
+      lb = 0, ub = 10, mu = 0, scale = .1
+    ), 
+    thin = 10, conv_checker = convergence_heildel(500L),
+    nchains = 2L
+  )))
+})
 ans2 <- suppressMessages(suppressWarnings(MCMC(
   ll, initial = rep(5, 3), nsteps = 2000,
   kernel = kernel_normal_reflective(
@@ -76,4 +98,17 @@ expect_equivalent(colMeans(ans0), sol, tol = 0.2)
 expect_equivalent(colMeans(ans1), sol, tol = 0.2)
 expect_equivalent(colMeans(ans2), sol, tol = 0.2)
   
+# Checking errors and warnigns -------------------------------------------------
+conv <- convergence_auto()
+expect_warning(conv(1))
+
+conv <- convergence_gelman()
+expect_warning(conv(coda::mcmc.list(coda::mcmc(1), coda::mcmc(1))))
+
+conv <- convergence_geweke()
+expect_warning(conv(coda::mcmc(1)))
+
+conv <- convergence_heildel()
+expect_warning(conv(coda::mcmc(1)))
+
 
