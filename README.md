@@ -5,9 +5,7 @@
 [![Travis-CI Build
 Status](https://travis-ci.org/USCbiostats/fmcmc.svg?branch=master)](https://travis-ci.org/USCbiostats/fmcmc)
 [![Build
-status](https://ci.appveyor.com/api/projects/status/3x9qj7imvoijb1vf?svg=true)](https://ci.appveyor.com/project/gvegayon/fmcmc)
-[![Build
-status](https://ci.appveyor.com/api/projects/status/lirawn11ssw9cq07?svg=true)](https://ci.appveyor.com/project/gvegayon/fmcmc)
+status](https://ci.appveyor.com/api/projects/status/lirawn11ssw9cq07/branch/master?svg=true)](https://ci.appveyor.com/project/gvegayon/fmcmc/branch/master)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/USCbiostats/fmcmc/master.svg)](https://codecov.io/github/USCbiostats/fmcmc?branch=master)
 [![Lifecycle:
@@ -16,6 +14,7 @@ stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://
 status](https://www.r-pkg.org/badges/version/fmcmc)](https://cran.r-project.org/package=fmcmc)
 [![CRAN
 downloads](http://cranlogs.r-pkg.org/badges/grand-total/fmcmc)](https://cran.r-project.org/package=fmcmc)
+[![status](https://tinyverse.netlify.com/badge/fmcmc)](https://CRAN.R-project.org/package=fmcmc)
 
 ## What
 
