@@ -34,7 +34,7 @@ For this example, imagine that we are interested on learning what is the size of
 a population given that we already now the prevalence of a particular phenomena,
 for example, a disease. Furthermore, assume that 20\% of the population acquire
 this disease, and we have a random sample from this population
-$y \sim \mbox{Binom}(0.2, N)$. We don't know $N$.
+$y \sim \mbox{Binomial}(0.2, N)$. We don't know $N$.
 
 Such scenario, while perhaps a bit uncommon, needs a special treatment in a
 Bayesian/MCMC framework. The parameter to estimate is not continuous so we would

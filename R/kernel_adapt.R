@@ -12,7 +12,7 @@
 #' @param Sd Overall scale for the algorithm. By default, the variance-covariance
 #' is scaled to \eqn{2.4^2/d}, with \eqn{d} the number of dimensions.
 #' @section Kernels:
-#' `kernel_adapt` Implements the adaptive Metropolis (AM) algoriuthm of Haario
+#' `kernel_adapt` Implements the adaptive Metropolis (AM) algorithm of Haario
 #' et al. (2001). If the value of bw is greater than zero, then the algorithm
 #' folds back AP, a  previous version which is known to have ergodicity problems.
 #' 

@@ -103,11 +103,11 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #'    on the current state. The function must return a vector of length equal
 #'    to the number of parameters in the model.
 #'    
-#' -  `logration`: This function is called after a new state has been proposed,
+#' -  `logratio`: This function is called after a new state has been proposed,
 #'    and is used to compute the log of the Hastings ratio.
 #'    
 #'    In the case that the `logratio` function is not specified, then it is assumed
-#'    that the transition kernel is symmetric, this is, logratio is then implemented
+#'    that the transition kernel is symmetric, this is, log-ratio is then implemented
 #'    as `function(env) {env$f1 - env$f0}`
 #'    
 #' -  `...`: Further objects that are used within those functions.
@@ -115,7 +115,7 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #' Both functions, `proposal` and `logratio`, receive a single argument, an
 #' environment, which is passed by the [MCMC] function during each step using
 #' the function [environment]. The passed
-#' environment is actually the environemnt in which the `MCMC` function is running,
+#' environment is actually the environment in which the `MCMC` function is running,
 #' in particular, this environment contains the following objects:
 #' 
 #' \tabular{lcl}{
@@ -273,7 +273,7 @@ print.fmcmc_kernel <- function(x, ...) {
 #' for internal use only. 
 #' 
 #' @param x A numeric vector. The proposal
-#' @param lb,ub Numberic vectors of length `length(x)`. Lower and upper bounds.
+#' @param lb,ub Numeric vectors of length `length(x)`. Lower and upper bounds.
 #' @param which Integer vector. Index of variables to be updated.
 #' 
 #' @return An adjusted proposal vector.

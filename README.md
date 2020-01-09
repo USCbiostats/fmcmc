@@ -73,7 +73,7 @@ the [MCMCpack](https://cran.r-project.org/package=MCMCpack) R package.
 
 # Installing
 
-From github:
+From Github:
 
 ``` r
 devtools::install_github("USCbiostats/fmcmc")
