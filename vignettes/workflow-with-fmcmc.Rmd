@@ -25,7 +25,7 @@ beta.init <- as.numeric(coefficients(out))
 ```
 
 To be able to use the Metropolis-Hastings MCMC algorithm the function should be
-(in principle) the log un-normalized posterior. The following block of code,
+(in principle) the log unnormalized posterior. The following block of code,
 which was extracted from the `mcmc` package vignette "MCMC Package Example"
 creates the function that we will be using
 

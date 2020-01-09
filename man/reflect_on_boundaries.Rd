@@ -9,7 +9,7 @@ reflect_on_boundaries(x, lb, ub, which)
 \arguments{
 \item{x}{A numeric vector. The proposal}
 
-\item{lb, ub}{Numberic vectors of length \code{length(x)}. Lower and upper bounds.}
+\item{lb, ub}{Numeric vectors of length \code{length(x)}. Lower and upper bounds.}
 
 \item{which}{Integer vector. Index of variables to be updated.}
 }

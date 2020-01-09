@@ -1,7 +1,7 @@
 #' @export
 #' @rdname kernels
 #' @param eta A function that receives the MCMC environment. This is to calculate
-#' the scalig factor for the adaptation.
+#' the scaling factor for the adaptation.
 #' @param arate Numeric scalar. Objective acceptance rate.
 #' @section Kernels: 
 #' 

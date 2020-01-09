@@ -107,7 +107,7 @@ parameter, avoiding new proposals.}
 \item{scheme}{scheme in which proposals are made (see details).}
 
 \item{eta}{A function that receives the MCMC environment. This is to calculate
-the scalig factor for the adaptation.}
+the scaling factor for the adaptation.}
 
 \item{arate}{Numeric scalar. Objective acceptance rate.}
 
@@ -123,11 +123,11 @@ following objects:
 \item \code{proposal}: The function used to propose changes in the chain based
 on the current state. The function must return a vector of length equal
 to the number of parameters in the model.
-\item \code{logration}: This function is called after a new state has been proposed,
+\item \code{logratio}: This function is called after a new state has been proposed,
 and is used to compute the log of the Hastings ratio.
 
 In the case that the \code{logratio} function is not specified, then it is assumed
-that the transition kernel is symmetric, this is, logratio is then implemented
+that the transition kernel is symmetric, this is, log-ratio is then implemented
 as \code{function(env) {env$f1 - env$f0}}
 \item \code{...}: Further objects that are used within those functions.
 }
@@ -135,7 +135,7 @@ as \code{function(env) {env$f1 - env$f0}}
 Both functions, \code{proposal} and \code{logratio}, receive a single argument, an
 environment, which is passed by the \link{MCMC} function during each step using
 the function \link{environment}. The passed
-environment is actually the environemnt in which the \code{MCMC} function is running,
+environment is actually the environment in which the \code{MCMC} function is running,
 in particular, this environment contains the following objects:
 
 \tabular{lcl}{
@@ -205,7 +205,7 @@ are the backbone of the \link{MCMC} function.
 
 \section{Kernels}{
 
-\code{kernel_adapt} Implements the adaptive Metropolis (AM) algoriuthm of Haario
+\code{kernel_adapt} Implements the adaptive Metropolis (AM) algorithm of Haario
 et al. (2001). If the value of bw is greater than zero, then the algorithm
 folds back AP, a  previous version which is known to have ergodicity problems.
 
