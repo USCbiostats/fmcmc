@@ -216,6 +216,9 @@ The second usage is in the equation that ensures that the variance-covariance
 is greater than zero, this is, the \eqn{\varepsilon}{epsilon} parameter in the
 original paper.
 
+The update of the covariance matrix is done using \code{\link[=cov_recursive]{cov_recursive()}} function,
+which makes the updates faster.
+
 
 The \code{kernel_normal} function provides the canonical normal kernel
 with symmetric transition probabilities.
@@ -276,4 +279,12 @@ kernel_mvn <- kernel_new(
 \references{
 Brooks, S., Gelman, A., Jones, G. L., & Meng, X. L. (2011). Handbook of
 Markov Chain Monte Carlo. Handbook of Markov Chain Monte Carlo.
+
+Haario, H., Saksman, E., & Tamminen, J. (2001). An adaptive Metropolis algorithm.
+Bernoulli, 7(2), 223–242.
+\url{https://projecteuclid.org/euclid.bj/1080222083}
+
+Vihola, M. (2012). Robust adaptive Metropolis algorithm with coerced acceptance
+rate. Statistics and Computing, 22(5), 997–1008.
+\url{https://doi.org/10.1007/s11222-011-9269-5}
 }

@@ -56,3 +56,4 @@ check_initial <- function(initial, nchains) {
   initial
   
 }
+

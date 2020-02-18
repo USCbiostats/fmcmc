@@ -23,6 +23,13 @@
 #' is greater than zero, this is, the \eqn{\varepsilon}{epsilon} parameter in the
 #' original paper.
 #' 
+#' The update of the covariance matrix is done using [cov_recursive()] function,
+#' which makes the updates faster.
+#' 
+#' @references 
+#' Haario, H., Saksman, E., & Tamminen, J. (2001). An adaptive Metropolis algorithm.
+#' Bernoulli, 7(2), 223–242.
+#' \url{https://projecteuclid.org/euclid.bj/1080222083}
 #' 
 kernel_adapt <- function(
   mu     = 0,
@@ -41,6 +48,10 @@ kernel_adapt <- function(
   sd     <- NULL
   Ik     <- NULL
   which. <- NULL
+  
+  # Variables for fast cov (see cov_recursive)
+  Mean_t_prev <- NULL
+  t.          <- 1L
   
   if (bw > 0L && bw > warmup)
     stop("The `warmup` parameter must be greater than `bw`.", call. = FALSE)
@@ -76,7 +87,39 @@ kernel_adapt <- function(
         ran <- if (bw <= 0L) 1L:(env$i - 1L) 
         else (env$i - bw + 1L):(env$i - 1L)
         
-        Sigma <<- Sd * (stats::cov(env$ans[ran, , drop = FALSE]) + Ik)
+        if (bw > 0L) {
+          
+          Sigma <<- Sd * (stats::cov(env$ans[ran, , drop = FALSE]) + Ik)
+          
+        } else {
+          
+          # Update mean
+          if (is.null(Mean_t_prev))
+            Mean_t_prev <<- colMeans(env$ans[1:(env$i - 1), ])
+          
+          Mean_t <- mean_recursive(
+            X_t         = env$ans[env$i - 1L, ],
+            Mean_t_prev = Mean_t_prev,
+            t.          = t.
+            )
+          
+          # Update sigma
+          Sigma <<- cov_recursive(
+            X_t         = env$ans[env$i - 1, ],
+            Cov_t       = Sigma,
+            Mean_t      = Mean_t,
+            Mean_t_prev = Mean_t_prev,
+            t.          = t.,
+            eps         = 1,
+            Ik          = Ik
+            )
+          
+          Mean_t_prev <<- Mean_t
+          
+          # Add one to the counter, we need this for the recursive update of the
+          # Covariance matrix.
+          t. <<- t. + 1L
+        }
       }
       
       # Making the proposal
@@ -87,19 +130,113 @@ kernel_adapt <- function(
       reflect_on_boundaries(theta1, lb, ub, which.)
       
     },
-    mu     = mu,
-    bw     = bw,
-    lb     = lb,
-    ub     = ub,
-    freq   = freq,
-    warmup = warmup,
-    Sigma  = Sigma,
-    Sd     = Sd,
-    eps    = eps,
-    fixed  = fixed,
-    k      = k,
-    Ik     = Ik,
-    which. = which.
+    mu          = mu,
+    bw          = bw,
+    lb          = lb,
+    ub          = ub,
+    freq        = freq,
+    warmup      = warmup,
+    Sigma       = Sigma,
+    Sd          = Sd,
+    eps         = eps,
+    fixed       = fixed,
+    k           = k,
+    Ik          = Ik,
+    which.      = which.,
+    Mean_t_prev = Mean_t_prev,
+    t.          = t.
   )
   
 }
+
+
+#' Recursive algorithms for computing variance and mean
+#' 
+#' These algorithms are used in [kernel_adapt()] to simplify variance-covariance
+#' recalculation at every step of the algorithm.
+#' 
+#' @param X_t Last value of the sample
+#' @param Cov_t Covariance in t
+#' @param Mean_t,Mean_t_prev Vectors of averages in time `t` and `t-1` respectively.
+#' @param t. Sample size up to `t-1`.
+#' @param Sd,eps,Ik See [kernel_adapt()].
+#' @export
+#' @details The variance covariance algorithm was described in Haario, Sksman and
+#' Tamminen (2002).
+#' 
+#' @references 
+#' Haario, H., Saksman, E., & Tamminen, J. (2001). An adaptive Metropolis algorithm.
+#' Bernoulli, 7(2), 223–242.
+#' \url{https://projecteuclid.org/euclid.bj/1080222083}
+#' @examples 
+#' # Generating random data (only four points to see the difference)
+#' set.seed(1231)
+#' n <- 3
+#' X <- matrix(rnorm(n*4), ncol = 4)
+#' 
+#' # These two should be equal
+#' mean_recursive(
+#'   X_t         = X[1,],
+#'   Mean_t_prev = colMeans(X[-1,]),
+#'   t.          = n - 1
+#' )
+#' colMeans(X)
+#' 
+#' # These two should be equal
+#' cov_recursive(
+#'   X_t         = X[1, ], 
+#'   Cov_t       = cov(X[-1,]), 
+#'   Mean_t      = colMeans(X),
+#'   Mean_t_prev = colMeans(X[-1, ]),
+#'   t           = n-1
+#' )
+#' cov(X)
+#' 
+#' # Speed example -------------------------------------------------------------
+#' set.seed(13155511)
+#' X <- matrix(rnorm(1e3*100), ncol = 100)
+#' 
+#' ans0 <- cov(X[-1,])
+#' t0 <- system.time({
+#'   ans1 <- cov(X)
+#' })
+#' 
+#' t1 <- system.time(ans2 <- cov_recursive(
+#'   X[1, ], ans0,
+#'   Mean_t      = colMeans(X),
+#'   Mean_t_prev = colMeans(X[-1,]),
+#'   t. = 1e3 - 1
+#' ))
+#' 
+#' # Comparing accuracy and speed
+#' range(ans1 - ans2)
+#' t0/t1
+#' 
+cov_recursive <- function(
+  X_t,
+  Cov_t,
+  Mean_t,
+  Mean_t_prev,
+  t.,
+  eps = 0, Sd = 1, Ik = diag(length(X_t))
+  ) {
+  
+  (t. - 1)/t. * Cov_t + 
+    Sd/t. * (
+      t. * tcrossprod(Mean_t_prev) -
+        (t. + 1) * tcrossprod(Mean_t) +
+        tcrossprod(X_t) + 
+        eps * Ik
+      )
+  
+}
+
+#' @export
+#' @rdname cov_recursive
+mean_recursive <- function(X_t, Mean_t_prev, t.) {
+  
+  (Mean_t_prev * t. + X_t)/ (t. + 1)
+  
+}
+
+
