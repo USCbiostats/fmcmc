@@ -5,7 +5,11 @@
 #' @param arate Numeric scalar. Objective acceptance rate.
 #' @section Kernels: 
 #' 
-#' The `kernel_ram` Implements Vihola (2012)'s Robust Adaptive Metropolis.
+#' The `kernel_ram` Implements Vihola (2012)'s Robust Adaptive Metropolis. The
+#' idea is similar to that of the Adaptive Metropolis algorithm (AM implemented
+#' as `kernel_adapt` here) with the difference that it takes into account a
+#' target acceptance rate.
+#' 
 #' @references 
 #' Vihola, M. (2012). Robust adaptive Metropolis algorithm with coerced acceptance
 #' rate. Statistics and Computing, 22(5), 997–1008.
@@ -53,9 +57,9 @@ kernel_ram <- function(
       }
       
       # Making proposal
-      U      <- stats::rnorm(k)
+      U      <- stats::rt(k, df = k)
       theta1 <- env$theta1
-      theta1[which.] <- env$theta0[which.] + (Sigma %*% U)[,1L]
+      theta1[which.] <- env$theta0[which.] + (Sigma %*% U)[, 1L]
       
       # Updating the scheme
       if (env$i > warmup && !(env$i %% freq)) {
@@ -66,11 +70,11 @@ kernel_ram <- function(
           a_n <- 0.0
         
         Sigma <<- t(chol(Sigma %*% (
-          Ik + eta(env$i, k)*(a_n - arate) * U %*% t(U) /
-            norm(rbind(U), "2")
+          Ik + eta(env$i, k) * (a_n - arate) * tcrossprod(U) /
+            norm(rbind(U), "2") ^ 2.0
         ) %*% t(Sigma)))
         
-        
+
       }
       
       # Reflecting

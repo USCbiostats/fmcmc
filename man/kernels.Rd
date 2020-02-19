@@ -236,7 +236,10 @@ kernel).
 
 
 
-The \code{kernel_ram} Implements Vihola (2012)'s Robust Adaptive Metropolis.
+The \code{kernel_ram} Implements Vihola (2012)'s Robust Adaptive Metropolis. The
+idea is similar to that of the Adaptive Metropolis algorithm (AM implemented
+as \code{kernel_adapt} here) with the difference that it takes into account a
+target acceptance rate.
 
 
 The \code{kernel_unif} function provides a uniform transition kernel. This (symmetric)

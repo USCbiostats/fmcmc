@@ -69,10 +69,16 @@ R package, or the [MCMCpack](https://cran.r-project.org/package=MCMCpack) R pack
 
 # Installing
 
-From Github:
+If you want to get the latest bleeding-edge version from Github, you can use [devtools](https://cran.r-project.org/package=devtools):
 
 ```r
 devtools::install_github("USCbiostats/fmcmc")
+```
+
+The latest (stable) release is also available on CRAN:
+
+```r
+install.packages("fmcmc")
 ```
 
 # Citation

@@ -36,8 +36,13 @@ append_chains.mcmc.list <- function(...) {
     return(dots[[1]])
   
   nchains <- sapply(dots, coda::nchain)
-  if (length(unique) != 1)
-    stop()
+  if (length(unique(nchains)) != 1)
+    stop(
+      "All mcmc.list objects must have the same number of chains. ",
+      "The passed objects have ", paste(nchains, collapse = ", "),
+      " respectively.",
+      call. = FALSE
+      )
   
   ans <- vector("list", nchains[1])
   for (i in 1:nchains[1])
@@ -63,14 +68,14 @@ append_chains.mcmc <- function(...) {
   
   if (length(unique(thin)) != 1L)
     stop("All `mcmc` objects have to have the same `thin` parameter.",
-         "Observed: ", paste(thin, collapse=,", "), ".", call.=FALSE)
+         "Observed: ", paste(thin, collapse=", "), " respectively.", call.=FALSE)
   
   # Number of parameters
   nvar <- sapply(dots, coda::nvar)
   
   if (length(unique(nvar)) != 1L)
     stop("All `mcmc` objects have to have the same number of parameters.",
-         "Observed: ", paste(nvar, collapse=,", "), ".", call.=FALSE)
+         "Observed: ", paste(nvar, collapse=", "), " respectively.", call.=FALSE)
   
   # Measuring lengths
   mcpar <- lapply(dots, coda::mcpar)

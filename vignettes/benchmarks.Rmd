@@ -1,0 +1,86 @@
+---
+title: "Benchmarks"
+author: "George G Vega Yon"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Benchmarks}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# A 100 dimension multivariate normal (mean only)
+
+```{r dgp}
+set.seed(12314)
+k <- 100
+n <- 500
+mu <- rnorm(k)
+S  <- diag(k)
+dat <- MASS::mvrnorm(n, mu, Sigma = S)
+n_samples <- 1000
+```
+
+```{r logposterior}
+logpost <- function(x) {
+  sum(mvtnorm::dmvnorm(dat, mean = x, sigma = S, log = TRUE))
+}
+```
+
+```{r fmcmc, cache = TRUE}
+library(coda)
+library(fmcmc)
+
+ans_fmcmc <- fmcmc::MCMC(
+  initial = rep(0, k),
+  fun     = logpost,
+  nsteps  = n_samples, 
+  kernel  = kernel_adapt(Sigma = diag(k)*.1, freq = 1)
+  )
+
+ans_fmcmc_ram <- fmcmc::MCMC(
+  initial = rep(0, k),
+  fun     = logpost,
+  nsteps  = n_samples, 
+  kernel  = kernel_ram(Sigma = diag(k)*.1, freq = 1)
+  )
+
+```
+
+```{r adaptMCMC, cache = TRUE}
+ans_adaptMCMC <- adaptMCMC::MCMC(
+  p        = logpost,
+  n        = n_samples,
+  init     = rep(0, k),
+  acc.rate = .24,
+  scale    = rep(.1, k)
+  )
+
+ans_adaptMCMC <- mcmc(ans_adaptMCMC$samples)
+```
+
+```{r niceplotter}
+niceplot <- function(x, main = NULL, lvl = 1, which. = 1) {
+  
+  traceplot(x[, which., drop = FALSE], main = main)
+  sapply(lvl, abline, b = 0)
+  
+  # Adding info
+  ar <- 1 - rejectionRate(x[, which., drop = FALSE])
+  title(sub = sprintf("Acceptance rate: %.2f", ar))
+}
+```
+
+
+```{r comparing-par100, out.width="80%", fig.width=8}
+niceplot(ans_adaptMCMC, main = "RAM (adaptMCMC)")
+niceplot(ans_fmcmc, main = "AM (fmcmc)")
+niceplot(ans_fmcmc_ram, main = "RAM (fmcmc)")
+```

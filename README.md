@@ -243,7 +243,7 @@ plot(ans_RAM)
 ```
 
     ##      par1      par2      par3 
-    ## 0.3510702 0.3510702 0.3510702
+    ## 0.3512703 0.3512703 0.3512703
 
 We can also try using Haario et al (2001) Adaptive Metropolis
 
@@ -266,7 +266,7 @@ plot(ans_AM)
 ```
 
     ##      par1      par2      par3 
-    ## 0.3832767 0.3832767 0.3832767
+    ## 0.5357071 0.5357071 0.5357071
 
 ## Automatic stop
 

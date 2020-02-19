@@ -14,8 +14,10 @@ Description: Provides a friendly (flexible) Markov Chain Monte Carlo (MCMC)
          transition kernels, and out-of-the-box multiple MCMC chains using
          parallel computing. Most of the methods implemented in this package can
          be found in Brooks et al. (2011, ISBN 9781420079425). Among the methods
-         included, we have: Haario (2001) Adaptive Metropolis and Viohola (2012)
-         Robust Adaptive Metropolis transition kernels. 
+         included, we have: Haario (2001) <doi:10.1007/s11222-011-9269-5>
+         Adaptive Metropolis  and Viohola (2012) 
+         <https://doi.org/10.1007/s11222-011-9269-5> Robust Adaptive Metropolis 
+         transition kernels.
 Depends: R (>= 3.3.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -23,8 +25,20 @@ Language: en-US
 LazyData: true
 URL: https://github.com/USCbiostats/fmcmc
 BugReports: https://github.com/USCbiostats/fmcmc/issues
-Suggests: covr, mvtnorm, knitr, rmarkdown, mcmc, tinytest
-Imports: parallel, coda, stats, methods, MASS
+Suggests: 
+    covr,
+    knitr,
+    rmarkdown,
+    mcmc,
+    tinytest,
+    mvtnorm,
+    adaptMCMC
+Imports: 
+    parallel,
+    coda,
+    stats,
+    methods,
+    MASS
 RoxygenNote: 7.0.2
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr

@@ -2,14 +2,20 @@ language: R
 sudo: required
 cache: packages
 
-r:
-  - oldrel
-  - release
-  - devel
+matrix:
+  include:
+    - os: linux
+      r: oldrel
+    - os: linux
+      r: release
+      env:
+        - R_CODECOV=true
+        - BUILD_WWW_HERE=true
+    - os: linux
+      r: devel
+    - os: osx
+      osx_image: xcode10.2
 
-os:
-  - linux
-  - osx
   
 osx_image: xcode10.2
 
@@ -18,7 +24,7 @@ env:
    - CRAN: http://cran.rstudio.com
 
 after_success:
-  - if [ $TRAVIS_OS_NAME == "linux" ]; then Rscript -e 'covr::codecov()'; fi
+  - if [ $R_CODECOV == 'true' ]; then Rscript -e 'covr::codecov()'; fi
   
   # For automatic deploy of the website
 before_deploy: Rscript -e 'remotes::install_cran("pkgdown")'
@@ -28,4 +34,4 @@ deploy:
   skip_cleanup: true
   on:
     branch: master
-    condition: $TRAVIS_OS_NAME = linux
+    condition: $BUILD_WWW_HERE=linux

@@ -84,6 +84,10 @@ kernel_adapt <- function(
       # Updating the scheme
       if (env$i > warmup && env$i > 2 && !(env$i %% freq)) {
         
+        # Once the warmup part is passed, we can set it to 0 so that next time
+        # the kernel is started, it has passed the warmup bit
+        warmup <<- structure(0L, original = c(warmup = warmup))
+        
         ran <- if (bw <= 0L) 1L:(env$i - 1L) 
         else (env$i - bw + 1L):(env$i - 1L)
         
