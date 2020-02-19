@@ -34,4 +34,4 @@ deploy:
   skip_cleanup: true
   on:
     branch: master
-    condition: $BUILD_WWW_HERE=linux
+    condition: $BUILD_WWW_HERE=true
