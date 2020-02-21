@@ -1,7 +1,8 @@
 # fmcmc 0.2-1-9999
 
-* Adding Vihola (2012)'s Robust Adaptive Metropolis and Haario et al. (2001)
-  Adaptive Metropolis kernel algorithms.
+* Adding Vihola (2012)'s Robust Adaptive Metropolis, Haario et al. (2001)'s
+  Adaptive Metropolis, and Thawornwattana et al. (2018)'s mirror kernel
+  algorithms.
 
 * Improved coverage and fixed minor bugs.
 

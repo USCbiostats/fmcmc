@@ -64,6 +64,10 @@ kernel_ram <- function(
       # Updating the scheme
       if (env$i > warmup && !(env$i %% freq)) {
         
+        # Once the warmup part is passed, we can set it to 0 so that next time
+        # the kernel is started, it has passed the warmup bit
+        warmup <<- structure(0L, original = c(warmup = warmup))
+        
         # Computing
         a_n <- min(1, exp(env$f(theta1) - env$f0))
         if (!is.finite(a_n))
