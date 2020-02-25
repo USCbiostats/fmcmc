@@ -18,7 +18,8 @@
 #' @param conv_checker A function that receives an object of class [coda::mcmc.list],
 #' and returns a logical value with `TRUE` indicating convergence. See the
 #' "Automatic stop" section and the [convergence-checker] manual.
-#' @param progress Logical scalar (currently ignored).
+#' @param progress Logical scalar. When set to `TRUE` shows a progress bar. A new
+#' bar will be show everytime that the convergence checker is called.
 #' 
 #' @details This function implements MCMC using the Metropolis-Hastings ratio with
 #' flexible transition kernels. Users can specify either one of the available
@@ -219,7 +220,7 @@ MCMC <- function(
   multicore    = FALSE,
   conv_checker = NULL, 
   cl           = NULL,
-  progress     = interactive()
+  progress     = interactive() && !multicore
 ) UseMethod("MCMC")
 
 #' @export
@@ -496,6 +497,9 @@ MCMC.default <- function(
   ans <- matrix(ncol = length(initial), nrow = nsteps,
                 dimnames = list(1:nsteps, cnames))
   
+  if (progress)
+    progress_bar <- new_progress_bar(nsteps)
+  
   for (i in 1L:nsteps) {
     # Step 1. Propose
     theta1[] <- kernel$proposal(environment())
@@ -521,6 +525,9 @@ MCMC.default <- function(
       
     # Step 3. Saving the state
     ans[i,] <- theta0
+    
+    if (progress)
+      progress_bar(i)
     
   }
   

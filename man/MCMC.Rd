@@ -20,7 +20,7 @@ MCMC(
   multicore = FALSE,
   conv_checker = NULL,
   cl = NULL,
-  progress = interactive()
+  progress = interactive() && !multicore
 )
 
 \method{MCMC}{mcmc}(
@@ -96,7 +96,8 @@ and returns a logical value with \code{TRUE} indicating convergence. See the
 
 \item{cl}{A \code{cluster} object passed to \link[parallel:clusterApply]{parallel::clusterApply}.}
 
-\item{progress}{Logical scalar (currently ignored).}
+\item{progress}{Logical scalar. When set to \code{TRUE} shows a progress bar. A new
+bar will be show everytime that the convergence checker is called.}
 }
 \value{
 An object of class \link[coda:mcmc]{coda::mcmc} from the \CRANpkg{coda}

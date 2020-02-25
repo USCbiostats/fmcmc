@@ -4,6 +4,9 @@
   Adaptive Metropolis, and Thawornwattana et al. (2018)'s mirror kernel
   algorithms.
 
+* The argument `progress` is no longer ignored. When set to `TRUE`, the function
+  will print the progress of the MCMC algorithm.
+
 * Improved coverage and fixed minor bugs.
 
 
