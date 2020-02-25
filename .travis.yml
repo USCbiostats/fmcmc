@@ -1,8 +1,7 @@
 language: R
-sudo: required
 cache: packages
 
-matrix:
+jobs:
   include:
     - os: linux
       r: oldrel
@@ -14,9 +13,12 @@ matrix:
     - os: linux
       r: devel
     - os: osx
-      osx_image: xcode10.2
+      r: release
+    - os: osx
+      r: devel
+    - os: osx
+      r: oldrel
 
-  
 osx_image: xcode10.2
 
 env:
@@ -34,4 +36,4 @@ deploy:
   skip_cleanup: true
   on:
     branch: master
-    condition: $BUILD_WWW_HERE=true
+    condition: $BUILD_WWW_HERE = true
