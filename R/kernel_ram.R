@@ -3,6 +3,8 @@
 #' @param eta A function that receives the MCMC environment. This is to calculate
 #' the scaling factor for the adaptation.
 #' @param arate Numeric scalar. Objective acceptance rate.
+#' @param q Function. As described in Vihola (2012)'s, the `q` function is a symmetric
+#' function used to generate random numbers.
 #' @section Kernels: 
 #' 
 #' The `kernel_ram` Implements Vihola (2012)'s Robust Adaptive Metropolis. The
@@ -17,6 +19,7 @@
 kernel_ram <- function(
   mu     = 0,
   eta    = function(i, k) min(c(1.0, i^(-2.0/3.0) * k)),
+  q      = function(k) stats::rt(k, k),
   arate  = 0.234,
   freq   = 1L,
   warmup = 0L,
@@ -69,7 +72,7 @@ kernel_ram <- function(
       }
       
       # Making proposal
-      U      <- stats::rt(k, df = k)
+      U      <- q(k)
       theta1 <- env$theta1
       theta1[which.] <- env$theta0[which.] + (Sigma[[env$chain_id]] %*% U)[, 1L]
       

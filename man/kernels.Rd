@@ -66,6 +66,7 @@ kernel_normal_reflective(
 kernel_ram(
   mu = 0,
   eta = function(i, k) min(c(1, i^(-2/3) * k)),
+  q = function(k) stats::rt(k, k),
   arate = 0.234,
   freq = 1L,
   warmup = 0L,
@@ -128,6 +129,9 @@ parameter, avoiding new proposals.}
 
 \item{eta}{A function that receives the MCMC environment. This is to calculate
 the scaling factor for the adaptation.}
+
+\item{q}{Function. As described in Vihola (2012)'s, the \code{q} function is a symmetric
+function used to generate random numbers.}
 
 \item{arate}{Numeric scalar. Objective acceptance rate.}
 
