@@ -88,7 +88,7 @@ kernel_unif_reflective(
 )
 }
 \arguments{
-\item{proposal, logratio}{Functions. The function receives a single argument, an environment.
+\item{proposal, logratio}{Functions. Both receive a single argument, an environment.
 This functions are called later within \link{MCMC} (see details).}
 
 \item{...}{In the case of \code{kernel_new}, further arguments to be stored with
@@ -154,13 +154,16 @@ as \code{function(env) {env$f1 - env$f0}}
 
 Both functions, \code{proposal} and \code{logratio}, receive a single argument, an
 environment, which is passed by the \link{MCMC} function during each step using
-the function \link{environment}. The passed
-environment is actually the environment in which the \code{MCMC} function is running,
-in particular, this environment contains the following objects:
+the function \code{\link[=environment]{environment()}}.
+
+The passed environment is actually the environment in which the \code{MCMC}
+function is running, in particular, this environment contains the following
+objects:
 
 \tabular{lcl}{
 \strong{Object} \tab \tab \strong{Description} \cr
 \code{i} \tab \tab Integer. The current iteration. \cr
+\code{chain_id} \tab \tab Integer. The current chain (relevent for some kernels). \cr
 \code{theta1} \tab \tab Numeric vector. The last proposed state. \cr
 \code{theta0} \tab \tab Numeric vector. The current state \cr
 \code{f}\tab \tab The log-unnormalized posterior function (a wrapper of \code{fun} passed

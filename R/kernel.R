@@ -114,13 +114,16 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #' 
 #' Both functions, `proposal` and `logratio`, receive a single argument, an
 #' environment, which is passed by the [MCMC] function during each step using
-#' the function [environment]. The passed
-#' environment is actually the environment in which the `MCMC` function is running,
-#' in particular, this environment contains the following objects:
+#' the function [environment()].
+#' 
+#' The passed environment is actually the environment in which the `MCMC`
+#' function is running, in particular, this environment contains the following
+#' objects:
 #' 
 #' \tabular{lcl}{
 #' \strong{Object} \tab \tab \strong{Description} \cr
 #' `i` \tab \tab Integer. The current iteration. \cr
+#' `chain_id` \tab \tab Integer. The current chain (relevent for some kernels). \cr
 #' `theta1` \tab \tab Numeric vector. The last proposed state. \cr
 #' `theta0` \tab \tab Numeric vector. The current state \cr
 #' `f`\tab \tab The log-unnormalized posterior function (a wrapper of `fun` passed 
@@ -214,7 +217,7 @@ NULL
 
 #' @export
 #' @rdname kernels
-#' @param proposal,logratio Functions. The function receives a single argument, an environment.
+#' @param proposal,logratio Functions. Both receive a single argument, an environment.
 #' This functions are called later within [MCMC] (see details).
 #' @param kernel_env Environment. This will be used as the main container of the
 #' kernel's components. It is returned as an object of class `c("environment", "fmcmc_kernel")`.
@@ -233,9 +236,15 @@ kernel_new <- function(
   
   # Checks
   if (length(formals(proposal)) != 1L)
-    stop("The `proposal` function should receive a single argument.", call. = FALSE)
+    stop(
+      "The `proposal` function should receive a single arguments (an environment).",
+      call. = FALSE
+      )
   if (!is.null(logratio) && length(formals(logratio)) != 1L)
-    stop("The `logratio` function should receive a single argument.", call. = FALSE)
+    stop(
+      "The `logratio` function should receive a single argument (an environment) ",
+      call. = FALSE
+      )
   
   if (is.null(logratio))
     logratio <- function(env) {env$f1 - env$f0}
@@ -259,7 +268,7 @@ kernel_new <- function(
 #' @param x An object of class `fmcmc_kernel`.
 print.fmcmc_kernel <- function(x, ...) {
   
-  cat("\nAn object of class fmcmc_kernel. The following two functions are available:\n\n")
+  cat("\nAn environment of class fmcmc_kernel:\n\n")
   print(utils::ls.str(x))
   cat("\n")
   invisible(x)

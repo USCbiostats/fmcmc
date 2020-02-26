@@ -50,8 +50,14 @@ kernel_adapt <- function(
   which. <- NULL
   
   # Variables for fast cov (see cov_recursive)
-  Mean_t_prev <- NULL
-  t.          <- 1L
+  Mean_t_prev <- list()
+  t.          <- list()
+  
+  # We create copies of this b/c each chain has its own values
+  Sigma0  <- Sigma
+  Sigma   <- list()
+  
+  abs_iter <- list()
   
   if (bw > 0L && bw > warmup)
     stop("The `warmup` parameter must be greater than `bw`.", call. = FALSE)
@@ -65,8 +71,17 @@ kernel_adapt <- function(
         k     <<- length(env$theta0)
         Ik    <<- diag(k) * eps
         
-        if (is.null(Sigma))
-          Sigma <<- Ik
+        if (is.null(Sigma0))
+          Sigma0 <<- Ik
+        
+        # Looking at this chain in particular, we grow the thing
+        if ( is.null(Sigma[env$chain_id][[1L]]) ) {
+          
+          Sigma[env$chain_id]    <<- list(Sigma0) # Ik * eps
+          t.[env$chain_id]       <<- list(1L) # Just starting
+          abs_iter[env$chain_id] <<- list(0L)
+          
+        }
         
         mu     <<- check_dimensions(mu, k)
         ub     <<- check_dimensions(ub, k)
@@ -82,54 +97,56 @@ kernel_adapt <- function(
       }
       
       # Updating the scheme
-      if (env$i > warmup && env$i > 2 && !(env$i %% freq)) {
-        
-        # Once the warmup part is passed, we can set it to 0 so that next time
-        # the kernel is started, it has passed the warmup bit
-        warmup <<- structure(0L, original = c(warmup = warmup))
+      if (abs_iter[[env$chain_id]] > warmup && env$i > 2L && !(env$i %% freq)) {
         
         ran <- if (bw <= 0L) 1L:(env$i - 1L) 
         else (env$i - bw + 1L):(env$i - 1L)
         
         if (bw > 0L) {
           
-          Sigma <<- Sd * (stats::cov(env$ans[ran, , drop = FALSE]) + Ik)
+          Sigma[[env$chain_id]] <<- Sd * (stats::cov(env$ans[ran, , drop = FALSE]) + Ik)
           
         } else {
           
           # Update mean
-          if (is.null(Mean_t_prev))
-            Mean_t_prev <<- colMeans(env$ans[1:(env$i - 1), ])
+          if (is.null(Mean_t_prev[env$chain_id][[1L]]))
+            Mean_t_prev[env$chain_id] <<- list(colMeans(env$ans[1:(env$i - 1), ]))
           
           Mean_t <- mean_recursive(
             X_t         = env$ans[env$i - 1L, ],
-            Mean_t_prev = Mean_t_prev,
-            t.          = t.
+            Mean_t_prev = Mean_t_prev[[env$chain_id]],
+            t.          = t.[[env$chain_id]]
             )
           
           # Update sigma
-          Sigma <<- cov_recursive(
+          Sigma[[env$chain_id]] <<- cov_recursive(
             X_t         = env$ans[env$i - 1, ],
-            Cov_t       = Sigma,
+            Cov_t       = Sigma[[env$chain_id]],
             Mean_t      = Mean_t,
-            Mean_t_prev = Mean_t_prev,
-            t.          = t.,
+            Mean_t_prev = Mean_t_prev[[env$chain_id]],
+            t.          = t.[[env$chain_id]],
             eps         = 1,
             Ik          = Ik
             )
           
-          Mean_t_prev <<- Mean_t
+          Mean_t_prev[[env$chain_id]] <<- Mean_t
           
           # Add one to the counter, we need this for the recursive update of the
           # Covariance matrix.
-          t. <<- t. + 1L
+          t.[[env$chain_id]] <<- t.[[env$chain_id]] + 1L
         }
       }
+      
+      # Increasing the absolute number of iteration
+      abs_iter[[env$chain_id]] <<- abs_iter[[env$chain_id]] + 1L
       
       # Making the proposal
       theta1 <- env$theta0
       theta1[which.] <- env$theta0[which.] +
-        MASS::mvrnorm(mu = mu[which.], Sigma = Sigma[which., , drop = FALSE][,which. , drop = FALSE])
+        MASS::mvrnorm(
+          mu    = mu[which.],
+          Sigma = Sigma[[env$chain_id]][which., , drop = FALSE][,which. , drop = FALSE]
+          )
       
       reflect_on_boundaries(theta1, lb, ub, which.)
       
@@ -141,6 +158,7 @@ kernel_adapt <- function(
     freq        = freq,
     warmup      = warmup,
     Sigma       = Sigma,
+    Sigma0      = Sigma0,
     Sd          = Sd,
     eps         = eps,
     fixed       = fixed,
@@ -148,7 +166,8 @@ kernel_adapt <- function(
     Ik          = Ik,
     which.      = which.,
     Mean_t_prev = Mean_t_prev,
-    t.          = t.
+    t.          = t.,
+    abs_iter    = abs_iter
   )
   
 }

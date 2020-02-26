@@ -41,7 +41,7 @@ library(fmcmc)
 ans_fmcmc <- fmcmc::MCMC(
   initial = rep(0, k),
   fun     = logpost,
-  nsteps  = n_samples, 
+  nsteps  = n_samples,
   kernel  = kernel_adapt(Sigma = diag(k)*.1, freq = 1)
   )
 

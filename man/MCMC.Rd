@@ -20,7 +20,8 @@ MCMC(
   multicore = FALSE,
   conv_checker = NULL,
   cl = NULL,
-  progress = interactive() && !multicore
+  progress = interactive() && !multicore,
+  chain_id = 1L
 )
 
 \method{MCMC}{mcmc}(
@@ -35,7 +36,8 @@ MCMC(
   multicore = FALSE,
   conv_checker = NULL,
   cl = NULL,
-  progress = interactive() && !multicore
+  progress = interactive() && !multicore,
+  chain_id = 1L
 )
 
 \method{MCMC}{mcmc.list}(
@@ -50,7 +52,8 @@ MCMC(
   multicore = FALSE,
   conv_checker = NULL,
   cl = NULL,
-  progress = interactive() && !multicore
+  progress = interactive() && !multicore,
+  chain_id = 1L
 )
 
 \method{MCMC}{default}(
@@ -65,7 +68,8 @@ MCMC(
   multicore = FALSE,
   conv_checker = NULL,
   cl = NULL,
-  progress = interactive() && !multicore
+  progress = interactive() && !multicore,
+  chain_id = 1L
 )
 }
 \arguments{
@@ -98,6 +102,11 @@ and returns a logical value with \code{TRUE} indicating convergence. See the
 
 \item{progress}{Logical scalar. When set to \code{TRUE} shows a progress bar. A new
 bar will be show everytime that the convergence checker is called.}
+
+\item{chain_id}{Integer scalar (internal use only). This is an argument
+passed to the kernel function and it allows it identify in which of the
+chains the process is taking place. This could be relevant for some kernels
+(see \code{\link[=kernel_new]{kernel_new()}}).}
 }
 \value{
 An object of class \link[coda:mcmc]{coda::mcmc} from the \CRANpkg{coda}

@@ -7,6 +7,8 @@
 #' @param n Integer. Number of steps.
 #' @param probs Double vector. Quantiles where to put marks
 #' @param width Integer. Width of the bar in characters.
+#' @param symbol Character. Single character symbol to print each bar.
+#' @param ... Further arguments passed to [cat()] such as `file` and `append`.
 #' @return A function that can be included at the interior of a loop to 
 #' mark the progress of the loop. It receives a single argument, `i`,
 #' which is the number of the current step.
@@ -22,8 +24,10 @@
 #' 
 new_progress_bar <- function(
   n,
-  probs = c(0, .25, .5, .75, 1),
-  width = getOption("width", 80)
+  probs  = c(0, .25, .5, .75, 1),
+  width  = getOption("width", 80),
+  symbol = "/",
+  ...
   ) {
   
   
@@ -62,7 +66,7 @@ new_progress_bar <- function(
   
   # What is the number of iterations to count
   freq <- cumsum(diff(floor(seq(from = 0, to = n, length.out = nsplits + 1))))
-  bar <- function(w) cat(rep("|", w), sep = "")
+  bar <- function(w) cat(rep(symbol, w), sep = "", ...)
 
   first_done <- FALSE
   head_position <- 1L
@@ -70,7 +74,7 @@ new_progress_bar <- function(
     
     # If it is the first one, then start
     if (!first_done) {
-      cat("\n", line, "\n", sep = "")
+      cat("\n", line, "\n", sep = "", ...)
       first_done <<- TRUE
     }
     
@@ -82,7 +86,7 @@ new_progress_bar <- function(
     
     # if it is the last step, then write a new line
     if (i == freq[nsplits])
-      cat("\n")
+      cat("\n", ...)
 
   }
   

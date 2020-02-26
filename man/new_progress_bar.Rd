@@ -7,7 +7,9 @@
 new_progress_bar(
   n,
   probs = c(0, 0.25, 0.5, 0.75, 1),
-  width = getOption("width", 80)
+  width = getOption("width", 80),
+  symbol = "/",
+  ...
 )
 }
 \arguments{
@@ -16,6 +18,10 @@ new_progress_bar(
 \item{probs}{Double vector. Quantiles where to put marks}
 
 \item{width}{Integer. Width of the bar in characters.}
+
+\item{symbol}{Character. Single character symbol to print each bar.}
+
+\item{...}{Further arguments passed to \code{\link[=cat]{cat()}} such as \code{file} and \code{append}.}
 }
 \value{
 A function that can be included at the interior of a loop to

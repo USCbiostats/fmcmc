@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r}
-library(amcmc)
+library(fmcmc)
 library(mcmc)
 library(coda)
 data(logit)

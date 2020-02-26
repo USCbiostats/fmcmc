@@ -20,6 +20,10 @@
 #' "Automatic stop" section and the [convergence-checker] manual.
 #' @param progress Logical scalar. When set to `TRUE` shows a progress bar. A new
 #' bar will be show everytime that the convergence checker is called.
+#' @param chain_id Integer scalar (internal use only). This is an argument
+#' passed to the kernel function and it allows it identify in which of the
+#' chains the process is taking place. This could be relevant for some kernels
+#' (see [kernel_new()]).
 #' 
 #' @details This function implements MCMC using the Metropolis-Hastings ratio with
 #' flexible transition kernels. Users can specify either one of the available
@@ -220,7 +224,8 @@ MCMC <- function(
   multicore    = FALSE,
   conv_checker = NULL, 
   cl           = NULL,
-  progress     = interactive() && !multicore
+  progress     = interactive() && !multicore,
+  chain_id     = 1L
 ) UseMethod("MCMC")
 
 #' @export
@@ -237,7 +242,8 @@ MCMC.mcmc <- function(
   multicore    = FALSE,
   conv_checker = NULL, 
   cl           = NULL,
-  progress     = interactive() && !multicore
+  progress     = interactive() && !multicore,
+  chain_id     = 1L
 ) {
   
   MCMC.default(
@@ -252,7 +258,8 @@ MCMC.mcmc <- function(
     multicore    = multicore,
     conv_checker = conv_checker,
     cl           = cl,
-    progress     = progress
+    progress     = progress,
+    chain_id     = chain_id
   )
   
 }
@@ -271,7 +278,8 @@ MCMC.mcmc.list <- function(
   multicore    = FALSE,
   conv_checker = NULL, 
   cl           = NULL,
-  progress     = interactive() && !multicore
+  progress     = interactive() && !multicore,
+  chain_id     = 1L
 ) {
   
   if (nchains != length(initial))
@@ -292,7 +300,8 @@ MCMC.mcmc.list <- function(
     multicore    = multicore,
     conv_checker = conv_checker,
     cl           = cl,
-    progress     = progress
+    progress     = progress,
+    chain_id     = chain_id
   )
   
 }
@@ -313,7 +322,8 @@ MCMC.default <- function(
   multicore    = FALSE,
   conv_checker = NULL, 
   cl           = NULL,
-  progress     = interactive() && !multicore
+  progress     = interactive() && !multicore,
+  chain_id     = 1L
   ) {
   
   # # if the coda package hasn't been loaded, then return a warning
@@ -366,23 +376,22 @@ MCMC.default <- function(
         else 
           list(quote(lapply), X = quote(1L:nchains)),
         list(
-          FUN = quote(function(
-            i, fun., initial., nsteps., thin., kernel., burnin., ...) {
-          
-          MCMC(
-            fun          = fun.,
-            ...,
-            initial      = initial.[i, , drop = FALSE],
-            nsteps       = nsteps.,
-            burnin       = burnin.,
-            thin         = thin.,
-            kernel       = kernel.,
-            nchains      = 1L,
-            multicore    = FALSE,
-            cl           = NULL,
-            conv_checker = NULL
-            )
-          
+          FUN = quote(
+            function(i, fun., initial., nsteps., thin., kernel., burnin., ...) {
+              MCMC(
+                fun          = fun.,
+                ...,
+                initial      = initial.[i, , drop = FALSE],
+                nsteps       = nsteps.,
+                burnin       = burnin.,
+                thin         = thin.,
+                kernel       = kernel.,
+                nchains      = 1L,
+                multicore    = FALSE,
+                cl           = NULL,
+                conv_checker = NULL,
+                chain_id     = i
+                )
         }),
         fun.     = quote(fun),
         initial. = quote(initial),
@@ -412,6 +421,7 @@ MCMC.default <- function(
     fmcmc_call$thin         <- quote(thin)
     fmcmc_call$burnin       <- quote(burnin)
     fmcmc_call$conv_checker <- enquote(NULL)
+    fmcmc_call$chain_id     <- enquote(1L)
     
   }
   
@@ -432,8 +442,10 @@ MCMC.default <- function(
   # If we are not using conv_checker, but still have multiple chains, then
   # we still have to run this somewhat recursively.
   } else if (nchains > 1L) {
+    
     ans <- eval(fmcmc_call)
     return(ans)
+    
   }
   
   # Adding names
