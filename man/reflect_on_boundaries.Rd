@@ -2,7 +2,7 @@
 % Please edit documentation in R/kernel.R
 \name{reflect_on_boundaries}
 \alias{reflect_on_boundaries}
-\title{Reflective boundaries}
+\title{Reflective Boundaries}
 \usage{
 reflect_on_boundaries(x, lb, ub, which)
 }

@@ -16,8 +16,29 @@ check_dimensions <- function(x, k) {
   
 }
 
-#' Generates a update sequence accordignly
-#' @noRd
+#' Paramaters' update sequence
+#' @param k Integer. Number of parameters
+#' @param nsteps Integer. Number of steps.
+#' @param fixed Logical scalar or vector of length `k`. Indicates which parameters
+#' will be treated as fixed or not. Single values are recycled.
+#' @param scheme Scheme in which the proposals are made (see details).
+#' 
+#' @details 
+#' The parameter `scheme` present on the currently available kernels sets the way
+#' in which proposals are made. By default, `scheme = "joint"`, proposals are done
+#' jointly, this is, at each step of the chain we are proposing new states for
+#' each parameter of the model. When `scheme = "ordered"`, a sequential update schema
+#' is followed, in which, at each step of the chain, proposals are made one
+#' variable at a time, If `scheme = "random"`, proposals are also made one
+#' variable at a time but in a random scheme.
+#' 
+#' Finally, users can specify their own sequence of proposals for the variables
+#' by passing a numeric vector to `scheme`, for example, if the user wants to make
+#' sequential proposals following the scheme 2, 1, 3, then scheme must be set to
+#' be `scheme = c(2, 1, 3)`.
+#' 
+#' @return A logical vector of size `nsteps` x `k`.
+#' @export
 plan_update_sequence <- function(k, nsteps, fixed, scheme) {
   
   # Setting the scheme in which the variables will be updated
@@ -87,15 +108,20 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
   
 }
 
-#' Various kernel functions for MCMC
+#' Create Personalized Transition Kernels for MCMC
 #' 
-#' @param mu,scale Either a numeric vector or a scalar. Proposal mean and scale.
-#' @param lb,ub Either a numeric vector or a scalar. Lower and upper bounds for
-#' bounded kernels.
-#' @param fixed Logical scalar or vector. When `TRUE` fixes the corresponding
-#' parameter, avoiding new proposals.
-#' @param scheme scheme in which proposals are made (see details).
+#' The function `kernel_new` is a helper function that allows creating
+#' `fmcmc_kernel` objects which are passed to the [MCMC()] function.
+#' 
+#' @param proposal,logratio Functions. Both receive a single argument, an environment.
+#' This functions are called later within [MCMC] (see details).
+#' @param kernel_env Environment. This will be used as the main container of the
+#' kernel's components. It is returned as an object of class `c("environment", "fmcmc_kernel")`.
+#' @param ... In the case of `kernel_new`, further arguments to be stored with
+#' the kernel.
+#' 
 #' @details
+#' 
 #' The objects `fmcmc_kernels` are environments that in general contain the 
 #' following objects:
 #' 
@@ -165,23 +191,8 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #' 
 #' For more details see the vignette `vignette("user-defined-kernels", "fmcmc")`.
 #' 
-#' @section Proposal scheme:
-#'  
-#' The parameter `scheme` present on the currently available kernels sets the way
-#' in which proposals are made. By default, `scheme = "joint"`, proposals are done
-#' jointly, this is, at each step of the chain we are proposing new states for
-#' each parameter of the model. When `scheme = "ordered"`, a sequential update schema
-#' is followed, in which, at each step of the chain, proposals are made one
-#' variable at a time, If `scheme = "random"`, proposals are also made one
-#' variable at a time but in a random scheme.
-#' 
-#' Finally, users can specify their own sequence of proposals for the variables
-#' by passing a numeric vector to `scheme`, for example, if the user wants to make
-#' sequential proposals following the scheme 2, 1, 3, then scheme must be set to
-#' be `scheme = c(2, 1, 3)`.
-#' 
-#' @name kernels
-#' @aliases fmcmc_kernel fmcmc-kernel
+#' @family kernels
+#' @aliases fmcmc_kernel kernels
 #' @examples 
 #' 
 #' # Example creating a multivariate normal kernel using the mvtnorm R package
@@ -210,23 +221,20 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #' # The logaratio function was not necesary to be passed since this kernel is
 #' # symmetric.
 #' 
+#' @return An environment of class `fmcmc_kernel` which contains the following:
+#' 
+#' - `proposal` A function that receives a single argument, an environment. This
+#'   is the proposal function used within [MCMC()].
+#'   
+#' - `logratio` A function to compute log ratios of the current vs the proposed
+#'   step of the chain. Also used within [MCMC()].
+#' 
+#' - `...` Further arguments passed to `kernel_new`.
+#' 
 #' @references 
 #' Brooks, S., Gelman, A., Jones, G. L., & Meng, X. L. (2011). Handbook of
 #' Markov Chain Monte Carlo. Handbook of Markov Chain Monte Carlo.
-NULL
-
 #' @export
-#' @rdname kernels
-#' @param proposal,logratio Functions. Both receive a single argument, an environment.
-#' This functions are called later within [MCMC] (see details).
-#' @param kernel_env Environment. This will be used as the main container of the
-#' kernel's components. It is returned as an object of class `c("environment", "fmcmc_kernel")`.
-#' @param ... In the case of `kernel_new`, further arguments to be stored with
-#' the kernel.
-#' @section Creating your own kernels:
-#' The function `kernel_new` is a helper function that allows creating
-#' `fmcmc_kernel` which is used with the `MCMC` function. The `fmcmc_kernel`
-#' are the backbone of the [MCMC] function.
 kernel_new <- function(
   proposal,
   ... ,
@@ -264,7 +272,7 @@ kernel_new <- function(
 }
 
 #' @export
-#' @rdname kernels
+#' @rdname kernel_new
 #' @param x An object of class `fmcmc_kernel`.
 print.fmcmc_kernel <- function(x, ...) {
   
@@ -275,7 +283,7 @@ print.fmcmc_kernel <- function(x, ...) {
   
 }
 
-#' Reflective boundaries
+#' Reflective Boundaries
 #' 
 #' Adjust a proposal according to its support by reflecting it. This is the workhorse
 #' of [kernel_normal_reflective] and [kernel_unif_reflective]. It is intended

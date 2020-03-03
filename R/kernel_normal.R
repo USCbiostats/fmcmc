@@ -1,8 +1,12 @@
-#' @export
-#' @rdname kernels
-#' @section Kernels:
+#' Gaussian Transition Kernel
+#' @template mu-scale
+#' @template scheme
+#' @details
 #' The `kernel_normal` function provides the canonical normal kernel
 #' with symmetric transition probabilities.
+#' @export
+#' @return An object of class [fmcmc_kernel].
+#' @family kernels
 kernel_normal <- function(
   mu    = 0,
   scale = 1,
@@ -62,8 +66,9 @@ kernel_normal <- function(
 }
 
 #' @export 
-#' @rdname kernels
-#' @section Kernels:
+#' @rdname kernel_normal
+#' @family kernels
+#' @details
 #' The `kernel_normal_reflective` implements the normal kernel with reflective
 #' boundaries. Lower and upper bounds are treated using reflecting boundaries, this is, 
 #' if the proposed \eqn{\theta'} is greater than the \code{ub}, then \eqn{\theta' - ub}

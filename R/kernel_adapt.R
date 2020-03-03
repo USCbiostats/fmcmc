@@ -1,5 +1,7 @@
-#' @export 
-#' @rdname kernels
+#' Adaptive Metropolis (AM) Transition Kernel
+#' @template mu-scale
+#' @template lb-ub
+#' @template scheme
 #' @param bw Integer scalar. The bandwidth, is the number of observations to
 #' include in the computation of the variance-covariance matrix.
 #' @param freq Integer scalar. Frequency of updates. How often the
@@ -11,7 +13,9 @@
 #' @param eps Double scalar. Default size of the initial step (see details).
 #' @param Sd Overall scale for the algorithm. By default, the variance-covariance
 #' is scaled to \eqn{2.4^2/d}, with \eqn{d} the number of dimensions.
-#' @section Kernels:
+#' 
+#' @details
+#' 
 #' `kernel_adapt` Implements the adaptive Metropolis (AM) algorithm of Haario
 #' et al. (2001). If the value of bw is greater than zero, then the algorithm
 #' folds back AP, a  previous version which is known to have ergodicity problems.
@@ -31,6 +35,10 @@
 #' Bernoulli, 7(2), 223–242.
 #' \url{https://projecteuclid.org/euclid.bj/1080222083}
 #' 
+#' @return An object of class [fmcmc_kernel].
+#' 
+#' @export 
+#' @family kernels
 kernel_adapt <- function(
   mu     = 0,
   bw     = 0L,
