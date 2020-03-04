@@ -184,8 +184,9 @@ kernel_adapt <- function(
 #' @param t. Sample size up to `t-1`.
 #' @param Sd,eps,Ik See [kernel_adapt()].
 #' @export
-#' @details The variance covariance algorithm was described in Haario, Sksman and
-#' Tamminen (2002).
+#' @details
+#' The variance covariance algorithm was described in Haario, Saksman and
+#' Tamminen (2002). 
 #' 
 #' @references 
 #' Haario, H., Saksman, E., & Tamminen, J. (2001). An adaptive Metropolis algorithm.
@@ -199,8 +200,8 @@ kernel_adapt <- function(
 #' 
 #' # These two should be equal
 #' mean_recursive(
-#'   X_t         = X[1,],
-#'   Mean_t_prev = colMeans(X[-1,]),
+#'   X_t         = X[1, ],
+#'   Mean_t_prev = colMeans(X[-1, ]),
 #'   t.          = n - 1
 #' )
 #' colMeans(X)
@@ -208,10 +209,10 @@ kernel_adapt <- function(
 #' # These two should be equal
 #' cov_recursive(
 #'   X_t         = X[1, ], 
-#'   Cov_t       = cov(X[-1,]), 
+#'   Cov_t       = cov(X[-1, ]), 
 #'   Mean_t      = colMeans(X),
 #'   Mean_t_prev = colMeans(X[-1, ]),
-#'   t           = n-1
+#'   t           = n - 1
 #' )
 #' cov(X)
 #' 
@@ -219,7 +220,7 @@ kernel_adapt <- function(
 #' set.seed(13155511)
 #' X <- matrix(rnorm(1e3*100), ncol = 100)
 #' 
-#' ans0 <- cov(X[-1,])
+#' ans0 <- cov(X[-1, ])
 #' t0 <- system.time({
 #'   ans1 <- cov(X)
 #' })
@@ -227,7 +228,7 @@ kernel_adapt <- function(
 #' t1 <- system.time(ans2 <- cov_recursive(
 #'   X[1, ], ans0,
 #'   Mean_t      = colMeans(X),
-#'   Mean_t_prev = colMeans(X[-1,]),
+#'   Mean_t_prev = colMeans(X[-1, ]),
 #'   t. = 1e3 - 1
 #' ))
 #' 
