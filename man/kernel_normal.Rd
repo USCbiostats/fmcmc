@@ -55,12 +55,5 @@ Other kernels:
 \code{\link{kernel_new}()},
 \code{\link{kernel_ram}()},
 \code{\link{kernel_unif}()}
-
-Other kernels: 
-\code{\link{kernel_adapt}()},
-\code{\link{kernel_mirror}},
-\code{\link{kernel_new}()},
-\code{\link{kernel_ram}()},
-\code{\link{kernel_unif}()}
 }
 \concept{kernels}

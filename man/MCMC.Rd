@@ -108,11 +108,6 @@ passed to the kernel function and it allows it identify in which of the
 chains the process is taking place. This could be relevant for some kernels
 (see \code{\link[=kernel_new]{kernel_new()}}).}
 }
-\value{
-An object of class \link[coda:mcmc]{coda::mcmc} from the \CRANpkg{coda}
-package. The \code{mcmc} object is a matrix with one column per parameter,
-and \code{nsteps} rows. If \code{nchains > 1}, then it returns a \link[coda:mcmc.list]{coda::mcmc.list}.
-}
 \description{
 A flexible implementation of the Metropolis-Hastings MCMC algorithm.
 }
@@ -181,6 +176,13 @@ By default, no automatic stop is implemented. If one of the functions in
 \link{convergence-checker} is used, then the MCMC is done by bulks as specified
 by the convergence checker function, and thus the algorithm will stop if,
 the \code{conv_checker} returns \code{TRUE}. For more information see \link{convergence-checker}.
+}
+
+\section{Value}{
+
+An object of class \link[coda:mcmc]{coda::mcmc} from the \CRANpkg{coda}
+package. The \code{mcmc} object is a matrix with one column per parameter,
+and \code{nsteps} rows. If \code{nchains > 1}, then it returns a \link[coda:mcmc.list]{coda::mcmc.list}.
 }
 
 \examples{

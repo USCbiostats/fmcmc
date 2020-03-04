@@ -66,7 +66,6 @@ kernel_unif <- function(
 #' @details
 #' The `kernel_unif_reflective` is similar to `kernel_unif` with the
 #' main difference that proposals are bounded to be within `[lb, ub]`.
-#' @family kernels
 kernel_unif_reflective <- function(
   min.  = -1.0,
   max.  = 1.0,

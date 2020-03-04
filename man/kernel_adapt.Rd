@@ -2,9 +2,23 @@
 % Please edit documentation in R/kernel_adapt.R
 \name{kernel_adapt}
 \alias{kernel_adapt}
+\alias{kernel_am}
 \title{Adaptive Metropolis (AM) Transition Kernel}
 \usage{
 kernel_adapt(
+  mu = 0,
+  bw = 0L,
+  lb = -.Machine$double.xmax,
+  ub = .Machine$double.xmax,
+  freq = 50L,
+  warmup = 500L,
+  Sigma = NULL,
+  Sd = NULL,
+  eps = 1e-04,
+  fixed = FALSE
+)
+
+kernel_am(
   mu = 0,
   bw = 0L,
   lb = -.Machine$double.xmax,
@@ -50,7 +64,7 @@ will be treated as fixed or not. Single values are recycled.}
 An object of class \link{fmcmc_kernel}.
 }
 \description{
-Adaptive Metropolis (AM) Transition Kernel
+Implementation of Haario et al. (2001)'s Adaptive Metropolis.
 }
 \details{
 \code{kernel_adapt} Implements the adaptive Metropolis (AM) algorithm of Haario
@@ -66,6 +80,8 @@ original paper.
 
 The update of the covariance matrix is done using \code{\link[=cov_recursive]{cov_recursive()}} function,
 which makes the updates faster.
+
+\code{kernel_am} is just an alias for \code{kernel_adapt}.
 }
 \references{
 Haario, H., Saksman, E., & Tamminen, J. (2001). An adaptive Metropolis algorithm.

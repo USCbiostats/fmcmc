@@ -68,7 +68,6 @@ kernel_normal <- function(
 
 #' @export 
 #' @rdname kernel_normal
-#' @family kernels
 #' @details
 #' The `kernel_normal_reflective` implements the normal kernel with reflective
 #' boundaries. Lower and upper bounds are treated using reflecting boundaries, this is, 

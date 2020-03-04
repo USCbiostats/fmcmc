@@ -1,4 +1,8 @@
 #' Mirror Transition Kernels
+#' 
+#' NMirror and UMirror transition kernels described in Thawornwattana et al.
+#' (2018).
+#' 
 #' @template mu-scale
 #' @template lb-ub
 #' @template scheme
@@ -9,12 +13,11 @@
 #' @param arate Double. Target acceptance rate used as a reference during the
 #' adaptation process.
 #' @family kernels
+#' 
 #' @details
-#' `kernel_nmirror` and `kernel_umirror` implemented in Thawornwattana et al.
-#' (2018). Provides simple symmetric transition kernels that pivot around
-#' an approximation of the asymptotic mean. The `warmup` parameter here sets
-#' the number of steps before replacing `mu` and `scale` (sd) with those obtained
-#' from the sample until the `warmup` number of iteration.
+#' 
+#' The `kernel_nmirror` and `kernel_umirror` functions implement simple symmetric
+#' transition kernels that pivot around an approximation of the asymptotic mean.
 #' 
 #' In the multidimensional case, this implementation just draws a vector of
 #' independent draws from the proposal kernel, instead of using, for example,
@@ -25,8 +28,10 @@
 #' adapts both the scale and the reference mean of the proposal distribution.
 #' While the mean is adapted continuously, the scale is updated only a handful
 #' of times, in particular, `nadapt` times during the warmup time. The adaptation
-#' is done as proposed by Yang and Rodriguez (2013). In the original paper, the
+#' is done as proposed by Yang and Rodriguez (2013) in which the
 #' scale is adapted four times.
+#' 
+#' @return An object of class [fmcmc_kernel].
 #' 
 #' @references 
 #' Thawornwattana, Y., Dalquen, D., & Yang, Z. (2018). Designing Simple and
@@ -41,7 +46,6 @@ NULL
 
 #' @export
 #' @rdname kernel_mirror
-#' @family kernels
 kernel_nmirror <- function(
   mu     = 0,
   scale  = 1,
@@ -174,7 +178,6 @@ kernel_nmirror <- function(
 
 #' @export
 #' @rdname kernel_mirror
-#' @family kernels
 kernel_umirror <- function(
   mu     = 0,
   scale  = 1,

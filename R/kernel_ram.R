@@ -1,4 +1,7 @@
 #' Robust Adaptive Metropolis (RAM) Transition Kernel
+#' 
+#' Implementation of Vihola (2012)'s Robust Adaptive Metropolis.
+#' 
 #' @export
 #' @template lb-ub
 #' @template mu-Sigma
@@ -14,10 +17,13 @@
 #' 
 #' @details 
 #' 
-#' The `kernel_ram` Implements Vihola (2012)'s Robust Adaptive Metropolis. The
-#' idea is similar to that of the Adaptive Metropolis algorithm (AM implemented
-#' as `kernel_adapt` here) with the difference that it takes into account a
+#' The idea is similar to that of the Adaptive Metropolis algorithm (AM implemented
+#' as [kernel_adapt()] here) with the difference that it takes into account a
 #' target acceptance rate.
+#' 
+#' The `eta` function regulates the rate of adaptation. The default implementation
+#' will decrease the rate of adaptation exponentially as a function of the iteration
+#' number.
 #' 
 #' @return An object of class [fmcmc_kernel].
 #' 

@@ -46,12 +46,5 @@ Other kernels:
 \code{\link{kernel_new}()},
 \code{\link{kernel_normal}()},
 \code{\link{kernel_ram}()}
-
-Other kernels: 
-\code{\link{kernel_adapt}()},
-\code{\link{kernel_mirror}},
-\code{\link{kernel_new}()},
-\code{\link{kernel_normal}()},
-\code{\link{kernel_ram}()}
 }
 \concept{kernels}

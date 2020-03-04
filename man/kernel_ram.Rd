@@ -53,13 +53,16 @@ will be treated as fixed or not. Single values are recycled.}
 An object of class \link{fmcmc_kernel}.
 }
 \description{
-Robust Adaptive Metropolis (RAM) Transition Kernel
+Implementation of Vihola (2012)'s Robust Adaptive Metropolis.
 }
 \details{
-The \code{kernel_ram} Implements Vihola (2012)'s Robust Adaptive Metropolis. The
-idea is similar to that of the Adaptive Metropolis algorithm (AM implemented
-as \code{kernel_adapt} here) with the difference that it takes into account a
+The idea is similar to that of the Adaptive Metropolis algorithm (AM implemented
+as \code{\link[=kernel_adapt]{kernel_adapt()}} here) with the difference that it takes into account a
 target acceptance rate.
+
+The \code{eta} function regulates the rate of adaptation. The default implementation
+will decrease the rate of adaptation exponentially as a function of the iteration
+number.
 }
 \references{
 Vihola, M. (2012). Robust adaptive Metropolis algorithm with coerced acceptance

@@ -85,15 +85,17 @@
 #' by the convergence checker function, and thus the algorithm will stop if,
 #' the `conv_checker` returns `TRUE`. For more information see [convergence-checker].
 #' 
-#' @return An object of class [coda::mcmc] from the \CRANpkg{coda}
+#' @section Value:
+#' An object of class [coda::mcmc] from the \CRANpkg{coda}
 #' package. The \code{mcmc} object is a matrix with one column per parameter,
 #' and \code{nsteps} rows. If \code{nchains > 1}, then it returns a [coda::mcmc.list].
-#' 
+#'    
 #' @references 
 #' Brooks, S., Gelman, A., Jones, G. L., & Meng, X. L. (2011). Handbook of
 #' Markov Chain Monte Carlo. Handbook of Markov Chain Monte Carlo.
 #' 
 #' @export
+#'  
 #' @examples 
 #' # Univariate distributed data with multiple parameters ----------------------
 #' # Parameters

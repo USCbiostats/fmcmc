@@ -51,15 +51,16 @@ of parameters in the objective function.}
 \item{fixed, scheme}{For multivariate functions, sets the update plan.
 See \code{\link[=plan_update_sequence]{plan_update_sequence()}}.}
 }
+\value{
+An object of class \link{fmcmc_kernel}.
+}
 \description{
-Mirror Transition Kernels
+NMirror and UMirror transition kernels described in Thawornwattana et al.
+(2018).
 }
 \details{
-\code{kernel_nmirror} and \code{kernel_umirror} implemented in Thawornwattana et al.
-(2018). Provides simple symmetric transition kernels that pivot around
-an approximation of the asymptotic mean. The \code{warmup} parameter here sets
-the number of steps before replacing \code{mu} and \code{scale} (sd) with those obtained
-from the sample until the \code{warmup} number of iteration.
+The \code{kernel_nmirror} and \code{kernel_umirror} functions implement simple symmetric
+transition kernels that pivot around an approximation of the asymptotic mean.
 
 In the multidimensional case, this implementation just draws a vector of
 independent draws from the proposal kernel, instead of using, for example,
@@ -70,7 +71,7 @@ During the warmup period (or burnin as described in the paper), the algorithm
 adapts both the scale and the reference mean of the proposal distribution.
 While the mean is adapted continuously, the scale is updated only a handful
 of times, in particular, \code{nadapt} times during the warmup time. The adaptation
-is done as proposed by Yang and Rodriguez (2013). In the original paper, the
+is done as proposed by Yang and Rodriguez (2013) in which the
 scale is adapted four times.
 }
 \references{
@@ -83,20 +84,6 @@ Monte Carlo proposal kernels. Proceedings of the National Academy of Sciences,
 110(48), 19307–19312. \url{https://doi.org/10.1073/pnas.1311790110}
 }
 \seealso{
-Other kernels: 
-\code{\link{kernel_adapt}()},
-\code{\link{kernel_new}()},
-\code{\link{kernel_normal}()},
-\code{\link{kernel_ram}()},
-\code{\link{kernel_unif}()}
-
-Other kernels: 
-\code{\link{kernel_adapt}()},
-\code{\link{kernel_new}()},
-\code{\link{kernel_normal}()},
-\code{\link{kernel_ram}()},
-\code{\link{kernel_unif}()}
-
 Other kernels: 
 \code{\link{kernel_adapt}()},
 \code{\link{kernel_new}()},
