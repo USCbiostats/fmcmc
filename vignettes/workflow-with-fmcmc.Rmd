@@ -13,6 +13,8 @@ vignette: >
 knitr::opts_chunk$set(fig.dim=c(9, 9), out.width=600, out.height=600)
 ```
 
+# Motivating example
+
 We start by loading the dataset that the `mcmc` package includes. We will use
 the `logit` data set to obtain a posterior distribution of the model parameters
 using the `MCMC` function.
@@ -142,3 +144,8 @@ plot(out_final[, 1:3])
 summary(out_final[, 1:3])
 ```
 
+
+# Reusing fmcmc_kernel objects
+
+`fmcmc_kernel` objects are enviroments that are passed to the `MCMC` function.
+In the case of adaptive algorithms, users may want to reuse the adaptation.

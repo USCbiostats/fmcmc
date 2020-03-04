@@ -1,9 +1,12 @@
+#' Uniform Transition Kernel
+#' @template scheme
 #' @export
-#' @rdname kernels
-#' @param min.,max. Passed to [stats::runif].
-#' @section Kernels:
+#' @param min.,max. Passed to [stats::runif()].
+#' @details 
 #' The `kernel_unif` function provides a uniform transition kernel. This (symmetric)
 #' kernel function by default adds the current status values between \[-1,1\].
+#' @return An object of class [fmcmc_kernel]
+#' @family kernels
 kernel_unif <- function(
   min.  = -1.0,
   max.  = 1.0,
@@ -58,8 +61,9 @@ kernel_unif <- function(
 }
 
 #' @export
-#' @rdname kernels
-#' @section Kernels:
+#' @rdname kernel_unif
+#' @template lb-ub
+#' @details
 #' The `kernel_unif_reflective` is similar to `kernel_unif` with the
 #' main difference that proposals are bounded to be within `[lb, ub]`.
 kernel_unif_reflective <- function(

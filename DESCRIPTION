@@ -15,9 +15,9 @@ Description: Provides a friendly (flexible) Markov Chain Monte Carlo (MCMC)
          parallel computing. Most of the methods implemented in this package can
          be found in Brooks et al. (2011, ISBN 9781420079425). Among the methods
          included, we have: Haario (2001) <doi:10.1007/s11222-011-9269-5>
-         Adaptive Metropolis  and Viohola (2012) 
-         <https://doi.org/10.1007/s11222-011-9269-5> Robust Adaptive Metropolis 
-         transition kernels.
+         Adaptive Metropolis, Viohola (2012) <doi:10.1007/s11222-011-9269-5>
+         Robust Adaptive Metropolis, and Thawornwattana et
+         al. (2018) <doi:10.1214/17-BA1084> Mirror transition kernels.
 Depends: R (>= 3.3.0)
 License: MIT + file LICENSE
 Encoding: UTF-8

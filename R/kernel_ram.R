@@ -1,25 +1,41 @@
+#' Robust Adaptive Metropolis (RAM) Transition Kernel
+#' 
+#' Implementation of Vihola (2012)'s Robust Adaptive Metropolis.
+#' 
 #' @export
-#' @rdname kernels
+#' @template lb-ub
+#' @template mu-Sigma
 #' @param eta A function that receives the MCMC environment. This is to calculate
 #' the scaling factor for the adaptation.
 #' @param arate Numeric scalar. Objective acceptance rate.
-#' @param q Function. As described in Vihola (2012)'s, the `q` function is a symmetric
-#' function used to generate random numbers.
-#' @section Kernels: 
+#' @param qfun Function. As described in Vihola (2012)'s, the `qfun` function is
+#' a symmetric function used to generate random numbers.
+#' @param fixed Logical scalar or vector of length `k`. Indicates which parameters
+#' will be treated as fixed or not. Single values are recycled.
+#' @param freq Integer scalar. Frequency of updates. How often the
+#' variance-covariance matrix is updated.
 #' 
-#' The `kernel_ram` Implements Vihola (2012)'s Robust Adaptive Metropolis. The
-#' idea is similar to that of the Adaptive Metropolis algorithm (AM implemented
-#' as `kernel_adapt` here) with the difference that it takes into account a
+#' @details 
+#' 
+#' The idea is similar to that of the Adaptive Metropolis algorithm (AM implemented
+#' as [kernel_adapt()] here) with the difference that it takes into account a
 #' target acceptance rate.
+#' 
+#' The `eta` function regulates the rate of adaptation. The default implementation
+#' will decrease the rate of adaptation exponentially as a function of the iteration
+#' number.
+#' 
+#' @return An object of class [fmcmc_kernel].
 #' 
 #' @references 
 #' Vihola, M. (2012). Robust adaptive Metropolis algorithm with coerced acceptance
 #' rate. Statistics and Computing, 22(5), 997–1008.
 #' \url{https://doi.org/10.1007/s11222-011-9269-5}
+#' @family kernels
 kernel_ram <- function(
   mu     = 0,
   eta    = function(i, k) min(c(1.0, i^(-2.0/3.0) * k)),
-  q      = function(k) stats::rt(k, k),
+  qfun   = function(k) stats::rt(k, k),
   arate  = 0.234,
   freq   = 1L,
   warmup = 0L,
@@ -72,7 +88,7 @@ kernel_ram <- function(
       }
       
       # Making proposal
-      U      <- q(k)
+      U      <- qfun(k)
       theta1 <- env$theta1
       theta1[which.] <- env$theta0[which.] + (Sigma[[env$chain_id]] %*% U)[, 1L]
       
@@ -101,6 +117,7 @@ kernel_ram <- function(
     },
     mu         = mu,
     eta        = eta, 
+    qfun       = qfun,
     arate      = arate,
     freq       = freq,
     warmup     = warmup,
