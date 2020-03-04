@@ -1,16 +1,13 @@
 #' Adaptive Metropolis (AM) Transition Kernel
-#' @template mu-scale
+#' 
+#' @param fixed Logical scalar or vector of length `k`. Indicates which parameters
+#' will be treated as fixed or not. Single values are recycled.
 #' @template lb-ub
-#' @template scheme
+#' @template mu-Sigma
 #' @param bw Integer scalar. The bandwidth, is the number of observations to
 #' include in the computation of the variance-covariance matrix.
 #' @param freq Integer scalar. Frequency of updates. How often the
 #' variance-covariance matrix is updated.
-#' @param warmup Integer scalar. The number of iterations that the algorithm has
-#' to wait before starting to do the updates.
-#' @param Sigma The variance-covariance matrix. By default this will be an
-#' identity matrix during the warmup period.
-#' @param eps Double scalar. Default size of the initial step (see details).
 #' @param Sd Overall scale for the algorithm. By default, the variance-covariance
 #' is scaled to \eqn{2.4^2/d}, with \eqn{d} the number of dimensions.
 #' 

@@ -513,10 +513,11 @@ MCMC.default <- function(
     progress_bar <- new_progress_bar(nsteps)
   
   for (i in 1L:nsteps) {
+
     # Step 1. Propose
     theta1[] <- kernel$proposal(environment())
     f1       <- f(theta1)
-    
+
     # Checking f(theta1) (it must be a number, can be Inf)
     if (is.nan(f1) | is.na(f1) | is.null(f1)) 
       stop(

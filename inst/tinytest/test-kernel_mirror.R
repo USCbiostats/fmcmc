@@ -15,19 +15,20 @@ ans0 <- suppressWarnings(MCMC(
 ))
 
 set.seed(1)
-kern <- kernel_nmirror(lb = 0, warmup = 200, tadapt = 1000)
+kern <- kernel_nmirror(lb = 0, warmup = 1000, nadapt = 5)
 ans1 <- suppressWarnings(MCMC(
   c(.5, .5), f, nsteps = 2000,
   kernel = kern,
-  burnin = 1000,
+  burnin = 0,
   nchains = 2L
 ))
 
 set.seed(1)
+kern <- kernel_umirror(lb = 0, warmup = 1000, nadapt = 5)
 ans2 <- suppressWarnings(MCMC(
   c(.5, .5), f, nsteps = 2000,
-  kernel = kernel_umirror(lb = 0, warmup = 1000),
-  burnin = 1000,
+  kernel = kern,
+  burnin = 0,
   nchains = 2L
 ))
 

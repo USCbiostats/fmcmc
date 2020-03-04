@@ -1,6 +1,7 @@
 #' Gaussian Transition Kernel
 #' @template mu-scale
 #' @template scheme
+#' @template lb-ub
 #' @details
 #' The `kernel_normal` function provides the canonical normal kernel
 #' with symmetric transition probabilities.

@@ -9,8 +9,8 @@
 kernel_nmirror(
   mu = 0,
   scale = 1,
-  warmup = 100,
-  tadapt = 100,
+  warmup = 500L,
+  nadapt = 4L,
   arate = 0.4,
   lb = -.Machine$double.xmax,
   ub = .Machine$double.xmax,
@@ -21,10 +21,13 @@ kernel_nmirror(
 kernel_umirror(
   mu = 0,
   scale = 1,
-  warmup = 100,
+  warmup = 500L,
+  nadapt = 4L,
+  arate = 0.4,
   lb = -.Machine$double.xmax,
   ub = .Machine$double.xmax,
-  fixed = FALSE
+  fixed = FALSE,
+  scheme = "joint"
 )
 }
 \arguments{
@@ -35,8 +38,8 @@ objective function.}
 \item{warmup}{Integer. Number of steps required before starting adapting the
 chains.}
 
-\item{tadapt}{Integer. Number of steps during which the adaptation will take
-place.}
+\item{nadapt}{Integer. Number of times the scale is adjusted for adaptation
+during the warmup (burnin) period.}
 
 \item{arate}{Double. Target acceptance rate used as a reference during the
 adaptation process.}
@@ -44,6 +47,9 @@ adaptation process.}
 \item{lb, ub}{Either a numeric vector or a scalar. Lower and upper bounds for
 bounded kernels. When of length 1, the values are recycled to match the number
 of parameters in the objective function.}
+
+\item{fixed, scheme}{For multivariate functions, sets the update plan.
+See \code{\link[=plan_update_sequence]{plan_update_sequence()}}.}
 }
 \description{
 Mirror Transition Kernels
@@ -59,11 +65,22 @@ In the multidimensional case, this implementation just draws a vector of
 independent draws from the proposal kernel, instead of using, for example,
 a multivariate distribution of some kind. This will be implemented in the
 next update of the package.
+
+During the warmup period (or burnin as described in the paper), the algorithm
+adapts both the scale and the reference mean of the proposal distribution.
+While the mean is adapted continuously, the scale is updated only a handful
+of times, in particular, \code{nadapt} times during the warmup time. The adaptation
+is done as proposed by Yang and Rodriguez (2013). In the original paper, the
+scale is adapted four times.
 }
 \references{
 Thawornwattana, Y., Dalquen, D., & Yang, Z. (2018). Designing Simple and
 Efficient Markov Chain Monte Carlo Proposal Kernels. Bayesian Analysis, 13(4),
 1037–1063. \url{https://doi.org/10.1214/17-BA1084}
+
+Yang, Z., & Rodriguez, C. E. (2013). Searching for efficient Markov chain
+Monte Carlo proposal kernels. Proceedings of the National Academy of Sciences,
+110(48), 19307–19312. \url{https://doi.org/10.1073/pnas.1311790110}
 }
 \seealso{
 Other kernels: 

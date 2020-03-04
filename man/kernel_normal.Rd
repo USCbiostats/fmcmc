@@ -23,6 +23,10 @@ objective function.}
 
 \item{fixed, scheme}{For multivariate functions, sets the update plan.
 See \code{\link[=plan_update_sequence]{plan_update_sequence()}}.}
+
+\item{lb, ub}{Either a numeric vector or a scalar. Lower and upper bounds for
+bounded kernels. When of length 1, the values are recycled to match the number
+of parameters in the objective function.}
 }
 \value{
 An object of class \link{fmcmc_kernel}.

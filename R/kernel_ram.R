@@ -1,12 +1,16 @@
 #' Robust Adaptive Metropolis (RAM) Transition Kernel
 #' @export
 #' @template lb-ub
-#' @template mu-scale
+#' @template mu-Sigma
 #' @param eta A function that receives the MCMC environment. This is to calculate
 #' the scaling factor for the adaptation.
 #' @param arate Numeric scalar. Objective acceptance rate.
 #' @param qfun Function. As described in Vihola (2012)'s, the `qfun` function is
 #' a symmetric function used to generate random numbers.
+#' @param fixed Logical scalar or vector of length `k`. Indicates which parameters
+#' will be treated as fixed or not. Single values are recycled.
+#' @param freq Integer scalar. Frequency of updates. How often the
+#' variance-covariance matrix is updated.
 #' 
 #' @details 
 #' 

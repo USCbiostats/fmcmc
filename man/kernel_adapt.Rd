@@ -18,7 +18,7 @@ kernel_adapt(
 )
 }
 \arguments{
-\item{mu, scale}{Either a numeric vector or a scalar. Proposal mean and scale.
+\item{mu}{Either a numeric vector or a scalar. Proposal mean.
 If scalar, values are recycled to match the number of parameters in the
 objective function.}
 
@@ -43,8 +43,8 @@ is scaled to \eqn{2.4^2/d}, with \eqn{d} the number of dimensions.}
 
 \item{eps}{Double scalar. Default size of the initial step (see details).}
 
-\item{fixed, scheme}{For multivariate functions, sets the update plan.
-See \code{\link[=plan_update_sequence]{plan_update_sequence()}}.}
+\item{fixed}{Logical scalar or vector of length \code{k}. Indicates which parameters
+will be treated as fixed or not. Single values are recycled.}
 }
 \value{
 An object of class \link{fmcmc_kernel}.

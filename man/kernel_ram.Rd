@@ -19,7 +19,7 @@ kernel_ram(
 )
 }
 \arguments{
-\item{mu, scale}{Either a numeric vector or a scalar. Proposal mean and scale.
+\item{mu}{Either a numeric vector or a scalar. Proposal mean.
 If scalar, values are recycled to match the number of parameters in the
 objective function.}
 
@@ -31,9 +31,23 @@ a symmetric function used to generate random numbers.}
 
 \item{arate}{Numeric scalar. Objective acceptance rate.}
 
+\item{freq}{Integer scalar. Frequency of updates. How often the
+variance-covariance matrix is updated.}
+
+\item{warmup}{Integer scalar. The number of iterations that the algorithm has
+to wait before starting to do the updates.}
+
+\item{Sigma}{The variance-covariance matrix. By default this will be an
+identity matrix during the warmup period.}
+
+\item{eps}{Double scalar. Default size of the initial step (see details).}
+
 \item{lb, ub}{Either a numeric vector or a scalar. Lower and upper bounds for
 bounded kernels. When of length 1, the values are recycled to match the number
 of parameters in the objective function.}
+
+\item{fixed}{Logical scalar or vector of length \code{k}. Indicates which parameters
+will be treated as fixed or not. Single values are recycled.}
 }
 \value{
 An object of class \link{fmcmc_kernel}.
