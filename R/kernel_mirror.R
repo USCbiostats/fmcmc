@@ -63,7 +63,7 @@ kernel_nmirror <- function(
   
   # We create copies of this b/c each chain has its own values
   abs_iter  <- 0L
-  obs_arate <- list()
+  obs_arate <- NULL
   
   kernel_new(
     proposal = function(env) {
@@ -104,9 +104,8 @@ kernel_nmirror <- function(
       # Updating acceptance rate
       if (abs_iter == nadapt[1]) {
         
-        obs_arate <<- list(
-          1.0 - mean(rowSums(diff(env$ans[1L:(env$i - 1L), , drop = FALSE])^2) == 0.0)
-        )
+        obs_arate <<- 1.0 -
+          mean(rowSums(diff(env$ans[1L:(env$i - 1L), , drop = FALSE])^2) == 0.0)
         
       } else if (abs_iter > nadapt[1] && abs_iter <= warmup) {
         
@@ -195,8 +194,8 @@ kernel_umirror <- function(
         ub     <<- check_dimensions(ub, k)
         lb     <<- check_dimensions(lb, k)
         fixed  <<- check_dimensions(fixed, k)
-        mu     <<- list(check_dimensions(mu, k)) 
-        scale  <<- list(check_dimensions(scale, k))
+        mu     <<- check_dimensions(mu, k)
+        scale  <<- check_dimensions(scale, k)
         
         # Setting the scheme in which the variables will be updated
         update_sequence <<- plan_update_sequence(
