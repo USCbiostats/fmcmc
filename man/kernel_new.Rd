@@ -4,12 +4,9 @@
 \alias{kernel_new}
 \alias{fmcmc_kernel}
 \alias{kernels}
-\alias{print.fmcmc_kernel}
 \title{Create Personalized Transition Kernels for MCMC}
 \usage{
 kernel_new(proposal, ..., logratio = NULL, kernel_env = new.env(hash = TRUE))
-
-\method{print}{fmcmc_kernel}(x, ...)
 }
 \arguments{
 \item{proposal, logratio}{Functions. Both receive a single argument, an environment.
@@ -20,8 +17,6 @@ the kernel.}
 
 \item{kernel_env}{Environment. This will be used as the main container of the
 kernel's components. It is returned as an object of class \code{c("environment", "fmcmc_kernel")}.}
-
-\item{x}{An object of class \code{fmcmc_kernel}.}
 }
 \value{
 An environment of class \code{fmcmc_kernel} which contains the following:

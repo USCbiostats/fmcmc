@@ -62,11 +62,7 @@ kernel_nmirror <- function(
   update_sequence <- NULL
   
   # We create copies of this b/c each chain has its own values
-  mu0       <- mu
-  mu        <- list()
-  scale0    <- scale
-  scale     <- list()
-  abs_iter  <- list()
+  abs_iter  <- 0L
   obs_arate <- list()
   
   kernel_new(
@@ -79,16 +75,9 @@ kernel_nmirror <- function(
         ub     <<- check_dimensions(ub, k)
         lb     <<- check_dimensions(lb, k)
         fixed  <<- check_dimensions(fixed, k)
-        
-        # Looking at this chain in particular, we grow the thing
-        if ( is.null(abs_iter[env$chain_id][[1L]]) ) {
-          
-          mu[env$chain_id]        <<- list(check_dimensions(mu0, k)) 
-          scale[env$chain_id]     <<- list(check_dimensions(scale0, k))
-          abs_iter[env$chain_id]  <<- list(0L)
+        mu     <<- check_dimensions(mu, k)
+        scale  <<- check_dimensions(scale, k)
 
-        }
-        
         # Setting the scheme in which the variables will be updated
         update_sequence <<- plan_update_sequence(
           k      = k,
@@ -102,38 +91,38 @@ kernel_nmirror <- function(
       }
       
       # Updating the mean
-      if ((abs_iter[[env$chain_id]] >= 1L) && (abs_iter[[env$chain_id]] <= warmup)) {
+      if ((abs_iter >= 1L) && (abs_iter <= warmup)) {
         
-        mu[[env$chain_id]] <<- mean_recursive(
+        mu <<- mean_recursive(
           X_t         = env$ans[env$i - 1L, , drop = FALSE],
-          Mean_t_prev = mu[[env$chain_id]],
-          t.          = abs_iter[[env$chain_id]]
+          Mean_t_prev = mu,
+          t.          = abs_iter
         )
         
       }
 
       # Updating acceptance rate
-      if (abs_iter[[env$chain_id]] == nadapt[1]) {
+      if (abs_iter == nadapt[1]) {
         
-        obs_arate[env$chain_id] <<- list(
+        obs_arate <<- list(
           1.0 - mean(rowSums(diff(env$ans[1L:(env$i - 1L), , drop = FALSE])^2) == 0.0)
         )
         
-      } else if (abs_iter[[env$chain_id]] > nadapt[1] && abs_iter[[env$chain_id]] <= warmup) {
+      } else if (abs_iter > nadapt[1] && abs_iter <= warmup) {
         
-        obs_arate[[env$chain_id]] <<- mean_recursive(
+        obs_arate <<- mean_recursive(
           X_t         = as.double(env$ans[env$i - 1L, ] != env$ans[env$i - 2L, ]),
-          Mean_t_prev = obs_arate[[env$chain_id]],
-          t.          = abs_iter[[env$chain_id]]
+          Mean_t_prev = obs_arate,
+          t.          = abs_iter
         )
         
       }
       
       # Is this the iteration when we adapt?
-      if (abs_iter[[env$chain_id]] %in% nadapt) {
+      if (abs_iter %in% nadapt) {
         
-        scale[[env$chain_id]] <<- scale[[env$chain_id]] *
-          tan(pi/2.0 * obs_arate[[env$chain_id]]) /
+        scale <<- scale *
+          tan(pi/2.0 * obs_arate) /
           tan(pi/2.0 * arate)
         
       }
@@ -147,19 +136,17 @@ kernel_nmirror <- function(
       
       theta1[which.] <- stats::rnorm(
         k,
-        mean = 2*mu[[env$chain_id]][which.] - env$theta0[which.],
-        sd   = scale[[env$chain_id]][which.]
+        mean = 2*mu[which.] - env$theta0[which.],
+        sd   = scale[which.]
         )
       
       # Increasing the absolute number of iteration
-      abs_iter[[env$chain_id]] <<- abs_iter[[env$chain_id]] + 1L
+      abs_iter <<- abs_iter + 1L
       
       reflect_on_boundaries(x = theta1, lb = lb, ub = ub, which = which.)
       
     },
-    mu0       = mu0,
     mu        = mu,
-    scale0    = scale0,
     scale     = scale,
     abs_iter  = abs_iter,
     obs_arate = obs_arate,
@@ -195,12 +182,8 @@ kernel_umirror <- function(
   update_sequence <- NULL
   
   # We create copies of this b/c each chain has its own values
-  mu0       <- mu
-  mu        <- list()
-  scale0    <- scale
-  scale     <- list()
-  abs_iter  <- list()
-  obs_arate <- list()
+  abs_iter  <- 0L
+  obs_arate <- NULL
   
   kernel_new(
     proposal = function(env) {
@@ -212,15 +195,8 @@ kernel_umirror <- function(
         ub     <<- check_dimensions(ub, k)
         lb     <<- check_dimensions(lb, k)
         fixed  <<- check_dimensions(fixed, k)
-        
-        # Looking at this chain in particular, we grow the thing
-        if ( is.null(abs_iter[env$chain_id][[1L]]) ) {
-          
-          mu[env$chain_id]        <<- list(check_dimensions(mu0, k)) 
-          scale[env$chain_id]     <<- list(check_dimensions(scale0, k))
-          abs_iter[env$chain_id]  <<- list(0L)
-          
-        }
+        mu     <<- list(check_dimensions(mu, k)) 
+        scale  <<- list(check_dimensions(scale, k))
         
         # Setting the scheme in which the variables will be updated
         update_sequence <<- plan_update_sequence(
@@ -235,38 +211,39 @@ kernel_umirror <- function(
       }
       
       # Updating the mean
-      if ((abs_iter[[env$chain_id]] >= 1L) && (abs_iter[[env$chain_id]] <= warmup)) {
+      if ((abs_iter >= 1L) && (abs_iter <= warmup)) {
         
-        mu[[env$chain_id]] <<- mean_recursive(
+        mu <<- mean_recursive(
           X_t         = env$ans[env$i - 1L, , drop = FALSE],
-          Mean_t_prev = mu[[env$chain_id]],
-          t.          = abs_iter[[env$chain_id]]
+          Mean_t_prev = mu,
+          t.          = abs_iter
         )
         
       }
       
       # Updating acceptance rate
-      if (abs_iter[[env$chain_id]] == nadapt[1]) {
+      if (abs_iter == nadapt[1]) {
         
-        obs_arate[env$chain_id] <<- list(
-          1.0 - mean(rowSums(diff(env$ans[1L:(env$i - 1L), , drop = FALSE])^2) == 0.0)
-        )
+        obs_arate <<- 1.0 - mean(
+          rowSums(diff(env$ans[1L:(env$i - 1L), , drop = FALSE])^2) == 0.0
+          )
         
-      } else if (abs_iter[[env$chain_id]] > nadapt[1] && abs_iter[[env$chain_id]] <= warmup) {
         
-        obs_arate[[env$chain_id]] <<- mean_recursive(
+      } else if (abs_iter > nadapt[1] && abs_iter <= warmup) {
+        
+        obs_arate <<- mean_recursive(
           X_t         = as.double(env$ans[env$i - 1L, ] != env$ans[env$i - 2L, ]),
-          Mean_t_prev = obs_arate[[env$chain_id]],
-          t.          = abs_iter[[env$chain_id]]
+          Mean_t_prev = obs_arate,
+          t.          = abs_iter
         )
         
       }
       
       # Is this the iteration when we adapt?
-      if (abs_iter[[env$chain_id]] %in% nadapt) {
+      if (abs_iter %in% nadapt) {
         
-        scale[[env$chain_id]] <<- scale[[env$chain_id]] *
-          tan(pi/2.0 * obs_arate[[env$chain_id]]) /
+        scale <<- scale *
+          tan(pi/2.0 * obs_arate) /
           tan(pi/2.0 * arate)
         
       }
@@ -281,20 +258,18 @@ kernel_umirror <- function(
       # Making the proposal
       theta1[which.] <- stats::runif(
         k,
-        min = 2*mu[[env$chain_id]] - theta1[which.] - sqrt3 * scale[[env$chain_id]],
-        max = 2*mu[[env$chain_id]] - theta1[which.] + sqrt3 * scale[[env$chain_id]]
+        min = 2*mu - theta1[which.] - sqrt3 * scale,
+        max = 2*mu - theta1[which.] + sqrt3 * scale
         )
       
       # Increasing the absolute number of iteration
-      abs_iter[[env$chain_id]] <<- abs_iter[[env$chain_id]] + 1L
+      abs_iter <<- abs_iter + 1L
       
       reflect_on_boundaries(theta1, lb, ub, which.)
       
     },
     mu        = mu,
-    mu0       = mu0,
     scale     = scale,
-    scale0    = scale0,
     abs_iter  = abs_iter,
     obs_arate = obs_arate,
     lb        = lb,

@@ -353,6 +353,13 @@ MCMC.default <- function(
   if (thin < 1L)
     stop("-thin- should be >= 1.", call. = FALSE)
   
+  # If we are running in multiple chains, and this is not a kernel_list
+  # object, then we need to replicate it. This will modify the original kernel
+  # object creating a new environment with `nchains` copies of the original
+  # kernel.
+  if (nchains > 1L && !is_kernel_list(kernel))
+    rep_kernel(kernel, nchains = nchains)
+
   # Filling the gap on parallel
   if (multicore && !length(cl)) {
     
@@ -366,7 +373,12 @@ MCMC.default <- function(
     parallel::clusterSetRNGStream(cl, .Random.seed)
     
     on.exit(parallel::stopCluster(cl))
-  }
+    
+  } 
+    
+  # We need to pass an copy of what nchain will be used in the algorithm
+  if (length(cl))
+    parallel::clusterExport(cl, "kernel", envir = environment())
   
   if (nchains > 1L) {
     
@@ -379,7 +391,7 @@ MCMC.default <- function(
           list(quote(lapply), X = quote(1L:nchains)),
         list(
           FUN = quote(
-            function(i, fun., initial., nsteps., thin., kernel., burnin., ...) {
+            function(i, fun., initial., nsteps., thin., burnin., ...) {
               MCMC(
                 fun          = fun.,
                 ...,
@@ -387,7 +399,7 @@ MCMC.default <- function(
                 nsteps       = nsteps.,
                 burnin       = burnin.,
                 thin         = thin.,
-                kernel       = kernel.,
+                kernel       = kernel[[i]],
                 nchains      = 1L,
                 multicore    = FALSE,
                 cl           = NULL,
@@ -400,7 +412,6 @@ MCMC.default <- function(
         nsteps.  = quote(nsteps),
         burnin.  = quote(burnin),
         thin.    = quote(thin),
-        kernel.  = quote(kernel),
         quote(...)
         )
       )
@@ -439,6 +450,14 @@ MCMC.default <- function(
       )
     
     ans <- eval(fmcmc_call)
+    
+    # Need to update the kernel objects, if we were running in parallel!
+    if (multicore) {
+      kernel_list <- parallel::clusterEvalQ(cl, kernel)
+      kernel_list <- lapply(1:nchains, function(i) kernel_list[[i]][[i]])
+      update_kernel(kernel, do.call(c, kernel_list))
+    }
+    
     return(ans)
     
   # If we are not using conv_checker, but still have multiple chains, then
@@ -446,6 +465,14 @@ MCMC.default <- function(
   } else if (nchains > 1L) {
     
     ans <- eval(fmcmc_call)
+    
+    # Need to update the kernel objects, if we were running in parallel!
+    if (multicore) {
+      kernel_list <- parallel::clusterEvalQ(cl, kernel)
+      kernel_list <- lapply(1:nchains, function(i) kernel_list[[i]][[i]])
+      update_kernel(kernel, do.call(c, kernel_list))
+    }
+    
     return(ans)
     
   }
