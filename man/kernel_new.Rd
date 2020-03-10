@@ -4,7 +4,7 @@
 \alias{kernel_new}
 \alias{fmcmc_kernel}
 \alias{kernels}
-\title{Create Personalized Transition Kernels for MCMC}
+\title{Transition Kernels for MCMC}
 \usage{
 kernel_new(proposal, ..., logratio = NULL, kernel_env = new.env(hash = TRUE))
 }
@@ -49,7 +49,7 @@ as \code{function(env) {env$f1 - env$f0}}
 }
 
 Both functions, \code{proposal} and \code{logratio}, receive a single argument, an
-environment, which is passed by the \link{MCMC} function during each step using
+environment, which is passed by the \code{\link[=MCMC]{MCMC()}} function during each step using
 the function \code{\link[=environment]{environment()}}.
 
 The passed environment is actually the environment in which the \code{MCMC}
@@ -59,7 +59,6 @@ objects:
 \tabular{lcl}{
 \strong{Object} \tab \tab \strong{Description} \cr
 \code{i} \tab \tab Integer. The current iteration. \cr
-\code{chain_id} \tab \tab Integer. The current chain (relevent for some kernels). \cr
 \code{theta1} \tab \tab Numeric vector. The last proposed state. \cr
 \code{theta0} \tab \tab Numeric vector. The current state \cr
 \code{f}\tab \tab The log-unnormalized posterior function (a wrapper of \code{fun} passed
@@ -96,8 +95,32 @@ of code is how this is actually implemented in the package:\preformatted{for (i 
 \}
 }
 
-For more details see the vignette \code{vignette("user-defined-kernels", "fmcmc")}.
+For an extensive example on how to create new kernel objects see the vignette
+\code{vignette("user-defined-kernels", "fmcmc")}.
 }
+\section{Behavior}{
+
+
+In some cases, calls to the \code{proposal()} and \code{logratio()} functions in
+\code{fmcmc_kernels} can trigger changes or updates of variables stored within them.
+A concrete example is with adaptive kernels.
+
+Adaptive Metropolis and Robust Adaptive Metropolis implemented in the functions
+\code{\link[=kernel_adapt]{kernel_adapt()}} and \code{\link[=kernel_ram]{kernel_ram()}} both update a covariance matrix used
+during the proposal stage, and furthermore, have a \code{warmup} stage that sets
+the point at which both will start adapting. Because of this, both kernels
+have internal counters of the absolute step count which allows them activating,
+scaling, etc. the proposals correctly.
+\enumerate{
+\item When running multiple chains, \code{MCMC} will create independent copies of a
+baseline passed \code{fmcmc_kernel} object. These are managed together in a
+\code{fmcmc_kernel_list} object.
+\item Even if the chains are run in parallel, if a predefined kernel object is
+passed it will be updated to reflect the last state of the kernels
+before the \code{MCMC} call returns.
+}
+}
+
 \examples{
 
 # Example creating a multivariate normal kernel using the mvtnorm R package

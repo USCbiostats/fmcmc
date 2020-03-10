@@ -29,7 +29,8 @@ bounded kernels. When of length 1, the values are recycled to match the number
 of parameters in the objective function.}
 }
 \value{
-An object of class \link{fmcmc_kernel}.
+An object of class \link{fmcmc_kernel}. \code{fmcmc_kernel} objects are intended
+to be used with the \code{\link[=MCMC]{MCMC()}} function.
 }
 \description{
 Gaussian Transition Kernel
@@ -47,6 +48,17 @@ is subtracted from \eqn{ub}. At the same time, if it is less than \code{lb}, the
 
 In this case, the transition probability is symmetric (just like the normal
 kernel).
+}
+\examples{
+# Normal kernel with a small scale (sd) of 0.05
+kern <- kernel_normal(scale = 0.05)
+
+# Using boundaries for the second parameter of a two parameter chain
+# to have values in [0, 100].
+kern <- kernel_normal_reflective(
+  ub = c(.Machine$double.xmax, 100),
+  lb = c(-.Machine$double.xmax, 0)
+  )
 }
 \seealso{
 Other kernels: 

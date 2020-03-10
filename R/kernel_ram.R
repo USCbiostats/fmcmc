@@ -5,6 +5,7 @@
 #' @export
 #' @template lb-ub
 #' @template mu-Sigma
+#' @template until
 #' @param eta A function that receives the MCMC environment. This is to calculate
 #' the scaling factor for the adaptation.
 #' @param arate Numeric scalar. Objective acceptance rate.
@@ -32,6 +33,10 @@
 #' rate. Statistics and Computing, 22(5), 997–1008.
 #' \url{https://doi.org/10.1007/s11222-011-9269-5}
 #' @family kernels
+#' @examples 
+#' # Setting the acceptance rate to 30 % and deferring the updates until
+#' # after 1000 steps
+#' kern <- kernel_ram(arate = .3, warmup = 1000)
 kernel_ram <- function(
   mu     = 0,
   eta    = function(i, k) min(c(1.0, i^(-2.0/3.0) * k)),
@@ -43,7 +48,8 @@ kernel_ram <- function(
   eps    = 1e-4,
   lb     = -.Machine$double.xmax,
   ub     = .Machine$double.xmax,
-  fixed  = FALSE
+  fixed  = FALSE,
+  until  = Inf
 ) {
   
   k       <- NULL
@@ -85,7 +91,7 @@ kernel_ram <- function(
       theta1[which.] <- env$theta0[which.] + (Sigma %*% U)[, 1L]
       
       # Updating the scheme
-      if (abs_iter > warmup && !(env$i %% freq)) {
+      if ((until > abs_iter) && (abs_iter > warmup) && !(env$i %% freq)) {
         
         # Computing
         a_n <- min(1, exp(env$f(theta1) - env$f0))
@@ -121,7 +127,8 @@ kernel_ram <- function(
     k          = k,
     which.     = which.,
     Ik         = Ik,
-    abs_iter   = abs_iter
+    abs_iter   = abs_iter,
+    until      = until
   )
   
 }

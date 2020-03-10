@@ -6,10 +6,12 @@
 #' will be treated as fixed or not. Single values are recycled.
 #' @template lb-ub
 #' @template mu-Sigma
+#' @template until
 #' @param bw Integer scalar. The bandwidth, is the number of observations to
 #' include in the computation of the variance-covariance matrix.
 #' @param freq Integer scalar. Frequency of updates. How often the
-#' variance-covariance matrix is updated.
+#' variance-covariance matrix is updated. The implementation is different from that
+#' described in the original paper (see details).
 #' @param Sd Overall scale for the algorithm. By default, the variance-covariance
 #' is scaled to \eqn{2.4^2/d}, with \eqn{d} the number of dimensions.
 #' 
@@ -27,28 +29,40 @@
 #' original paper.
 #' 
 #' The update of the covariance matrix is done using [cov_recursive()] function,
-#' which makes the updates faster.
+#' which makes the updates faster. The `freq` parameter, besides of indicating the
+#' frequency with which the updates are done, it specifies what are the samples
+#' included in each update, in other words, like a thinning parameter, only every
+#' `freq` samples will be used to compute the covariance matrix. Since this
+#' implementation uses the recursive formula for updating the covariance, there is
+#' no practical need to set `freq != 1`.
 #' 
 #' @references 
 #' Haario, H., Saksman, E., & Tamminen, J. (2001). An adaptive Metropolis algorithm.
 #' Bernoulli, 7(2), 223–242.
 #' \url{https://projecteuclid.org/euclid.bj/1080222083}
 #' 
-#' @return An object of class [fmcmc_kernel].
+#' @template kernel
 #' 
 #' @export 
-#' @family kernels
+#' @examples 
+#' # Update every-step and wait 1,000 steps before starting to adapt
+#' kern <- kernel_adapt(freq = 1, warmup = 1000)
+#' 
+#' # Two parameters model, the second parameter with a restricted range, i.e.
+#' # a lower bound of 1
+#' kern <- kernel_adapt(lb = c(-.Machine$double.xmax, 0))
 kernel_adapt <- function(
   mu     = 0,
   bw     = 0L,
   lb     = -.Machine$double.xmax,
   ub     = .Machine$double.xmax,
-  freq   = 50L,
+  freq   = 1L,
   warmup = 500L,
   Sigma  = NULL,
   Sd     = NULL,
   eps    = 1e-4,
-  fixed  = FALSE
+  fixed  = FALSE,
+  until  = Inf
 ) {
   
   k      <- NULL
@@ -92,7 +106,7 @@ kernel_adapt <- function(
       }
       
       # Updating the scheme
-      if (abs_iter > warmup && env$i > 2L && !(env$i %% freq)) {
+      if ((until > abs_iter) && (abs_iter > warmup) && (env$i > 2L) && !(env$i %% freq)) {
         
         ran <- if (bw <= 0L) 1L:(env$i - 1L) 
         else (env$i - bw + 1L):(env$i - 1L)
@@ -161,7 +175,8 @@ kernel_adapt <- function(
     which.      = which.,
     Mean_t_prev = Mean_t_prev,
     t.          = t.,
-    abs_iter    = abs_iter
+    abs_iter    = abs_iter,
+    until       = until
   )
   
 }

@@ -19,7 +19,7 @@
 #' and returns a logical value with `TRUE` indicating convergence. See the
 #' "Automatic stop" section and the [convergence-checker] manual.
 #' @param progress Logical scalar. When set to `TRUE` shows a progress bar. A new
-#' bar will be show everytime that the convergence checker is called.
+#' bar will be show every time that the convergence checker is called.
 #' @param chain_id Integer scalar (internal use only). This is an argument
 #' passed to the kernel function and it allows it identify in which of the
 #' chains the process is taking place. This could be relevant for some kernels

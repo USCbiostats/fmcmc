@@ -2,7 +2,7 @@
 % Please edit documentation in R/kernel.R
 \name{plan_update_sequence}
 \alias{plan_update_sequence}
-\title{Paramaters' update sequence}
+\title{Parameters' update sequence}
 \usage{
 plan_update_sequence(k, nsteps, fixed, scheme)
 }
@@ -20,7 +20,7 @@ will be treated as fixed or not. Single values are recycled.}
 A logical vector of size \code{nsteps} x \code{k}.
 }
 \description{
-Paramaters' update sequence
+Parameters' update sequence
 }
 \details{
 The parameter \code{scheme} present on the currently available kernels sets the way

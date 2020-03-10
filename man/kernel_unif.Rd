@@ -27,7 +27,8 @@ bounded kernels. When of length 1, the values are recycled to match the number
 of parameters in the objective function.}
 }
 \value{
-An object of class \link{fmcmc_kernel}
+An object of class \link{fmcmc_kernel}. \code{fmcmc_kernel} objects are intended
+to be used with the \code{\link[=MCMC]{MCMC()}} function.
 }
 \description{
 Uniform Transition Kernel
@@ -38,6 +39,11 @@ kernel function by default adds the current status values between [-1,1].
 
 The \code{kernel_unif_reflective} is similar to \code{kernel_unif} with the
 main difference that proposals are bounded to be within \verb{[lb, ub]}.
+}
+\examples{
+# Multivariate setting with 4 parameters in which we set the kernel to make
+# proposals one parameter at-a-time in a random ordering.
+kern <- kernel_unif(scheme = "random")
 }
 \seealso{
 Other kernels: 

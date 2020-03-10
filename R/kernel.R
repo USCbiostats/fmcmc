@@ -16,7 +16,7 @@ check_dimensions <- function(x, k) {
   
 }
 
-#' Paramaters' update sequence
+#' Parameters' update sequence
 #' @param k Integer. Number of parameters
 #' @param nsteps Integer. Number of steps.
 #' @param fixed Logical scalar or vector of length `k`. Indicates which parameters
@@ -108,7 +108,7 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
   
 }
 
-#' Create Personalized Transition Kernels for MCMC
+#' Transition Kernels for MCMC
 #' 
 #' The function `kernel_new` is a helper function that allows creating
 #' `fmcmc_kernel` objects which are passed to the [MCMC()] function.
@@ -139,7 +139,7 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #' -  `...`: Further objects that are used within those functions.
 #' 
 #' Both functions, `proposal` and `logratio`, receive a single argument, an
-#' environment, which is passed by the [MCMC] function during each step using
+#' environment, which is passed by the [MCMC()] function during each step using
 #' the function [environment()].
 #' 
 #' The passed environment is actually the environment in which the `MCMC`
@@ -149,7 +149,6 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #' \tabular{lcl}{
 #' \strong{Object} \tab \tab \strong{Description} \cr
 #' `i` \tab \tab Integer. The current iteration. \cr
-#' `chain_id` \tab \tab Integer. The current chain (relevent for some kernels). \cr
 #' `theta1` \tab \tab Numeric vector. The last proposed state. \cr
 #' `theta0` \tab \tab Numeric vector. The current state \cr
 #' `f`\tab \tab The log-unnormalized posterior function (a wrapper of `fun` passed 
@@ -189,8 +188,30 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #' }
 #' ```
 #' 
-#' For more details see the vignette `vignette("user-defined-kernels", "fmcmc")`.
+#' For an extensive example on how to create new kernel objects see the vignette
+#' `vignette("user-defined-kernels", "fmcmc")`.
 #' 
+#' @section Behavior:
+#' 
+#' In some cases, calls to the `proposal()` and `logratio()` functions in
+#' `fmcmc_kernels` can trigger changes or updates of variables stored within them.
+#' A concrete example is with adaptive kernels.
+#' 
+#' Adaptive Metropolis and Robust Adaptive Metropolis implemented in the functions
+#' [kernel_adapt()] and [kernel_ram()] both update a covariance matrix used
+#' during the proposal stage, and furthermore, have a `warmup` stage that sets
+#' the point at which both will start adapting. Because of this, both kernels
+#' have internal counters of the absolute step count which allows them activating,
+#' scaling, etc. the proposals correctly.
+#' 
+#' 1. When running multiple chains, `MCMC` will create independent copies of a
+#'    baseline passed `fmcmc_kernel` object. These are managed together in a
+#'    `fmcmc_kernel_list` object.
+#'    
+#' 2. Even if the chains are run in parallel, if a predefined kernel object is
+#'    passed it will be updated to reflect the last state of the kernels
+#'    before the `MCMC` call returns.
+#'    
 #' @family kernels
 #' @aliases fmcmc_kernel kernels
 #' @examples 

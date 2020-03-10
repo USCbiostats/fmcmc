@@ -1,12 +1,17 @@
 #' Uniform Transition Kernel
+#' 
+#' 
+#' @template kernel
 #' @template scheme
 #' @export
 #' @param min.,max. Passed to [stats::runif()].
 #' @details 
 #' The `kernel_unif` function provides a uniform transition kernel. This (symmetric)
 #' kernel function by default adds the current status values between \[-1,1\].
-#' @return An object of class [fmcmc_kernel]
-#' @family kernels
+#' @examples 
+#' # Multivariate setting with 4 parameters in which we set the kernel to make
+#' # proposals one parameter at-a-time in a random ordering.
+#' kern <- kernel_unif(scheme = "random")
 kernel_unif <- function(
   min.  = -1.0,
   max.  = 1.0,

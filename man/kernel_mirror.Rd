@@ -39,7 +39,7 @@ objective function.}
 chains.}
 
 \item{nadapt}{Integer. Number of times the scale is adjusted for adaptation
-during the warmup (burnin) period.}
+during the warmup (burn-in) period.}
 
 \item{arate}{Double. Target acceptance rate used as a reference during the
 adaptation process.}
@@ -52,7 +52,8 @@ of parameters in the objective function.}
 See \code{\link[=plan_update_sequence]{plan_update_sequence()}}.}
 }
 \value{
-An object of class \link{fmcmc_kernel}.
+An object of class \link{fmcmc_kernel}. \code{fmcmc_kernel} objects are intended
+to be used with the \code{\link[=MCMC]{MCMC()}} function.
 }
 \description{
 NMirror and UMirror transition kernels described in Thawornwattana et al.
@@ -73,6 +74,14 @@ While the mean is adapted continuously, the scale is updated only a handful
 of times, in particular, \code{nadapt} times during the warmup time. The adaptation
 is done as proposed by Yang and Rodriguez (2013) in which the
 scale is adapted four times.
+}
+\examples{
+# Normal mirror kernel with 5 adaptations and 1000 steps of warmup (burnin)
+kern <- kernel_nmirror(nadapt = 5, warmup = 1000)
+
+# Same as before but using a uniform mirror and choosing a target acceptance
+# rate of 24 \%
+kern <- kernel_umirror(nadapt = 5, warmup = 1000, arate = .24)
 }
 \references{
 Thawornwattana, Y., Dalquen, D., & Yang, Z. (2018). Designing Simple and

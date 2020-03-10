@@ -15,7 +15,8 @@ kernel_ram(
   eps = 1e-04,
   lb = -.Machine$double.xmax,
   ub = .Machine$double.xmax,
-  fixed = FALSE
+  fixed = FALSE,
+  until = Inf
 )
 }
 \arguments{
@@ -48,6 +49,9 @@ of parameters in the objective function.}
 
 \item{fixed}{Logical scalar or vector of length \code{k}. Indicates which parameters
 will be treated as fixed or not. Single values are recycled.}
+
+\item{until}{Integer scalar. Last step at which adaptation takes place (see
+details).}
 }
 \value{
 An object of class \link{fmcmc_kernel}.
@@ -56,6 +60,10 @@ An object of class \link{fmcmc_kernel}.
 Implementation of Vihola (2012)'s Robust Adaptive Metropolis.
 }
 \details{
+While it has been shown that under regular conditions this transition kernel
+generates ergodic chains even when the adaptation does not stop, some
+practitioners may want to stop adaptation at some point.
+
 The idea is similar to that of the Adaptive Metropolis algorithm (AM implemented
 as \code{\link[=kernel_adapt]{kernel_adapt()}} here) with the difference that it takes into account a
 target acceptance rate.
@@ -63,6 +71,11 @@ target acceptance rate.
 The \code{eta} function regulates the rate of adaptation. The default implementation
 will decrease the rate of adaptation exponentially as a function of the iteration
 number.
+}
+\examples{
+# Setting the acceptance rate to 30 \% and deferring the updates until
+# after 1000 steps
+kern <- kernel_ram(arate = .3, warmup = 1000)
 }
 \references{
 Vihola, M. (2012). Robust adaptive Metropolis algorithm with coerced acceptance

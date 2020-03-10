@@ -18,3 +18,4 @@ makefile
 ^CRAN-RELEASE$
 benchmarks\.Rmd
 ^man-roxygen$
+^data-raw$

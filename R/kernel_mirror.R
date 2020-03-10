@@ -9,10 +9,10 @@
 #' @param warmup Integer. Number of steps required before starting adapting the
 #' chains.
 #' @param nadapt Integer. Number of times the scale is adjusted for adaptation
-#' during the warmup (burnin) period.
+#' during the warmup (burn-in) period.
 #' @param arate Double. Target acceptance rate used as a reference during the
 #' adaptation process.
-#' @family kernels
+#' @template kernel
 #' 
 #' @details
 #' 
@@ -31,8 +31,6 @@
 #' is done as proposed by Yang and Rodriguez (2013) in which the
 #' scale is adapted four times.
 #' 
-#' @return An object of class [fmcmc_kernel].
-#' 
 #' @references 
 #' Thawornwattana, Y., Dalquen, D., & Yang, Z. (2018). Designing Simple and
 #' Efficient Markov Chain Monte Carlo Proposal Kernels. Bayesian Analysis, 13(4),
@@ -42,6 +40,13 @@
 #' Monte Carlo proposal kernels. Proceedings of the National Academy of Sciences,
 #' 110(48), 19307–19312. \url{https://doi.org/10.1073/pnas.1311790110}
 #' @name kernel_mirror
+#' @examples 
+#' # Normal mirror kernel with 5 adaptations and 1000 steps of warmup (burnin)
+#' kern <- kernel_nmirror(nadapt = 5, warmup = 1000)
+#' 
+#' # Same as before but using a uniform mirror and choosing a target acceptance
+#' # rate of 24 %
+#' kern <- kernel_umirror(nadapt = 5, warmup = 1000, arate = .24)
 NULL
 
 #' @export

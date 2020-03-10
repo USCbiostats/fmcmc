@@ -9,7 +9,7 @@
 #' @param t. Sample size up to `t-1`.
 #' @param Sd,eps,Ik See [kernel_adapt()].
 #' @export
-#' @details The variance covariance algorithm was described in Haario, Sksman and
+#' @details The variance covariance algorithm was described in Haario, Saksman and
 #' Tamminen (2002).
 #' 
 #' @references 

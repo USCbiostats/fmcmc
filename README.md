@@ -73,10 +73,17 @@ the [MCMCpack](https://cran.r-project.org/package=MCMCpack) R package.
 
 # Installing
 
-From Github:
+If you want to get the latest bleeding-edge version from Github, you can
+use [devtools](https://cran.r-project.org/package=devtools):
 
 ``` r
 devtools::install_github("USCbiostats/fmcmc")
+```
+
+The latest (stable) release is also available on CRAN:
+
+``` r
+install.packages("fmcmc")
 ```
 
 # Citation
@@ -243,7 +250,7 @@ plot(ans_RAM)
 ```
 
     ##      par1      par2      par3 
-    ## 0.3512703 0.3512703 0.3512703
+    ## 0.3486697 0.3486697 0.3486697
 
 We can also try using Haario et al (2001) Adaptive Metropolis
 
@@ -266,7 +273,7 @@ plot(ans_AM)
 ```
 
     ##      par1      par2      par3 
-    ## 0.5357071 0.5357071 0.5357071
+    ## 0.5057011 0.5057011 0.5057011
 
 ## Automatic stop
 
