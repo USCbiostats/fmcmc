@@ -68,3 +68,19 @@ expect_error({
 }, "same length as")
 
 
+# Creating kernels -------------------------------------------------------------
+
+expect_error(kernel_new(function(e,b) {}), "single argument")
+expect_error(kernel_new(function(e) {}, logratio = function(a,e) {}), "single argument")
+
+# Plan schedule ----------------------------------------------------------------
+
+expect_error(
+  MCMC(c(.1,.1), f, 1e3, kernel = kernel_normal(scheme = c(1L, 3L))),
+  "included in"
+)
+
+expect_error(
+  MCMC(c(.1,.1), f, 1e3, kernel = kernel_normal(scheme = "what?")),
+  "either an integer"
+)

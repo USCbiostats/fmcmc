@@ -266,7 +266,7 @@ kernel_new <- function(
   # Checks
   if (length(formals(proposal)) != 1L)
     stop(
-      "The `proposal` function should receive a single arguments (an environment).",
+      "The `proposal` function should receive a single argument (an environment).",
       call. = FALSE
       )
   if (!is.null(logratio) && length(formals(logratio)) != 1L)
