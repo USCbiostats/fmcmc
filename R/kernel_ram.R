@@ -5,6 +5,7 @@
 #' @export
 #' @template lb-ub
 #' @template mu-Sigma
+#' @template until
 #' @param eta A function that receives the MCMC environment. This is to calculate
 #' the scaling factor for the adaptation.
 #' @param arate Numeric scalar. Objective acceptance rate.
@@ -32,6 +33,10 @@
 #' rate. Statistics and Computing, 22(5), 997–1008.
 #' \url{https://doi.org/10.1007/s11222-011-9269-5}
 #' @family kernels
+#' @examples 
+#' # Setting the acceptance rate to 30 % and deferring the updates until
+#' # after 1000 steps
+#' kern <- kernel_ram(arate = .3, warmup = 1000)
 kernel_ram <- function(
   mu     = 0,
   eta    = function(i, k) min(c(1.0, i^(-2.0/3.0) * k)),
@@ -43,7 +48,8 @@ kernel_ram <- function(
   eps    = 1e-4,
   lb     = -.Machine$double.xmax,
   ub     = .Machine$double.xmax,
-  fixed  = FALSE
+  fixed  = FALSE,
+  until  = Inf
 ) {
   
   k       <- NULL
@@ -51,9 +57,7 @@ kernel_ram <- function(
   Ik      <- NULL
   
   # We create copies of this b/c each chain has its own values
-  Sigma0   <- Sigma
-  Sigma    <- list()
-  abs_iter <- list()
+  abs_iter <- 0L
   
   kernel_new(
     proposal = function(env) {
@@ -73,14 +77,8 @@ kernel_ram <- function(
         Ik     <<- diag(k)
         
         # Initializing Sigma (for all chains)
-        if (is.null(Sigma0))
-          Sigma0 <<- Ik * eps
-        
-        # Looking at this chain in particular, we grow the thing
-        if ( is.null(Sigma[env$chain_id][[1L]]) ) {
-          Sigma[env$chain_id]    <<- list(Sigma0) # Ik * eps
-          abs_iter[env$chain_id] <<- list(0L)
-        }
+        if (is.null(Sigma))
+          Sigma <<- Ik * eps
         
         if (any(ub <= lb))
           stop("-ub- cannot be <= than -lb-.", call. = FALSE)
@@ -90,26 +88,26 @@ kernel_ram <- function(
       # Making proposal
       U      <- qfun(k)
       theta1 <- env$theta1
-      theta1[which.] <- env$theta0[which.] + (Sigma[[env$chain_id]] %*% U)[, 1L]
+      theta1[which.] <- env$theta0[which.] + (Sigma %*% U)[, 1L]
       
       # Updating the scheme
-      if (abs_iter[[env$chain_id]] > warmup && !(env$i %% freq)) {
+      if ((until > abs_iter) && (abs_iter > warmup) && !(env$i %% freq)) {
         
         # Computing
         a_n <- min(1, exp(env$f(theta1) - env$f0))
         if (!is.finite(a_n))
           a_n <- 0.0
         
-        Sigma[[env$chain_id]] <<- t(chol(Sigma[[env$chain_id]] %*% (
+        Sigma <<- t(chol(Sigma %*% (
           Ik + eta(env$i, k) * (a_n - arate) * tcrossprod(U) /
             norm(rbind(U), "2") ^ 2.0
-        ) %*% t(Sigma[[env$chain_id]])))
+        ) %*% t(Sigma)))
         
 
       }
       
       # Increasing the absolute number of iteration
-      abs_iter[[env$chain_id]] <<- abs_iter[[env$chain_id]] + 1L
+      abs_iter <<- abs_iter + 1L
       
       # Reflecting
       reflect_on_boundaries(theta1, lb, ub, which.)
@@ -122,7 +120,6 @@ kernel_ram <- function(
     freq       = freq,
     warmup     = warmup,
     Sigma      = Sigma,
-    Sigma0     = Sigma0,
     eps        = eps,
     lb         = lb,
     ub         = ub,
@@ -130,7 +127,8 @@ kernel_ram <- function(
     k          = k,
     which.     = which.,
     Ik         = Ik,
-    abs_iter   = abs_iter
+    abs_iter   = abs_iter,
+    until      = until
   )
   
 }

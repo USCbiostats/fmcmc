@@ -6,6 +6,7 @@ Gelman
 geweke
 Geweke
 Haario
+Haario's
 https
 HybridMC
 Lifecycle
@@ -16,6 +17,8 @@ rstan
 runif
 unif
 Vihola
+Saksman
+Tamminen
 warmup
 WinBUGS
 et
@@ -27,3 +30,11 @@ mbox
 fmcmc'
 elhmc
 cran
+Dalquen
+devtools
+doi
+Thawornwattana
+burnin
+ergodic
+NMirror
+UMirror

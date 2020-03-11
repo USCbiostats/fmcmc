@@ -16,7 +16,7 @@ check_dimensions <- function(x, k) {
   
 }
 
-#' Paramaters' update sequence
+#' Parameters' update sequence
 #' @param k Integer. Number of parameters
 #' @param nsteps Integer. Number of steps.
 #' @param fixed Logical scalar or vector of length `k`. Indicates which parameters
@@ -108,7 +108,7 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
   
 }
 
-#' Create Personalized Transition Kernels for MCMC
+#' Transition Kernels for MCMC
 #' 
 #' The function `kernel_new` is a helper function that allows creating
 #' `fmcmc_kernel` objects which are passed to the [MCMC()] function.
@@ -139,7 +139,7 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #' -  `...`: Further objects that are used within those functions.
 #' 
 #' Both functions, `proposal` and `logratio`, receive a single argument, an
-#' environment, which is passed by the [MCMC] function during each step using
+#' environment, which is passed by the [MCMC()] function during each step using
 #' the function [environment()].
 #' 
 #' The passed environment is actually the environment in which the `MCMC`
@@ -149,7 +149,6 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #' \tabular{lcl}{
 #' \strong{Object} \tab \tab \strong{Description} \cr
 #' `i` \tab \tab Integer. The current iteration. \cr
-#' `chain_id` \tab \tab Integer. The current chain (relevent for some kernels). \cr
 #' `theta1` \tab \tab Numeric vector. The last proposed state. \cr
 #' `theta0` \tab \tab Numeric vector. The current state \cr
 #' `f`\tab \tab The log-unnormalized posterior function (a wrapper of `fun` passed 
@@ -189,8 +188,30 @@ plan_update_sequence <- function(k, nsteps, fixed, scheme) {
 #' }
 #' ```
 #' 
-#' For more details see the vignette `vignette("user-defined-kernels", "fmcmc")`.
+#' For an extensive example on how to create new kernel objects see the vignette
+#' `vignette("user-defined-kernels", "fmcmc")`.
 #' 
+#' @section Behavior:
+#' 
+#' In some cases, calls to the `proposal()` and `logratio()` functions in
+#' `fmcmc_kernels` can trigger changes or updates of variables stored within them.
+#' A concrete example is with adaptive kernels.
+#' 
+#' Adaptive Metropolis and Robust Adaptive Metropolis implemented in the functions
+#' [kernel_adapt()] and [kernel_ram()] both update a covariance matrix used
+#' during the proposal stage, and furthermore, have a `warmup` stage that sets
+#' the point at which both will start adapting. Because of this, both kernels
+#' have internal counters of the absolute step count which allows them activating,
+#' scaling, etc. the proposals correctly.
+#' 
+#' 1. When running multiple chains, `MCMC` will create independent copies of a
+#'    baseline passed `fmcmc_kernel` object. These are managed together in a
+#'    `fmcmc_kernel_list` object.
+#'    
+#' 2. Even if the chains are run in parallel, if a predefined kernel object is
+#'    passed it will be updated to reflect the last state of the kernels
+#'    before the `MCMC` call returns.
+#'    
 #' @family kernels
 #' @aliases fmcmc_kernel kernels
 #' @examples 
@@ -245,7 +266,7 @@ kernel_new <- function(
   # Checks
   if (length(formals(proposal)) != 1L)
     stop(
-      "The `proposal` function should receive a single arguments (an environment).",
+      "The `proposal` function should receive a single argument (an environment).",
       call. = FALSE
       )
   if (!is.null(logratio) && length(formals(logratio)) != 1L)
@@ -272,8 +293,6 @@ kernel_new <- function(
 }
 
 #' @export
-#' @rdname kernel_new
-#' @param x An object of class `fmcmc_kernel`.
 print.fmcmc_kernel <- function(x, ...) {
   
   cat("\nAn environment of class fmcmc_kernel:\n\n")
@@ -282,6 +301,115 @@ print.fmcmc_kernel <- function(x, ...) {
   invisible(x)
   
 }
+
+#' @export
+c.fmcmc_kernel <- function(...) {
+  
+  dots <- list(...)
+  if (any(!sapply(dots, inherits, what = "fmcmc_kernel")))
+    stop("One or more terms passed in ... are not of class fmcmc_kernel.", call. = FALSE)
+  
+  kernels_env <- new.env(hash = TRUE)
+  for (i in seq_along(dots))
+    assign(x = paste0("kernel", i), value = dots[[i]], envir = kernels_env)
+  
+  structure(kernels_env, class = c("environment", "fmcmc_kernel_list"))
+  
+}
+
+#' Creates independent duplicates of an fmcmc_kernel object
+#' 
+#' This is intended to be used in the case of having multiple chains running.s
+#' @noRd
+rep_kernel <- function(x, nchains, ...) {
+  
+  # If it is already duplicated, then we don't need to duplicate it again...
+  # unless the number of kernels doesn't matches the number of chains!
+  if (is_kernel_list(x)) 
+    stop("The kernel is already a list (fmcmc_kernel_list).", call. = FALSE)
+
+  if (!inherits(x, "fmcmc_kernel"))
+    stop("x is not of class fmcmc_kernel.", call. = FALSE)
+  
+  # This is a list of environments, we need to add it to the original
+  # environment
+  ans <- replicate(n = nchains, expr = copy_kernel(x))
+  
+  # Cleaning and replacing
+  rm(list = ls(envir = x), envir = x)
+  
+  ans <- lapply(
+    X = seq_along(ans),
+    FUN = function(i) assign(paste0("kernel", i), ans[[i]], envir = x)
+    )
+  
+  class(x) <- c("environment", "fmcmc_kernel_list")
+  
+  invisible(NULL)
+  
+}
+
+#' Copy a kernel by going env2list2env and wrap in fmcmc_kernel class
+#' @noRd
+#' 
+copy_kernel <- function(x) {
+  
+  if (!inherits(x, "fmcmc_kernel"))
+    stop("x must be an object of class fmcmc_kernel.", call. = FALSE)
+  
+  kernel_env <- new.env(hash = TRUE)
+  lapply(names(x), function(obj_name) {
+    assign(obj_name, get(obj_name, envir = x), kernel_env)
+  })
+  
+  environment(kernel_env$proposal) <- kernel_env
+  environment(kernel_env$logratio) <- kernel_env
+  
+  structure(kernel_env, class = c("environment", "fmcmc_kernel"))
+  
+}
+
+#' @export
+`[[.fmcmc_kernel_list` <- function(x, i) {
+  
+  get(names(x)[i], envir = x)
+  
+}
+
+#' This function copies the contents of k1 into k0
+#' @noRd
+update_kernel <- function(k0, k1, positions = 1:length(k0)) {
+  
+  # Basic checks (to make sure we are not busting it)
+  if (!is_kernel_list(k0))
+    stop("k0 must be an object of class kernel_list.", call. = FALSE)
+  
+  if (!is_kernel_list(k1))
+    stop("k1 must be an object of class kernel_list.", call. = FALSE)
+  
+  if (length(k0) != length(k1))
+    stop("k0 and k1 must be of the same length.", call. = FALSE)
+  
+  # Assigning the values in the new environment
+  for (i in positions) 
+    assign(names(k1)[i], k1[[i]], envir = k0)
+  
+  invisible(NULL)
+}
+
+is_kernel_list <- function(x) {
+  inherits(x, what = "fmcmc_kernel_list")
+}
+
+#' @export
+print.fmcmc_kernel_list <- function(x, ...) {
+  
+  cat("A list of", length(x), "fmcmc_kernels.\n")
+  invisible(x)
+  
+}
+
+
 
 #' Reflective Boundaries
 #' 

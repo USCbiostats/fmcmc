@@ -10,12 +10,13 @@ kernel_adapt(
   bw = 0L,
   lb = -.Machine$double.xmax,
   ub = .Machine$double.xmax,
-  freq = 50L,
+  freq = 1L,
   warmup = 500L,
   Sigma = NULL,
   Sd = NULL,
   eps = 1e-04,
-  fixed = FALSE
+  fixed = FALSE,
+  until = Inf
 )
 
 kernel_am(
@@ -23,12 +24,13 @@ kernel_am(
   bw = 0L,
   lb = -.Machine$double.xmax,
   ub = .Machine$double.xmax,
-  freq = 50L,
+  freq = 1L,
   warmup = 500L,
   Sigma = NULL,
   Sd = NULL,
   eps = 1e-04,
-  fixed = FALSE
+  fixed = FALSE,
+  until = Inf
 )
 }
 \arguments{
@@ -44,7 +46,8 @@ bounded kernels. When of length 1, the values are recycled to match the number
 of parameters in the objective function.}
 
 \item{freq}{Integer scalar. Frequency of updates. How often the
-variance-covariance matrix is updated.}
+variance-covariance matrix is updated. The implementation is different from that
+described in the original paper (see details).}
 
 \item{warmup}{Integer scalar. The number of iterations that the algorithm has
 to wait before starting to do the updates.}
@@ -59,14 +62,22 @@ is scaled to \eqn{2.4^2/d}, with \eqn{d} the number of dimensions.}
 
 \item{fixed}{Logical scalar or vector of length \code{k}. Indicates which parameters
 will be treated as fixed or not. Single values are recycled.}
+
+\item{until}{Integer scalar. Last step at which adaptation takes place (see
+details).}
 }
 \value{
-An object of class \link{fmcmc_kernel}.
+An object of class \link{fmcmc_kernel}. \code{fmcmc_kernel} objects are intended
+to be used with the \code{\link[=MCMC]{MCMC()}} function.
 }
 \description{
 Implementation of Haario et al. (2001)'s Adaptive Metropolis.
 }
 \details{
+While it has been shown that under regular conditions this transition kernel
+generates ergodic chains even when the adaptation does not stop, some
+practitioners may want to stop adaptation at some point.
+
 \code{kernel_adapt} Implements the adaptive Metropolis (AM) algorithm of Haario
 et al. (2001). If the value of bw is greater than zero, then the algorithm
 folds back AP, a  previous version which is known to have ergodicity problems.
@@ -79,9 +90,22 @@ is greater than zero, this is, the \eqn{\varepsilon}{epsilon} parameter in the
 original paper.
 
 The update of the covariance matrix is done using \code{\link[=cov_recursive]{cov_recursive()}} function,
-which makes the updates faster.
+which makes the updates faster. The \code{freq} parameter, besides of indicating the
+frequency with which the updates are done, it specifies what are the samples
+included in each update, in other words, like a thinning parameter, only every
+\code{freq} samples will be used to compute the covariance matrix. Since this
+implementation uses the recursive formula for updating the covariance, there is
+no practical need to set \code{freq != 1}.
 
 \code{kernel_am} is just an alias for \code{kernel_adapt}.
+}
+\examples{
+# Update every-step and wait 1,000 steps before starting to adapt
+kern <- kernel_adapt(freq = 1, warmup = 1000)
+
+# Two parameters model, the second parameter with a restricted range, i.e.
+# a lower bound of 1
+kern <- kernel_adapt(lb = c(-.Machine$double.xmax, 0))
 }
 \references{
 Haario, H., Saksman, E., & Tamminen, J. (2001). An adaptive Metropolis algorithm.

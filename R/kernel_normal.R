@@ -6,8 +6,17 @@
 #' The `kernel_normal` function provides the canonical normal kernel
 #' with symmetric transition probabilities.
 #' @export
-#' @return An object of class [fmcmc_kernel].
-#' @family kernels
+#' @template kernel
+#' @examples 
+#' # Normal kernel with a small scale (sd) of 0.05
+#' kern <- kernel_normal(scale = 0.05)
+#' 
+#' # Using boundaries for the second parameter of a two parameter chain
+#' # to have values in [0, 100].
+#' kern <- kernel_normal_reflective(
+#'   ub = c(.Machine$double.xmax, 100),
+#'   lb = c(-.Machine$double.xmax, 0)
+#'   )
 kernel_normal <- function(
   mu    = 0,
   scale = 1,

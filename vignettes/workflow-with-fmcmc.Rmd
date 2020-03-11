@@ -147,5 +147,115 @@ summary(out_final[, 1:3])
 
 # Reusing fmcmc_kernel objects
 
-`fmcmc_kernel` objects are enviroments that are passed to the `MCMC` function.
-In the case of adaptive algorithms, users may want to reuse the adaptation.
+`fmcmc_kernel` objects are environments that are passed to the `MCMC` function.
+While the `MCMC` function only returns the `mcmc` class object (as defined in
+the `coda` package), users can exploit the fact that the kernel objects are
+environments to reuse them or inspect them once the `MCMC` function returns.
+
+This could be particularly useful in the case of adaptive kernels as users can
+review the covariance structure (for example) or other components of the kernel.
+
+To illustrate this, let's re-do the MCMC chain of the previous example but using
+an adaptive kernel instead, in particular, Haario's 2010 adaptive metropolis.
+
+```{r kernel-object-adapt}
+khaario <- kernel_adapt(freq = 1, warmup = 500)
+```
+
+This kernel object will be updated at every step (`freq = 1`) and adaptation will
+start from step 500 (`warmup = 500`). We can see that some of its components haven't
+been initialized or have default starting values before the call of the `MCMC`
+function:
+
+```{r haario-first-inspect}
+# Number of iterations (absolute count, starts in 0)
+khaario$abs_iter
+
+# Variance covariance matrix (is empty... for now)
+khaario$Sigma
+```
+
+
+Let's see how it works:
+
+```{r haario-first-run}
+set.seed(12) 
+
+out_harrio_1 <- MCMC(
+  initial   = out,                       
+  fun       = lupost, 
+  nsteps    = 1000,    # We will only run the chain for 100 steps                    
+  kernel    = khaario, # We passed the predefined kernel
+  thin      = 1,       # No thining here
+  nchains   = 1L,      # A single chain
+  multicore = FALSE    # Running in serial
+  )
+```
+
+Let's inspect the output and mark when the adaptation starts:
+
+```{r haario-first-run-plots}
+traceplot(out_harrio_1[,1], main = "Traceplot of the first parameter")
+abline(v = 500, col = "red", lwd = 2, lty=2)
+```
+
+If we look at the `khaario` kernel, the `fmcmc_kernel` object, we can see that
+things changed from the first time we ran it
+
+```{r haario-second-inspect}
+# Number of iterations (absolute count, the counts equal the number of steps)
+khaario$abs_iter
+
+# Variance covariance matrix (now is not empty)
+(Sigma1 <- khaario$Sigma)
+```
+
+If we re-run the chain, using as starting point the last step of the first run,
+we can also continue using the kernel object:
+
+```{r haario-second-run}
+out_harrio_2 <- MCMC(
+  initial   = out_harrio_1,
+  fun       = lupost, 
+  nsteps    = 2000,    # We will only run the chain for 2000 steps now
+  kernel    = khaario, # Same as before, same kernel.
+  thin      = 1,       
+  nchains   = 1L,      
+  multicore = FALSE    
+  )
+```
+
+Let's see again how does everything looks like:
+
+```{r haario-second-run-plots}
+traceplot(out_harrio_2[,1], main = "Traceplot of the first parameter")
+abline(v = 500, col = "red", lwd = 2, lty=2)
+```
+
+As shown in the plot, since the warmup period already passed for the kernel object,
+the adaptation process is happening continuously so we don't see a big break at
+step 500 as before. Let's see now the counts and the covariance matrix and compare
+it with the previous one:
+
+```{r haario-third-inspect}
+# Number of iterations (absolute count, the counts equal the number of steps)
+# This will have 1000 (first run) + 2000 (second run) steps
+khaario$abs_iter
+
+# Variance covariance matrix (now is not empty)
+(Sigma2 <- khaario$Sigma)
+
+# How different these are?
+Sigma1 - Sigma2
+```
+
+Things have changed since the last time we used the kernel, as expected. Kernel
+objects in the `fmcmc` package can also be used with multiple chains and in
+parallel. The `MCMC` function is smart enough to create independent copies of
+`fmcmc_kernel` objects when running multiple chains, and keep the original
+kernel objects up-to-date even when using multiple cores to run `MCMC`. For
+more technical details on how `fmcmc_kernel` objects work see the manual
+`?fmcmc_kernel` or the vignette "User-defined kernels" included in the package
+`vignette("user-defined-kernels", package = "fmcmc")`.
+
+

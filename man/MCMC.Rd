@@ -101,7 +101,7 @@ and returns a logical value with \code{TRUE} indicating convergence. See the
 \item{cl}{A \code{cluster} object passed to \link[parallel:clusterApply]{parallel::clusterApply}.}
 
 \item{progress}{Logical scalar. When set to \code{TRUE} shows a progress bar. A new
-bar will be show everytime that the convergence checker is called.}
+bar will be show every time that the convergence checker is called.}
 
 \item{chain_id}{Integer scalar (internal use only). This is an argument
 passed to the kernel function and it allows it identify in which of the

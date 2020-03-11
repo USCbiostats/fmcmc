@@ -34,7 +34,7 @@ These algorithms are used in \code{\link[=kernel_adapt]{kernel_adapt()}} to simp
 recalculation at every step of the algorithm.
 }
 \details{
-The variance covariance algorithm was described in Haario, Sksman and
+The variance covariance algorithm was described in Haario, Saksman and
 Tamminen (2002).
 }
 \examples{
