@@ -205,7 +205,9 @@ convergence_auto <- function(freq = 1000L) {
 #' @noRd
 #' @param expr The expression to parse
 #' @param conv_checker A function to be used as a convergence checker.
-with_autostop <- function(expr, conv_checker) {
+#' @param free_params An integer indicating the set of parameters of the
+#' chain that should be considered in the model.
+with_autostop <- function(expr, conv_checker, free_params) {
   
   # Getting the parent environment
   freq   <- attr(conv_checker, "freq")
@@ -259,12 +261,17 @@ with_autostop <- function(expr, conv_checker) {
     # Appending retults
     ans <- append_chains(ans, tmp)
     
-    if ((converged <- conv_checker(ans))) {
+    if ((converged <- conv_checker(ans[, free_params, drop = FALSE]))) {
       message(
         "Convergence has been reached with ", sum(bulks[1:i]), " steps (",
         coda::niter(ans), " final count of samples)."
         )
       break
+    } else {
+      message(
+        "No convergence yet (steps count: ", sum(bulks[1:i]), "). ",
+        "Trying with the next bulk."
+      )
     }
     
   }

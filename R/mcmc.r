@@ -443,10 +443,22 @@ MCMC.default <- function(
   # chains
   if (!is.null(conv_checker)) {
     
+    # Checking the set of free parameters
+    free_params <- if (inherits(kernel, "fmcmc_kernel_list"))
+      kernel[[1]]$fixed
+    else
+      kernel$fixed
+    
+    if (is.null(free_params))
+      free_params <- seq_along(initial)
+    else
+      free_params <- which(!free_params)
+    
     fmcmc_call <- call(
       "with_autostop",
       fmcmc_call,
-      conv_checker = quote(conv_checker)
+      conv_checker = quote(conv_checker), 
+      free_params  = free_params
       )
     
     ans <- eval(fmcmc_call)
