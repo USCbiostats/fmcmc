@@ -91,3 +91,15 @@ new_progress_bar <- function(
   }
   
 }
+
+# start_multi_progress <- function(nbars) {
+#   assign(".fmcmc_multi_progress_nbars", nbars, pos = .GlobalEnv)
+#   assign(".fmcmc_multi_progress_file", stdout(), pos = .GlobalEnv)
+# }
+# 
+# end_multi_progress <- function(nbars) {
+#   rm(
+#     list  = c(".fmcmc_multi_progress_nbars", ".fmcmc_multi_progress_file"),
+#     envir = .GlobalEnv
+#     )
+# }

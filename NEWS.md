@@ -1,4 +1,4 @@
-# fmcmc 0.2-1-9999
+# fmcmc 0.3-0
 
 * Adding Vihola (2012)'s Robust Adaptive Metropolis, Haario et al. (2001)'s
   Adaptive Metropolis, and Thawornwattana et al. (2018)'s mirror kernel
@@ -8,6 +8,9 @@
   will print the progress of the MCMC algorithm.
 
 * Improved coverage and fixed minor bugs.
+
+* When running with convergence check, fixed parameters (offset), as tagged in
+  the `fmcmc_kernel` object will be excluded from the call to `conv_checker`.
 
 
 # fmcmc 0.2-0
