@@ -36,8 +36,8 @@ way:
 
 3.  **User defined transition kernels**: Besides of canonical Gaussian
     Kernel, users can specify their own or use one of the included in
-    the package, for example: `kernel_normal`,
-    `kernel_normal_reflective`, `kernel_unif`, or
+    the package, for example: `kernel_adapt`, `kernel_ram`,
+    `kernel_normal_reflective`, `kernel_unif`, `kernel_mirror`, or
     `kernel_unif_reflective`.
 
 All the above without requiring compiled code.
@@ -297,7 +297,9 @@ ans <- MCMC(
   )
 ```
 
-    ## Convergence has been reached with 1000 steps (1000 final count of samples).
+    ## No convergence yet (steps count: 50). Trying with the next bulk.
+
+    ## Convergence has been reached with 100 steps (100 final count of samples).
 
 As a difference from the previous case, now we didn’t had to wait until
 the 5,000 steps were done, but the algorithm stopped for us, allowing us
@@ -347,7 +349,9 @@ ans <- MCMC(
   )
 ```
 
-    ## Convergence has been reached with 550 steps (550 final count of samples).
+    ## No convergence yet (steps count: 50). Trying with the next bulk.
+
+    ## Convergence has been reached with 100 steps (100 final count of samples).
 
 Again, as the proposal kernel has lower and upper bounds, then we are
 guaranteed that all proposed states are within the support of the

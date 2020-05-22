@@ -8,12 +8,12 @@
 cov_recursive(
   X_t,
   Cov_t,
-  Mean_t,
   Mean_t_prev,
   t.,
+  Mean_t = NULL,
   eps = 0,
   Sd = 1,
-  Ik = diag(length(X_t))
+  Ik = diag(ncol(Cov_t))
 )
 
 mean_recursive(X_t, Mean_t_prev, t.)
@@ -23,9 +23,9 @@ mean_recursive(X_t, Mean_t_prev, t.)
 
 \item{Cov_t}{Covariance in t}
 
-\item{Mean_t, Mean_t_prev}{Vectors of averages in time \code{t} and \code{t-1} respectively.}
-
 \item{t.}{Sample size up to \code{t-1}.}
+
+\item{Mean_t, Mean_t_prev}{Vectors of averages in time \code{t} and \code{t-1} respectively.}
 
 \item{Sd, eps, Ik}{See \code{\link[=kernel_adapt]{kernel_adapt()}}.}
 }

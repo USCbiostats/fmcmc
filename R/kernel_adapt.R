@@ -72,7 +72,7 @@ kernel_adapt <- function(
   
   # Variables for fast cov (see cov_recursive)
   Mean_t_prev <- NULL
-  t.          <- 1L
+  # t.          <- NULL
   
   # We create copies of this b/c each chain has its own values
   abs_iter <- 0L
@@ -121,28 +121,56 @@ kernel_adapt <- function(
           if (is.null(Mean_t_prev))
             Mean_t_prev <<- colMeans(env$ans[1:(env$i - 1), ])
           
+          # Figuring out range (this is greater than a single observation if the
+          # updates happen with freq > 1).
+          update_range <- (env$i - freq):(env$i - 1L)
+          
+          # if (is.null(t.))
+          #   t. <<- update_range[1L]
+
+          # If we are updating every freq != 1, then this is a matrix
           Mean_t <- mean_recursive(
-            X_t         = env$ans[env$i - 1L, ],
+            X_t         = env$ans[update_range, ],
             Mean_t_prev = Mean_t_prev,
-            t.          = t.
+            t.          = abs_iter - freq
             )
           
           # Update sigma
-          Sigma <<- cov_recursive(
-            X_t         = env$ans[env$i - 1, ],
-            Cov_t       = Sigma,
-            Mean_t      = Mean_t,
-            Mean_t_prev = Mean_t_prev,
-            t.          = t.,
-            eps         = 1,
-            Ik          = Ik
+          if (freq > 1L) {
+            
+            Sigma <<- cov_recursive(
+              X_t         = env$ans[update_range, ],
+              Cov_t       = Sigma,
+              Mean_t      = Mean_t,
+              Mean_t_prev = Mean_t_prev,
+              t.          = abs_iter - freq,
+              eps         = 1e-5,
+              Ik          = Ik
+              )[,,freq,drop=TRUE]
+            
+            Mean_t_prev <<- Mean_t[freq, ]
+            
+          } else {
+            
+            Sigma <<- cov_recursive(
+              X_t         = env$ans[update_range, ],
+              Cov_t       = Sigma,
+              Mean_t      = Mean_t,
+              Mean_t_prev = Mean_t_prev,
+              t.          = abs_iter - freq,
+              eps         = 1e-5,
+              Ik          = Ik
             )
+            
+            Mean_t_prev <<- Mean_t
+            
+          }
           
-          Mean_t_prev <<- Mean_t
+          
           
           # Add one to the counter, we need this for the recursive update of the
           # Covariance matrix.
-          t. <<- t. + 1L
+          # t. <<- t. + freq
         }
       }
       
@@ -174,7 +202,7 @@ kernel_adapt <- function(
     Ik          = Ik,
     which.      = which.,
     Mean_t_prev = Mean_t_prev,
-    t.          = t.,
+    # t.          = t.,
     abs_iter    = abs_iter,
     until       = until
   )
