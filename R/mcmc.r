@@ -460,7 +460,7 @@ MCMC_without_conv_checker <- function(
     ans <- vector("list", nchains)
     for (i in seq_len(nchains))
       ans[[i]] <- MCMC_without_conv_checker(
-        initial      = initial,
+        initial      = initial[i,,drop=FALSE],
         fun          = fun,
         nsteps       = nsteps,
         nchains      = 1L,
