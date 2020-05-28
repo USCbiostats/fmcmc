@@ -111,7 +111,7 @@ cov_recursive <- function(
   
   (t. - 1)/t. * Cov_t + 
     Sd/t. * (
-      t. * tcrossprod(Mean_t_prev) -
+      t. * tcrossprod(if (is.matrix(Mean_t_prev)) t(Mean_t_prev) else Mean_t_prev) -
         (t. + 1) * tcrossprod(Mean_t) +
         tcrossprod(X_t) + 
         eps * Ik

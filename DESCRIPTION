@@ -38,7 +38,8 @@ Imports:
     coda,
     stats,
     methods,
-    MASS
+    MASS,
+    Matrix
 RoxygenNote: 7.0.2
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr

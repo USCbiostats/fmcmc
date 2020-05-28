@@ -15,6 +15,10 @@
 #' will be treated as fixed or not. Single values are recycled.
 #' @param freq Integer scalar. Frequency of updates. How often the
 #' variance-covariance matrix is updated.
+#' @param constr Logical lower-diagonal square matrix of size `k`. **Not** in the
+#' original paper, but rather a tweak that imposes a constraint on the `S_n`
+#' matrix. If different from `NULL`, the kernel multiplates `S_n` by this
+#' constraint so that zero elements are pre-imposed.
 #' 
 #' @details 
 #' 
@@ -49,12 +53,14 @@ kernel_ram <- function(
   lb     = -.Machine$double.xmax,
   ub     = .Machine$double.xmax,
   fixed  = FALSE,
-  until  = Inf
+  until  = Inf,
+  constr = NULL
 ) {
   
   k       <- NULL
   which.  <- NULL
   Ik      <- NULL
+  nerrors <- 0L
   
   # We create copies of this b/c each chain has its own values
   abs_iter <- 0L
@@ -67,7 +73,7 @@ kernel_ram <- function(
         
         k     <<- length(env$theta0)
         
-        mu     <<- check_dimensions(mu, k)
+        # mu     <<- check_dimensions(mu, k)
         ub     <<- check_dimensions(ub, k)
         lb     <<- check_dimensions(lb, k)
         fixed  <<- check_dimensions(fixed, k)
@@ -75,6 +81,9 @@ kernel_ram <- function(
         
         k      <<- sum(!fixed)
         Ik     <<- diag(k)
+        
+        # # We wont be reusing mu, so we need to adjust it
+        # mu <<- mu[which.]
         
         # Initializing Sigma (for all chains)
         if (is.null(Sigma))
@@ -98,11 +107,21 @@ kernel_ram <- function(
         if (!is.finite(a_n))
           a_n <- 0.0
         
-        Sigma <<- t(chol(Sigma %*% (
+        Sigma <<- Sigma %*% (
           Ik + eta(env$i, k) * (a_n - arate) * tcrossprod(U) /
             norm(rbind(U), "2") ^ 2.0
-        ) %*% t(Sigma)))
+        ) %*% t(Sigma)
         
+        Sigma_temp <<- tryCatch(t(chol(Sigma)), error = function(e) e)
+        if (inherits(Sigma_temp, "error")) {
+          nerrors <<- nerrors + 1L
+          Sigma <<- t(chol(Matrix::nearPD(Sigma)$mat))
+        } else
+          Sigma <<- Sigma_temp
+        
+        # Applying a constraint on sigma
+        if (!is.null(constr))
+          Sigma <<- constr[which., , drop = FALSE][, which., drop = FALSE] * Sigma
 
       }
       
@@ -128,7 +147,9 @@ kernel_ram <- function(
     which.     = which.,
     Ik         = Ik,
     abs_iter   = abs_iter,
-    until      = until
+    until      = until,
+    constr     = constr,
+    nerrors    = nerrors
   )
   
 }

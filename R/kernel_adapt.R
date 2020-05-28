@@ -87,22 +87,26 @@ kernel_adapt <- function(
       if (env$i == 1L | is.null(k)) {
         
         k     <<- length(env$theta0)
-        Ik    <<- diag(k) * eps
-        
-        if (is.null(Sigma))
-          Sigma <<- Ik
-        
+
         mu     <<- check_dimensions(mu, k)
         ub     <<- check_dimensions(ub, k)
         lb     <<- check_dimensions(lb, k)
         fixed  <<- check_dimensions(fixed, k)
         which. <<- which(!fixed)
         
+        # Need to adapt this afterwards
+        k  <<- sum(!fixed)
+        Ik <<- diag(k) * eps
+        mu <<- mu[which.]
+        
+        if (is.null(Sigma))
+          Sigma <<- Ik
+        
         if (any(ub <= lb))
           stop("-ub- cannot be <= than -lb-.", call. = FALSE)
         
         if (is.null(Sd))
-          Sd <<- 5.76 / length(which.) # 2.38^2
+          Sd <<- 5.76 / k # 2.38^2
       }
       
       # Updating the scheme
@@ -113,13 +117,13 @@ kernel_adapt <- function(
         
         if (bw > 0L) {
           
-          Sigma <<- Sd * (stats::cov(env$ans[ran, , drop = FALSE]) + Ik)
+          Sigma <<- Sd * (stats::cov(env$ans[ran, which., drop = FALSE]) + Ik)
           
         } else {
           
           # Update mean
           if (is.null(Mean_t_prev))
-            Mean_t_prev <<- colMeans(env$ans[1:(env$i - 1), ])
+            Mean_t_prev <<- colMeans(env$ans[1:(env$i - 1), which., drop = FALSE])
           
           # Figuring out range (this is greater than a single observation if the
           # updates happen with freq > 1).
@@ -130,43 +134,26 @@ kernel_adapt <- function(
 
           # If we are updating every freq != 1, then this is a matrix
           Mean_t <- mean_recursive(
-            X_t         = env$ans[update_range, ],
+            X_t         = env$ans[update_range, which., drop = FALSE],
             Mean_t_prev = Mean_t_prev,
             t.          = abs_iter - freq
             )
           
           # Update sigma
-          if (freq > 1L) {
-            
-            Sigma <<- cov_recursive(
-              X_t         = env$ans[update_range, ],
-              Cov_t       = Sigma,
-              Mean_t      = Mean_t,
-              Mean_t_prev = Mean_t_prev,
-              t.          = abs_iter - freq,
-              eps         = 1e-5,
-              Ik          = Ik
-              )[,,freq,drop=TRUE]
-            
+          Sigma <<- cov_recursive(
+            X_t         = env$ans[update_range, which., drop = FALSE],
+            Cov_t       = Sigma,
+            Mean_t      = Mean_t,
+            Mean_t_prev = Mean_t_prev,
+            t.          = abs_iter - freq,
+            eps         = 1e-5,
+            Ik          = Ik
+          )[, , freq, drop = TRUE]
+          
+          if (freq > 1L) 
             Mean_t_prev <<- Mean_t[freq, ]
-            
-          } else {
-            
-            Sigma <<- cov_recursive(
-              X_t         = env$ans[update_range, ],
-              Cov_t       = Sigma,
-              Mean_t      = Mean_t,
-              Mean_t_prev = Mean_t_prev,
-              t.          = abs_iter - freq,
-              eps         = 1e-5,
-              Ik          = Ik
-            )
-            
+          else
             Mean_t_prev <<- Mean_t
-            
-          }
-          
-          
           
           # Add one to the counter, we need this for the recursive update of the
           # Covariance matrix.
@@ -181,8 +168,8 @@ kernel_adapt <- function(
       theta1 <- env$theta0
       theta1[which.] <- env$theta0[which.] +
         MASS::mvrnorm(
-          mu    = mu[which.],
-          Sigma = Sigma[which., , drop = FALSE][,which. , drop = FALSE]
+          mu    = mu,
+          Sigma = Sigma
           )
       
       reflect_on_boundaries(theta1, lb, ub, which.)

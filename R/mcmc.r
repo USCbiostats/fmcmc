@@ -326,12 +326,15 @@ MCMC.default <- function(
   chain_id     = 1L
 ) {
   
+  # Initializing recording of variables
+  MCMC_init(...)
+  
   MCMC_CALL <- if (!is.null(conv_checker))
     MCMC_with_conv_checker
   else
     MCMC_without_conv_checker
   
-  MCMC_CALL(
+  ans <- MCMC_CALL(
     initial      = initial,
     fun          = fun,
     nsteps       = nsteps,
@@ -346,6 +349,11 @@ MCMC.default <- function(
     chain_id     = chain_id,
     ...
   )
+  
+  # Stopping the timer
+  MCMC_finalize()
+  
+  return(ans)
 
 }
 

@@ -1,3 +1,13 @@
+# fmcmc 0.3-0-99
+
+* `kernel_am` and `kernel_ram` no longer fail when at least one parameter is
+  an offset (`fixed = TRUE` for some parameter).
+
+* Now `kernel_ram` tries first to find the cholesky decomp. If it fails, then
+  it uses `Matrix::nearPD` and re-tries. This is following what is done in the
+  `adaptMCMC` package.
+  
+
 # fmcmc 0.3-0
 
 * Adding Vihola (2012)'s Robust Adaptive Metropolis, Haario et al. (2001)'s
