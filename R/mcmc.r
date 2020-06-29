@@ -357,6 +357,10 @@ MCMC.default <- function(
 
 }
 
+#' @export
+#' @rdname MCMC
+#' @details The functions `MCMC_without_conv_checker` and `MCMC_with_conv_checker`
+#' should not be directly called by the user. These are for internal use only.
 MCMC_without_conv_checker <- function(
   initial,
   fun,
@@ -400,7 +404,7 @@ MCMC_without_conv_checker <- function(
   # kernel.
   if (nchains > 1L && !is_kernel_list(kernel))
     rep_kernel(kernel, nchains = nchains)
-
+  
   # Filling the gap on parallel
   if (multicore && !length(cl)) {
     
@@ -415,10 +419,13 @@ MCMC_without_conv_checker <- function(
     
     on.exit(parallel::stopCluster(cl))
     
-    # We need to actively export these so we can capture it later
+  }
+  
+  # We need to actively export these so we can capture it later
+  if (multicore) {
     parallel::clusterExport(cl, "kernel", envir = environment())
-    
-  } 
+    parallel::clusterEvalQ(cl, FMCMC_PLL_KERNEL <- new.env())
+  }
     
   if (nchains > 1L && multicore) {
     
@@ -429,7 +436,7 @@ MCMC_without_conv_checker <- function(
         i, initial, fun., nsteps, nchains, burnin, thin, 
         progress
         ) {
-        fmcmc:::MCMC_without_conv_checker(
+        res. <- fmcmc::MCMC_without_conv_checker(
           initial      = initial[i, , drop=FALSE],
           fun          = fun.,
           nsteps       = nsteps,
@@ -444,6 +451,11 @@ MCMC_without_conv_checker <- function(
           chain_id     = i,
           ...
         )
+        
+        # Making sure we are returning the right kernel
+        assign("kernel", kernel[[i]], envir = FMCMC_PLL_KERNEL)
+        
+        res.
       },
       initial      = initial,
       fun.         = fun,
@@ -455,8 +467,7 @@ MCMC_without_conv_checker <- function(
     )
     
     # Updating the kernel
-    kernel_list <- parallel::clusterEvalQ(cl, kernel)
-    kernel_list <- lapply(1:nchains, function(i) kernel_list[[i]][[i]])
+    kernel_list <- parallel::clusterEvalQ(cl, get("kernel", envir = FMCMC_PLL_KERNEL))
     update_kernel(kernel, do.call(c, kernel_list))
     
     # Appending the chains
@@ -586,6 +597,9 @@ MCMC_without_conv_checker <- function(
   if (burnin) ans <- ans[-c(1:burnin), , drop = FALSE]
   if (thin)   ans <- ans[(1:nrow(ans) %% thin) == 0, , drop = FALSE]
   
+  # Cleaning the space
+  on.exit(rm(list = ls(envir = environment())))
+  
   # Returning an mcmc object from the coda package
   return(
     coda::mcmc(
@@ -597,6 +611,7 @@ MCMC_without_conv_checker <- function(
     )
   
 }
+
 
 MCMC_with_conv_checker <- function(
   initial,
@@ -617,18 +632,7 @@ MCMC_with_conv_checker <- function(
   if (is.null(conv_checker))
     stop("The convergence checker for this call cannot be null.", call. = FALSE)
 
-  # Checking the set of free parameters
-  free_params <- if (inherits(kernel, "fmcmc_kernel_list"))
-    kernel[[1]]$fixed
-  else
-    kernel$fixed
-  
-  if (is.null(free_params))
-    free_params <- seq_along(initial)
-  else
-    free_params <- which(!free_params)
-  
-  
+
   # Getting the parent environment
   freq   <- attr(conv_checker, "freq")
 
@@ -653,6 +657,11 @@ MCMC_with_conv_checker <- function(
   converged <- FALSE
   i         <- 0L
   ans       <- NULL
+  free_params <- NULL
+  
+  # Cleaning the convergence environment
+  convergence_data_flush()
+  
   for (i in seq_along(bulks)) {
     
     # Updating the nsteps argument
@@ -682,6 +691,10 @@ MCMC_with_conv_checker <- function(
       ...
     )
     
+    # A friendly call to the garbage collector
+    if (multicore && !is.null(cl))
+      parallel::clusterEvalQ(cl, gc())
+    
     
     if (is.list(tmp) & !coda::is.mcmc.list(tmp))
       tmp <- coda::as.mcmc.list(tmp)
@@ -689,15 +702,42 @@ MCMC_with_conv_checker <- function(
     # Appending retults
     ans <- append_chains(ans, tmp)
     
-    if ((converged <- conv_checker(ans[, free_params, drop = FALSE]))) {
+    # Checking the set of free parameters
+    if (is.null(free_params)) {
+      free_params <- if (inherits(kernel, "fmcmc_kernel_list"))
+        kernel[[1]]$fixed
+      else
+        kernel$fixed
+      
+      if (is.null(free_params))
+        free_params <- seq_along(initial)
+      else
+        free_params <- which(!free_params)
+    }
+    
+    # Resetting the convergence message
+    convergence_msg_set()
+    
+    # Checking convergence on the gree parameters only
+    converged <- conv_checker(ans[, free_params, drop = FALSE])
+    
+    # Anything to say?
+    msg <- convergence_msg_get()
+    
+    if (converged) {
+      
       message(
-        "Convergence has been reached with ", sum(bulks[1:i]), " steps (",
+        "Convergence has been reached with ", sum(bulks[1:i]), " steps. ",
+        ifelse(is.na(msg), "", paste0(msg, " ")), "(",
         coda::niter(ans), " final count of samples)."
       )
       break
+      
     } else {
+      
       message(
         "No convergence yet (steps count: ", sum(bulks[1:i]), "). ",
+        ifelse(is.na(msg), "", paste0(msg, " ")),
         "Trying with the next bulk."
       )
     }

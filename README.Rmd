@@ -211,7 +211,7 @@ plot(ans_AM)
 Now, suppose that the algorithm actually takes a lot of time to actually reach
 stationary state, then it would be nice to actually sample from the posterior
 distribution once convergence has been reached. In the following example we 
-use multiple chains and the Gelman diagnostic to check for convergence of the
+use multiple chains and the Gelman-Rubin diagnostic to check for convergence of the
 chain:
 
 
@@ -225,7 +225,7 @@ ans <- MCMC(
   y.      = y,
   kernel  = kernel_normal(scale = .05),
   nchains = 2,                           # Multiple chains
-  conv_checker = convergence_gelman(50) # Checking for conv. every 200 steps
+  conv_checker = convergence_gelman(200) # Checking for conv. every 200 steps
   )
 ```
 
@@ -271,7 +271,7 @@ ans <- MCMC(
     scale = 0.05               # This is the same scale as before
     ),
   nchains = 2,                           
-  conv_checker = convergence_gelman(50)
+  conv_checker = convergence_gelman(200)
   )
 ```
 

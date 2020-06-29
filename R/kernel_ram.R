@@ -112,7 +112,7 @@ kernel_ram <- function(
             norm(rbind(U), "2") ^ 2.0
         ) %*% t(Sigma)
         
-        Sigma_temp <<- tryCatch(t(chol(Sigma)), error = function(e) e)
+        Sigma_temp <- tryCatch(t(chol(Sigma)), error = function(e) e)
         if (inherits(Sigma_temp, "error")) {
           nerrors <<- nerrors + 1L
           Sigma <<- t(chol(Matrix::nearPD(Sigma)$mat))

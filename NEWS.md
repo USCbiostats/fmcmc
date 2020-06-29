@@ -6,6 +6,12 @@
 * Now `kernel_ram` tries first to find the cholesky decomp. If it fails, then
   it uses `Matrix::nearPD` and re-tries. This is following what is done in the
   `adaptMCMC` package.
+
+* Workflow for running MCMC with `conv_checker` re-designed (less error prone).
+
+* Environments `LAST_MCMC` and `LAST_CONV_CHECK` provide information about the
+  last call to `MCMC` and the corresponding convergence checker. Users can
+  access these environments via getter and setter functions.
   
 
 # fmcmc 0.3-0
