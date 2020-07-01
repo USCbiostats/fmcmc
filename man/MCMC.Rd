@@ -160,7 +160,7 @@ with as many rows as chains, and as many columns as parameters in the model.
 
 When \code{nchains > 1}, the function will run multiple chains. Furthermore,
 if \code{cl} is not passed, \code{MCMC} will create a \code{PSOCK} cluster
-using \link[parallel:makePSOCKcluster]{parallel::makePSOCKcluster} with
+using \code{\link[parallel:makeCluster]{makePSOCKcluster}} with
 \link[parallel:detectCores]{parallel::detectCores}
 clusters and attempt to execute using multiple cores. Internally, the function does
 the following:

@@ -17,7 +17,7 @@ kernel_unif_reflective(
 )
 }
 \arguments{
-\item{min., max.}{Passed to \code{\link[stats:runif]{stats::runif()}}.}
+\item{min., max.}{Passed to \code{\link[stats:Uniform]{runif}}.}
 
 \item{fixed, scheme}{For multivariate functions, sets the update plan.
 See \code{\link[=plan_update_sequence]{plan_update_sequence()}}.}

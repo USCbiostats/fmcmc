@@ -50,7 +50,7 @@
 #' 
 #' When \code{nchains > 1}, the function will run multiple chains. Furthermore,
 #' if \code{cl} is not passed, \code{MCMC} will create a \code{PSOCK} cluster
-#' using [parallel::makePSOCKcluster] with
+#' using \code{\link[parallel:makeCluster]{makePSOCKcluster}} with
 #' [parallel::detectCores]
 #' clusters and attempt to execute using multiple cores. Internally, the function does
 #' the following:

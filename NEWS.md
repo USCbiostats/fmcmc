@@ -1,4 +1,4 @@
-# fmcmc 0.3-0-99
+# fmcmc 0.4-0
 
 * `kernel_am` and `kernel_ram` no longer fail when at least one parameter is
   an offset (`fixed = TRUE` for some parameter).
