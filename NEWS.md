@@ -13,6 +13,13 @@
   last call to `MCMC` and the corresponding convergence checker. Users can
   access these environments via getter and setter functions.
   
+* `MCMC` with convergence checker now reports the status of the convergence
+  statistic using the `LAST_CONV_CHECK` environment and corresponding
+  functions.
+  
+* The functions to compute mean and variance recursively now allow us to do so
+  using windows.
+  
 
 # fmcmc 0.3-0
 

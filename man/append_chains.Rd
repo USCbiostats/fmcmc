@@ -2,18 +2,9 @@
 % Please edit documentation in R/append_chains.R
 \name{append_chains}
 \alias{append_chains}
-\alias{append_chains.default}
-\alias{append_chains.mcmc.list}
-\alias{append_chains.mcmc}
 \title{Append MCMC chains (objects of class \link[coda:mcmc]{coda::mcmc})}
 \usage{
 append_chains(...)
-
-\method{append_chains}{default}(...)
-
-\method{append_chains}{mcmc.list}(...)
-
-\method{append_chains}{mcmc}(...)
 }
 \arguments{
 \item{...}{A list of \code{mcmc} or \code{mcmc.list} class objects.}

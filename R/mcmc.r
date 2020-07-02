@@ -1,6 +1,8 @@
 #' Markov Chain Monte Carlo
 #' 
-#' A flexible implementation of the Metropolis-Hastings MCMC algorithm.
+#' A flexible implementation of the Metropolis-Hastings MCMC algorithm, users
+#' can utilize arbitrary transition kernels as well as set-up an automatic 
+#' stop criterion using a convergence check test.
 #' 
 #' @param fun A function. Returns the log-likelihood.
 #' @param initial Either a numeric matrix or vector, or an object of class [coda::mcmc]
@@ -25,12 +27,13 @@
 #' chains the process is taking place. This could be relevant for some kernels
 #' (see [kernel_new()]).
 #' 
-#' @details This function implements MCMC using the Metropolis-Hastings ratio with
+#' @details This function implements Markov Chain Monte Carlo (MCMC) using the
+#' Metropolis-Hastings ratio with
 #' flexible transition kernels. Users can specify either one of the available
 #' transition kernels or define one of their own (see [kernels]). Furthermore,
-#' it allows easy parallel implementation running multiple chains in parallel. In
-#' addition, we incorporate a variety of convergence diagnostics, alternatively
-#' the user can specify their own (see [convergence-checker]).
+#' it allows easy parallel implementation running multiple chains in parallel.
+#' The function also allows using convergence diagnostics tests to set-up a
+#' criterion for automatically stopping the algorithm  (see [convergence-checker]).
 #' 
 #' We now give details of the various options included in the function.
 #' 
@@ -231,7 +234,7 @@ MCMC <- function(
 ) UseMethod("MCMC")
 
 #' @export
-#' @rdname MCMC
+# @rdname MCMC
 MCMC.mcmc <- function(
   initial,
   fun,
@@ -267,7 +270,7 @@ MCMC.mcmc <- function(
 }
 
 #' @export
-#' @rdname MCMC
+# @rdname MCMC
 MCMC.mcmc.list <- function(
   initial,
   fun,
@@ -309,7 +312,7 @@ MCMC.mcmc.list <- function(
 }
 
 #' @export
-#' @rdname MCMC
+# @rdname MCMC
 MCMC.default <- function(
   initial,
   fun,
@@ -612,7 +615,8 @@ MCMC_without_conv_checker <- function(
   
 }
 
-
+#' @export
+#' @rdname MCMC
 MCMC_with_conv_checker <- function(
   initial,
   fun,

@@ -3,7 +3,7 @@
 
 [![DOI](http://joss.theoj.org/papers/10.21105/joss.01427/status.svg)](https://doi.org/10.21105/joss.01427)
 [![Travis-CI Build
-Status](https://travis-ci.org/USCbiostats/fmcmc.svg?branch=master)](https://travis-ci.org/USCbiostats/fmcmc)
+Status](https://travis-ci.com/USCbiostats/fmcmc.svg?branch=master)](https://travis-ci.com/USCbiostats/fmcmc)
 [![Build
 status](https://ci.appveyor.com/api/projects/status/lirawn11ssw9cq07/branch/master?svg=true)](https://ci.appveyor.com/project/gvegayon/fmcmc/branch/master)
 [![Coverage
@@ -273,15 +273,15 @@ plot(ans_AM)
 ```
 
     ##      par1      par2      par3 
-    ## 0.5057011 0.5057011 0.5057011
+    ## 0.5593119 0.5593119 0.5593119
 
 ## Automatic stop
 
 Now, suppose that the algorithm actually takes a lot of time to actually
 reach stationary state, then it would be nice to actually sample from
 the posterior distribution once convergence has been reached. In the
-following example we use multiple chains and the Gelman diagnostic to
-check for convergence of the chain:
+following example we use multiple chains and the Gelman-Rubin diagnostic
+to check for convergence of the chain:
 
 ``` r
 set.seed(1215) # Same seed as before
@@ -293,13 +293,13 @@ ans <- MCMC(
   y.      = y,
   kernel  = kernel_normal(scale = .05),
   nchains = 2,                           # Multiple chains
-  conv_checker = convergence_gelman(50) # Checking for conv. every 200 steps
+  conv_checker = convergence_gelman(200) # Checking for conv. every 200 steps
   )
 ```
 
-    ## No convergence yet (steps count: 50). Trying with the next bulk.
+    ## No convergence yet (steps count: 200). Gelman-Rubin's R: 4.5253. Trying with the next bulk.
 
-    ## Convergence has been reached with 100 steps (100 final count of samples).
+    ## Convergence has been reached with 400 steps. Gelman-Rubin's R: 1.0897. (400 final count of samples).
 
 As a difference from the previous case, now we didn’t had to wait until
 the 5,000 steps were done, but the algorithm stopped for us, allowing us
@@ -345,13 +345,13 @@ ans <- MCMC(
     scale = 0.05               # This is the same scale as before
     ),
   nchains = 2,                           
-  conv_checker = convergence_gelman(50)
+  conv_checker = convergence_gelman(200)
   )
 ```
 
-    ## No convergence yet (steps count: 50). Trying with the next bulk.
+    ## No convergence yet (steps count: 200). Gelman-Rubin's R: 3.0834. Trying with the next bulk.
 
-    ## Convergence has been reached with 100 steps (100 final count of samples).
+    ## Convergence has been reached with 400 steps. Gelman-Rubin's R: 1.0583. (400 final count of samples).
 
 Again, as the proposal kernel has lower and upper bounds, then we are
 guaranteed that all proposed states are within the support of the

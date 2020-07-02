@@ -3,61 +3,11 @@
 \name{MCMC}
 \alias{MCMC}
 \alias{Metropolis-Hastings}
-\alias{MCMC.mcmc}
-\alias{MCMC.mcmc.list}
-\alias{MCMC.default}
 \alias{MCMC_without_conv_checker}
+\alias{MCMC_with_conv_checker}
 \title{Markov Chain Monte Carlo}
 \usage{
 MCMC(
-  initial,
-  fun,
-  nsteps,
-  ...,
-  nchains = 1L,
-  burnin = 0L,
-  thin = 1L,
-  kernel = kernel_normal(),
-  multicore = FALSE,
-  conv_checker = NULL,
-  cl = NULL,
-  progress = interactive() && !multicore,
-  chain_id = 1L
-)
-
-\method{MCMC}{mcmc}(
-  initial,
-  fun,
-  nsteps,
-  ...,
-  nchains = 1L,
-  burnin = 0L,
-  thin = 1L,
-  kernel = kernel_normal(),
-  multicore = FALSE,
-  conv_checker = NULL,
-  cl = NULL,
-  progress = interactive() && !multicore,
-  chain_id = 1L
-)
-
-\method{MCMC}{mcmc.list}(
-  initial,
-  fun,
-  nsteps,
-  ...,
-  nchains = 1L,
-  burnin = 0L,
-  thin = 1L,
-  kernel = kernel_normal(),
-  multicore = FALSE,
-  conv_checker = NULL,
-  cl = NULL,
-  progress = interactive() && !multicore,
-  chain_id = 1L
-)
-
-\method{MCMC}{default}(
   initial,
   fun,
   nsteps,
@@ -87,6 +37,22 @@ MCMC_without_conv_checker(
   cl = NULL,
   progress = interactive() && !multicore,
   chain_id = 1L
+)
+
+MCMC_with_conv_checker(
+  initial,
+  fun,
+  nsteps,
+  ...,
+  nchains,
+  burnin,
+  thin,
+  kernel,
+  multicore,
+  conv_checker,
+  cl,
+  progress,
+  chain_id
 )
 }
 \arguments{
@@ -126,15 +92,18 @@ chains the process is taking place. This could be relevant for some kernels
 (see \code{\link[=kernel_new]{kernel_new()}}).}
 }
 \description{
-A flexible implementation of the Metropolis-Hastings MCMC algorithm.
+A flexible implementation of the Metropolis-Hastings MCMC algorithm, users
+can utilize arbitrary transition kernels as well as set-up an automatic
+stop criterion using a convergence check test.
 }
 \details{
-This function implements MCMC using the Metropolis-Hastings ratio with
+This function implements Markov Chain Monte Carlo (MCMC) using the
+Metropolis-Hastings ratio with
 flexible transition kernels. Users can specify either one of the available
 transition kernels or define one of their own (see \link{kernels}). Furthermore,
-it allows easy parallel implementation running multiple chains in parallel. In
-addition, we incorporate a variety of convergence diagnostics, alternatively
-the user can specify their own (see \link{convergence-checker}).
+it allows easy parallel implementation running multiple chains in parallel.
+The function also allows using convergence diagnostics tests to set-up a
+criterion for automatically stopping the algorithm  (see \link{convergence-checker}).
 
 We now give details of the various options included in the function.
 

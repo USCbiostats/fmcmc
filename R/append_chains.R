@@ -11,7 +11,7 @@
 append_chains <- function(...) UseMethod("append_chains")
 
 #' @export
-#' @rdname append_chains
+# @rdname append_chains
 append_chains.default <- function(...) {
   
   dots <- list(...)
@@ -27,7 +27,7 @@ append_chains.default <- function(...) {
 }
 
 #' @export
-#' @rdname append_chains
+# @rdname append_chains
 append_chains.mcmc.list <- function(...) {
   
   dots <- list(...)
@@ -53,7 +53,7 @@ append_chains.mcmc.list <- function(...) {
 }
 
 #' @export
-#' @rdname append_chains
+# @rdname append_chains
 append_chains.mcmc <- function(...) {
   
   # retrieving the list of objects
