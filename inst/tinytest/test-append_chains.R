@@ -57,3 +57,4 @@ ans2 <- MCMC(
 )
 
 expect_error(append_chains(ans1, ans2), "same number of parameters")
+

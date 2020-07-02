@@ -4,7 +4,7 @@
 #' @template kernel
 #' @template scheme
 #' @export
-#' @param min.,max. Passed to [stats::runif()].
+#' @param min.,max. Passed to \code{\link[stats:Uniform]{runif}}.
 #' @details 
 #' The `kernel_unif` function provides a uniform transition kernel. This (symmetric)
 #' kernel function by default adds the current status values between \[-1,1\].

@@ -63,15 +63,55 @@
 cov_recursive <- function(
   X_t,
   Cov_t,
-  Mean_t,
   Mean_t_prev,
   t.,
-  eps = 0, Sd = 1, Ik = diag(length(X_t))
+  Mean_t = NULL,
+  eps    = 0,
+  Sd     = 1,
+  Ik     = diag(ncol(Cov_t))
 ) {
+  
+  # Computing the current average
+  if (is.null(Mean_t))
+    Mean_t <- mean_recursive(X_t = X_t, Mean_t_prev = Mean_t_prev, t. = t.)
+  
+  if (is.matrix(X_t)) {
+    
+    # First the mean, which is easier
+    ans <- array(dim = c(ncol(X_t), rev(dim(X_t))))
+    for (i in 1:nrow(X_t)) {
+      if (i == 1L)
+        ans[, , i] <- cov_recursive(
+          X_t         = X_t[i, ],
+          Cov_t       = Cov_t,
+          Mean_t      = Mean_t[i, ],
+          Mean_t_prev = Mean_t_prev,
+          t.          = t.,
+          eps         = eps,
+          Sd          = Sd,
+          Ik          = Ik
+        )
+      else 
+        ans[, , i] <- cov_recursive(
+          X_t         = X_t[i, ],
+          Cov_t       = ans[, , i - 1L],
+          Mean_t      = Mean_t[i, ],
+          Mean_t_prev = Mean_t[i - 1L, ],
+          t.          = t. + i - 1,
+          eps         = eps,
+          Sd          = Sd,
+          Ik          = Ik
+        )
+        
+    }
+
+    return(ans)
+    
+  }
   
   (t. - 1)/t. * Cov_t + 
     Sd/t. * (
-      t. * tcrossprod(Mean_t_prev) -
+      t. * tcrossprod(if (is.matrix(Mean_t_prev)) t(Mean_t_prev) else Mean_t_prev) -
         (t. + 1) * tcrossprod(Mean_t) +
         tcrossprod(X_t) + 
         eps * Ik
@@ -83,7 +123,18 @@ cov_recursive <- function(
 #' @rdname cov_recursive
 mean_recursive <- function(X_t, Mean_t_prev, t.) {
   
-  (Mean_t_prev * t. + X_t)/ (t. + 1)
+  if (!is.matrix(X_t))
+    return((Mean_t_prev * t. + X_t)/ (t. + 1))
+  else {
+    ans <- matrix(nrow = nrow(X_t), ncol = ncol(X_t))
+    for (i in 1:nrow(ans)) {
+      if (i == 1)
+        ans[i,] <- (Mean_t_prev * t. + X_t[i, ])/ (t. + 1)
+      else
+        ans[i,] <- (ans[i - 1L, ] * (t. + i - 1L) + X_t[i, ])/ (t. + i)
+    }
+    return(ans)
+  }
   
 }
 

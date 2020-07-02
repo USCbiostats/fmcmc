@@ -16,7 +16,8 @@ kernel_ram(
   lb = -.Machine$double.xmax,
   ub = .Machine$double.xmax,
   fixed = FALSE,
-  until = Inf
+  until = Inf,
+  constr = NULL
 )
 }
 \arguments{
@@ -52,6 +53,11 @@ will be treated as fixed or not. Single values are recycled.}
 
 \item{until}{Integer scalar. Last step at which adaptation takes place (see
 details).}
+
+\item{constr}{Logical lower-diagonal square matrix of size \code{k}. \strong{Not} in the
+original paper, but rather a tweak that imposes a constraint on the \code{S_n}
+matrix. If different from \code{NULL}, the kernel multiplates \code{S_n} by this
+constraint so that zero elements are pre-imposed.}
 }
 \value{
 An object of class \link{fmcmc_kernel}.

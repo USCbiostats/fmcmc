@@ -50,7 +50,7 @@
 #' 
 #' When \code{nchains > 1}, the function will run multiple chains. Furthermore,
 #' if \code{cl} is not passed, \code{MCMC} will create a \code{PSOCK} cluster
-#' using [parallel::makePSOCKcluster] with
+#' using \code{\link[parallel:makeCluster]{makePSOCKcluster}} with
 #' [parallel::detectCores]
 #' clusters and attempt to execute using multiple cores. Internally, the function does
 #' the following:
@@ -308,8 +308,6 @@ MCMC.mcmc.list <- function(
   
 }
 
-
-
 #' @export
 #' @rdname MCMC
 MCMC.default <- function(
@@ -326,12 +324,59 @@ MCMC.default <- function(
   cl           = NULL,
   progress     = interactive() && !multicore,
   chain_id     = 1L
+) {
+  
+  # Initializing recording of variables
+  MCMC_init(...)
+  
+  MCMC_CALL <- if (!is.null(conv_checker))
+    MCMC_with_conv_checker
+  else
+    MCMC_without_conv_checker
+  
+  ans <- MCMC_CALL(
+    initial      = initial,
+    fun          = fun,
+    nsteps       = nsteps,
+    nchains      = nchains,
+    burnin       = burnin,
+    thin         = thin,
+    kernel       = kernel,
+    multicore    = multicore,
+    conv_checker = conv_checker,
+    cl           = cl,
+    progress     = progress,
+    chain_id     = chain_id,
+    ...
+  )
+  
+  # Stopping the timer
+  MCMC_finalize()
+  
+  return(ans)
+
+}
+
+#' @export
+#' @rdname MCMC
+#' @details The functions `MCMC_without_conv_checker` and `MCMC_with_conv_checker`
+#' should not be directly called by the user. These are for internal use only.
+MCMC_without_conv_checker <- function(
+  initial,
+  fun,
+  nsteps,
+  ...,
+  nchains      = 1L,
+  burnin       = 0L,
+  thin         = 1L,
+  kernel       = kernel_normal(),
+  multicore    = FALSE,
+  conv_checker = NULL, 
+  cl           = NULL,
+  progress     = interactive() && !multicore,
+  chain_id     = 1L
   ) {
   
-  # # if the coda package hasn't been loaded, then return a warning
-  # if (!("package:coda" %in% search()))
-  #   warning("The -coda- package has not been loaded.", call. = FALSE, )
-
   # Checking initial argument
   initial <- check_initial(initial, nchains)
   
@@ -359,7 +404,7 @@ MCMC.default <- function(
   # kernel.
   if (nchains > 1L && !is_kernel_list(kernel))
     rep_kernel(kernel, nchains = nchains)
-
+  
   # Filling the gap on parallel
   if (multicore && !length(cl)) {
     
@@ -374,120 +419,87 @@ MCMC.default <- function(
     
     on.exit(parallel::stopCluster(cl))
     
-  } 
-    
-  # We need to pass an copy of what nchain will be used in the algorithm
-  if (length(cl))
-    parallel::clusterExport(cl, "kernel", envir = environment())
+  }
   
-  if (nchains > 1L) {
+  # We need to actively export these so we can capture it later
+  if (multicore) {
+    parallel::clusterExport(cl, "kernel", envir = environment())
+    parallel::clusterEvalQ(cl, FMCMC_PLL_KERNEL <- new.env())
+  }
     
-    # Preparing the call for multicore
-    fmcmc_call <- as.call(
-      c(
-        if (multicore) 
-          list(quote(parallel::clusterApply), cl=quote(cl), x = quote(1L:nchains)) 
-        else 
-          list(quote(lapply), X = quote(1L:nchains)),
-        list(
-          FUN = quote(
-            function(i, fun., initial., nsteps., thin., burnin., ...) {
-              MCMC(
-                fun          = fun.,
-                ...,
-                initial      = initial.[i, , drop = FALSE],
-                nsteps       = nsteps.,
-                burnin       = burnin.,
-                thin         = thin.,
-                kernel       = kernel[[i]],
-                nchains      = 1L,
-                multicore    = FALSE,
-                cl           = NULL,
-                conv_checker = NULL,
-                chain_id     = i
-                )
-        }),
-        fun.     = quote(fun),
-        initial. = quote(initial),
-        nsteps.  = quote(nsteps),
-        burnin.  = quote(burnin),
-        thin.    = quote(thin),
-        quote(...)
+  if (nchains > 1L && multicore) {
+    
+    # Recursively calling the function
+    ans <- parallel::parLapply(
+      cl = cl, X = seq_len(nchains),
+      fun = function(
+        i, initial, fun., nsteps, nchains, burnin, thin, 
+        progress
+        ) {
+        res. <- fmcmc::MCMC_without_conv_checker(
+          initial      = initial[i, , drop=FALSE],
+          fun          = fun.,
+          nsteps       = nsteps,
+          nchains      = 1L,
+          burnin       = burnin,
+          thin         = thin,
+          kernel       = kernel[[i]],
+          multicore    = FALSE,
+          conv_checker = NULL,
+          cl           = NULL,
+          progress     = progress,
+          chain_id     = i,
+          ...
         )
-      )
+        
+        # Making sure we are returning the right kernel
+        assign("kernel", kernel[[i]], envir = FMCMC_PLL_KERNEL)
+        
+        res.
+      },
+      initial      = initial,
+      fun.         = fun,
+      nsteps       = nsteps,
+      nchains      = nchains,
+      burnin       = burnin,
+      thin         = thin,
+      progress     = progress
     )
     
-    # updating names
-    if (multicore)
-      names(fmcmc_call)[names(fmcmc_call) == "FUN"] <- "fun"
+    # Updating the kernel
+    kernel_list <- parallel::clusterEvalQ(cl, get("kernel", envir = FMCMC_PLL_KERNEL))
+    update_kernel(kernel, do.call(c, kernel_list))
     
-    fmcmc_call <- as.call(list(quote(do.call),quote(coda::mcmc.list), fmcmc_call))
+    # Appending the chains
+    return(coda::as.mcmc.list(ans))
     
-  } else if (!is.null(conv_checker)) {
+  } else if (nchains > 1L && !multicore) {
     
-    # If not multicore, still we need to make sure that we are passing some
-    # variables as symbols and not as constants. As in the convergence checker
-    # function we modify the current environment in order to adapt the algorithm.
-    fmcmc_call              <- match.call()
-    fmcmc_call$fun          <- quote(fun)
-    fmcmc_call$nsteps       <- quote(nsteps)
-    fmcmc_call$thin         <- quote(thin)
-    fmcmc_call$burnin       <- quote(burnin)
-    fmcmc_call$conv_checker <- enquote(NULL)
-    fmcmc_call$chain_id     <- enquote(1L)
+    # Recursively calling the function
+    ans <- vector("list", nchains)
+    for (i in seq_len(nchains))
+      ans[[i]] <- MCMC_without_conv_checker(
+        initial      = initial[i,,drop=FALSE],
+        fun          = fun,
+        nsteps       = nsteps,
+        nchains      = 1L,
+        burnin       = burnin,
+        thin         = thin,
+        kernel       = kernel[[i]],
+        multicore    = multicore,
+        conv_checker = NULL,
+        cl           = NULL,
+        progress     = progress,
+        chain_id     = i,
+        ...
+        )
+    
+    # Appending the chains
+    return(coda::as.mcmc.list(ans))
     
   }
   
-  # If conv_checker, we run it with the conv checker and return. Notice that
-  # we already adapted the code for the case in which we are runing multiple
-  # chains
-  if (!is.null(conv_checker)) {
-    
-    # Checking the set of free parameters
-    free_params <- if (inherits(kernel, "fmcmc_kernel_list"))
-      kernel[[1]]$fixed
-    else
-      kernel$fixed
-    
-    if (is.null(free_params))
-      free_params <- seq_along(initial)
-    else
-      free_params <- which(!free_params)
-    
-    fmcmc_call <- call(
-      "with_autostop",
-      fmcmc_call,
-      conv_checker = quote(conv_checker), 
-      free_params  = free_params
-      )
-    
-    ans <- eval(fmcmc_call)
-    
-    # Need to update the kernel objects, if we were running in parallel!
-    if (multicore) {
-      kernel_list <- parallel::clusterEvalQ(cl, kernel)
-      kernel_list <- lapply(1:nchains, function(i) kernel_list[[i]][[i]])
-      update_kernel(kernel, do.call(c, kernel_list))
-    }
-    
-    return(ans)
-    
-  # If we are not using conv_checker, but still have multiple chains, then
-  # we still have to run this somewhat recursively.
-  } else if (nchains > 1L) {
-    
-    ans <- eval(fmcmc_call)
-    
-    # Need to update the kernel objects, if we were running in parallel!
-    if (multicore) {
-      kernel_list <- parallel::clusterEvalQ(cl, kernel)
-      kernel_list <- lapply(1:nchains, function(i) kernel_list[[i]][[i]])
-      update_kernel(kernel, do.call(c, kernel_list))
-    }
-    
-    return(ans)
-    
-  }
+  # Last checks before we lunch the MCMC ---------------------------------------
   
   # Adding names
   initial <- initial[1,,drop=TRUE]
@@ -496,12 +508,8 @@ MCMC.default <- function(
   # Wrapping function. If ellipsis is there, it will wrap it
   # so that the MCMC call only uses a single argument
   passedargs <- names(list(...))
-  # print(match.call())
   funargs    <- methods::formalArgs(eval(fun))
-  
-  # Compiling
-  # cfun <- compiler::cmpfun(fun)
-  
+
   # ... has extra args
   if (length(passedargs)) {
     # ... has stuff that fun doesnt
@@ -589,6 +597,9 @@ MCMC.default <- function(
   if (burnin) ans <- ans[-c(1:burnin), , drop = FALSE]
   if (thin)   ans <- ans[(1:nrow(ans) %% thin) == 0, , drop = FALSE]
   
+  # Cleaning the space
+  on.exit(rm(list = ls(envir = environment())))
+  
   # Returning an mcmc object from the coda package
   return(
     coda::mcmc(
@@ -598,5 +609,148 @@ MCMC.default <- function(
       thin  = thin
       )
     )
+  
+}
+
+
+MCMC_with_conv_checker <- function(
+  initial,
+  fun,
+  nsteps,
+  ...,
+  nchains      ,
+  burnin       ,
+  thin         ,
+  kernel       ,
+  multicore    ,
+  conv_checker , 
+  cl           ,
+  progress     ,
+  chain_id     
+){
+  
+  if (is.null(conv_checker))
+    stop("The convergence checker for this call cannot be null.", call. = FALSE)
+
+
+  # Getting the parent environment
+  freq   <- attr(conv_checker, "freq")
+
+  # Correcting the freq
+  if (freq * 2L > nsteps) 
+    freq <- 0L
+  
+  # Calculating lengths. The bulk vector sets what will be
+  # nsteps in each call. This excludes burnin
+  bulks <- if (freq > 0L)
+    rep(freq, (nsteps - burnin) %/% freq)
+  else
+    nsteps
+  
+  if (freq > 0 && (nsteps - burnin) %% freq)
+    bulks <- c(bulks, (nsteps - burnin) - sum(bulks))
+  
+  # We need to add the burnin to the first
+  bulks[1] <- bulks[1] + burnin
+  
+  # Do while no convergence
+  converged <- FALSE
+  i         <- 0L
+  ans       <- NULL
+  free_params <- NULL
+  
+  # Cleaning the convergence environment
+  convergence_data_flush()
+  
+  for (i in seq_along(bulks)) {
+    
+    # Updating the nsteps argument
+    nsteps <- bulks[i]
+    
+    if (i > 1) {
+      burnin  <- 0L
+      initial <- ans[coda::niter(ans),]
+      if (coda::is.mcmc.list(ans))
+        initial <- do.call(rbind, initial)
+    }
+    
+    # Running the MCMC and adding it to the tail
+    tmp <- MCMC_without_conv_checker(
+      initial      = initial,
+      fun          = fun,
+      nsteps       = nsteps,
+      nchains      = nchains,
+      burnin       = burnin,
+      thin         = thin,
+      kernel       = kernel,
+      multicore    = multicore,
+      conv_checker = NULL,
+      cl           = cl,
+      progress     = progress,
+      chain_id     = chain_id,
+      ...
+    )
+    
+    # A friendly call to the garbage collector
+    if (multicore && !is.null(cl))
+      parallel::clusterEvalQ(cl, gc())
+    
+    
+    if (is.list(tmp) & !coda::is.mcmc.list(tmp))
+      tmp <- coda::as.mcmc.list(tmp)
+    
+    # Appending retults
+    ans <- append_chains(ans, tmp)
+    
+    # Checking the set of free parameters
+    if (is.null(free_params)) {
+      free_params <- if (inherits(kernel, "fmcmc_kernel_list"))
+        kernel[[1]]$fixed
+      else
+        kernel$fixed
+      
+      if (is.null(free_params))
+        free_params <- seq_along(initial)
+      else
+        free_params <- which(!free_params)
+    }
+    
+    # Resetting the convergence message
+    convergence_msg_set()
+    
+    # Checking convergence on the gree parameters only
+    converged <- conv_checker(ans[, free_params, drop = FALSE])
+    
+    # Anything to say?
+    msg <- convergence_msg_get()
+    
+    if (converged) {
+      
+      message(
+        "Convergence has been reached with ", sum(bulks[1:i]), " steps. ",
+        ifelse(is.na(msg), "", paste0(msg, " ")), "(",
+        coda::niter(ans), " final count of samples)."
+      )
+      break
+      
+    } else {
+      
+      message(
+        "No convergence yet (steps count: ", sum(bulks[1:i]), "). ",
+        ifelse(is.na(msg), "", paste0(msg, " ")),
+        "Trying with the next bulk."
+      )
+    }
+    
+  }
+  
+  # Did it converged?
+  if (!is.null(conv_checker) && (i == length(bulks) & !converged))
+    message("No convergence reached after ", sum(bulks[1:i]), " steps (",
+            coda::niter(ans), " final count of samples).")
+  
+  # Returning
+  return(ans)
+  
   
 }

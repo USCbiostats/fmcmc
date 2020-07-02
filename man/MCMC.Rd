@@ -6,6 +6,7 @@
 \alias{MCMC.mcmc}
 \alias{MCMC.mcmc.list}
 \alias{MCMC.default}
+\alias{MCMC_without_conv_checker}
 \title{Markov Chain Monte Carlo}
 \usage{
 MCMC(
@@ -71,6 +72,22 @@ MCMC(
   progress = interactive() && !multicore,
   chain_id = 1L
 )
+
+MCMC_without_conv_checker(
+  initial,
+  fun,
+  nsteps,
+  ...,
+  nchains = 1L,
+  burnin = 0L,
+  thin = 1L,
+  kernel = kernel_normal(),
+  multicore = FALSE,
+  conv_checker = NULL,
+  cl = NULL,
+  progress = interactive() && !multicore,
+  chain_id = 1L
+)
 }
 \arguments{
 \item{initial}{Either a numeric matrix or vector, or an object of class \link[coda:mcmc]{coda::mcmc}
@@ -120,6 +137,9 @@ addition, we incorporate a variety of convergence diagnostics, alternatively
 the user can specify their own (see \link{convergence-checker}).
 
 We now give details of the various options included in the function.
+
+The functions \code{MCMC_without_conv_checker} and \code{MCMC_with_conv_checker}
+should not be directly called by the user. These are for internal use only.
 }
 \section{Starting point}{
 
@@ -140,7 +160,7 @@ with as many rows as chains, and as many columns as parameters in the model.
 
 When \code{nchains > 1}, the function will run multiple chains. Furthermore,
 if \code{cl} is not passed, \code{MCMC} will create a \code{PSOCK} cluster
-using \link[parallel:makePSOCKcluster]{parallel::makePSOCKcluster} with
+using \code{\link[parallel:makeCluster]{makePSOCKcluster}} with
 \link[parallel:detectCores]{parallel::detectCores}
 clusters and attempt to execute using multiple cores. Internally, the function does
 the following:
