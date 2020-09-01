@@ -11,7 +11,9 @@
 \alias{last_conv_checker}
 \alias{last_}
 \title{Information about the last \code{MCMC} call}
-\format{An object of class \code{fmcmc_last} (inherits from \code{environment}) of length 0.}
+\format{
+An object of class \code{fmcmc_last} (inherits from \code{environment}) of length 0.
+}
 \usage{
 LAST_MCMC
 

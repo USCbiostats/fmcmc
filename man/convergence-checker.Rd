@@ -14,7 +14,9 @@
 \alias{convergence_heildel}
 \alias{convergence_auto}
 \title{Convergence Monitoring}
-\format{An object of class \code{environment} of length 1.}
+\format{
+An object of class \code{environment} of length 1.
+}
 \usage{
 LAST_CONV_CHECK
 
