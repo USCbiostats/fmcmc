@@ -1,3 +1,9 @@
+# fmcmc 0.4-1
+
+* The function `fun` passed to `MCMC` is now called two times less. It shouldn't
+  significantly affect any previous results.
+  
+
 # fmcmc 0.4-0
 
 * `kernel_am` and `kernel_ram` no longer fail when at least one parameter is

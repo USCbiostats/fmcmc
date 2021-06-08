@@ -5,3 +5,5 @@ inst/doc
 *.o
 .Rhis*
 .Rproj.user
+/doc/
+/Meta/

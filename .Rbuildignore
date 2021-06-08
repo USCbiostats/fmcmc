@@ -13,9 +13,13 @@
 ^appveyor\.yml$
 ^playground$
 ^paper$
-makefile
+Makefile
 ^cran-comments\.md$
 ^CRAN-RELEASE$
 benchmarks\.Rmd
 ^man-roxygen$
 ^data-raw$
+^docker$
+doc
+.*\.Rcheck
+.*\.tar\.gz

@@ -548,23 +548,24 @@ MCMC_without_conv_checker <- function(
   }
   
   # MCMC algorithm -----------------------------------------------------------
-    
-  theta0 <- initial
-  theta1 <- theta0
-  f0     <- f(theta0)
-  f1     <- f(theta1)
   
   # The updates can be done jointly or sequentially
-  klogratio <- kernel$logratio(environment())
   R <- matrix(log(stats::runif(nsteps)), nrow = nsteps)
   
   ans <- matrix(ncol = length(initial), nrow = nsteps,
                 dimnames = list(1:nsteps, cnames))
   
+  # We start assuming the first call is accepted
+  theta0    <- initial
+  theta1    <- theta0
+  f0        <- f(theta0)
+  ans[1L, ] <- theta0
+  
   if (progress)
     progress_bar <- new_progress_bar(nsteps)
   
-  for (i in 1L:nsteps) {
+  # We start from the second, since we already completed the first
+  for (i in 2L:nsteps) {
 
     # Step 1. Propose
     theta1[] <- kernel$proposal(environment())

@@ -1,7 +1,7 @@
 Package: fmcmc
 Title: A friendly MCMC framework
-Version: 0.4-0
-Date: 2020-09-01
+Version: 0.4-1
+Date: 2021-06-07
 Authors@R: c(person("George", "Vega Yon", email = "g.vegayon@gmail.com", role =
          c("aut", "cre"), comment = c(ORCID = "0000-0002-3171-0844")),
          person("Paul", "Marjoram", email = "pmarjora@usc.edu", role = c("ctb",
@@ -33,7 +33,6 @@ Suggests:
     mcmc,
     tinytest,
     mvtnorm,
-    adaptMCMC
 Imports: 
     parallel,
     coda,
