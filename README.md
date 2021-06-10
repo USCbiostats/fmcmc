@@ -2,8 +2,7 @@
 # fmcmc: A friendly MCMC framework <img src="man/figures/logo.png" align="right" height="140"/>
 
 [![DOI](http://joss.theoj.org/papers/10.21105/joss.01427/status.svg)](https://doi.org/10.21105/joss.01427)
-[![Travis-CI Build
-Status](https://travis-ci.com/USCbiostats/fmcmc.svg?branch=master)](https://travis-ci.com/USCbiostats/fmcmc)
+[![R CI](https://github.com/USCbiostats/fmcmc/actions/workflows/ci.yml/badge.svg)](https://github.com/USCbiostats/fmcmc/actions/workflows/ci.yml)
 [![Build
 status](https://ci.appveyor.com/api/projects/status/lirawn11ssw9cq07/branch/master?svg=true)](https://ci.appveyor.com/project/gvegayon/fmcmc/branch/master)
 [![Coverage
@@ -15,6 +14,7 @@ status](https://www.r-pkg.org/badges/version/fmcmc)](https://cran.r-project.org/
 [![CRAN
 downloads](http://cranlogs.r-pkg.org/badges/grand-total/fmcmc)](https://cran.r-project.org/package=fmcmc)
 [![status](https://tinyverse.netlify.com/badge/fmcmc)](https://CRAN.R-project.org/package=fmcmc)
+[![Integrative Methods of Analysis for Genetic Epidemiology](https://raw.githubusercontent.com/USCbiostats/badges/master/tommy-image-badge.svg)](https://image.usc.edu)
 
 ## What
 
