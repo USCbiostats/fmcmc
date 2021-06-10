@@ -1,6 +1,4 @@
 build:
-	docker build -t uscbiostats/fmcmc-dev:latest --build-arg Rversion=latest -f Dockerfile.r-ver . ; \
-		docker build -t uscbiostats/fmcmc-dev:devel -f Dockerfile.r-dev .
+	docker build -t uscbiostats/fmcmc:latest -f Dockerfile .
 push: build
-	docker push uscbiostats/fmcmc-dev:latest ; \
-		docker push uscbiostats/fmcmc-dev:devel
+	docker push uscbiostats/fmcmc:latest 
