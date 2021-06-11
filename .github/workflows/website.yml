@@ -1,4 +1,4 @@
-rame: fmcmc website
+name: fmcmc website
 
 on: [push, pull_request]
 
