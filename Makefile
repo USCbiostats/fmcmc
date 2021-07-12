@@ -1,14 +1,13 @@
 VERSION:=$(shell Rscript -e 'x<-readLines("DESCRIPTION");cat(gsub(".+[:]\\s*", "", x[grepl("^Vers", x)]))')
 PKGNAME:=$(shell Rscript -e 'x<-readLines("DESCRIPTION");cat(gsub(".+[:]\\s*", "", x[grepl("^Package", x)]))')
 
-install: 
-	$(MAKE) clean && \
-		R CMD build $(PKGNAME)_$(VERSION).tar.gz && \
-		R CMD INSTALL $(PKGNAME)_$(VERSION).tar.gz
+install: $(PKGNAME)_$(VERSION).tar.gz 
+	R CMD INSTALL $(PKGNAME)_$(VERSION).tar.gz
 		
 
 $(PKGNAME)_$(VERSION).tar.gz: R/*.R inst/NEWS README.md
-	R CMD build --no-build-vignettes --no-manual . 
+	$(MAKE) clean && \
+		R CMD build --no-build-vignettes --no-manual . 
 
 inst/NEWS: NEWS.md
 	Rscript -e "rmarkdown::pandoc_convert('NEWS.md', 'plain', output='inst/NEWS')"&& \

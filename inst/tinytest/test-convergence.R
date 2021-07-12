@@ -21,16 +21,37 @@ ans0 <- suppressWarnings(suppressMessages(MCMC(
   kernel = kernel_normal_reflective(
     lb = 0, ub = 10, mu = 0, scale = .1
     ), conv_checker = convergence_auto(500L),
-  thin = 10
+  thin = 10, seed = 444
   )))
+
+expect_stdout(print(LAST_CONV_CHECK), "holds the")
 
 ans0 <- MCMC(
   ll, initial = tail(ans0, 0L), nsteps = 2000,
   kernel = kernel_normal_reflective(
     lb = 0, ub = 10, mu = 0, scale = .1
   ), conv_checker = NULL,
-  thin = 10, burnin = 0L
+  thin = 10, burnin = 0L, seed = 548
 )
+
+ans0b <- suppressWarnings(suppressMessages(MCMC(
+  ll, initial = rep(5, 3), nsteps = 2000,
+  kernel = kernel_normal_reflective(
+    lb = 0, ub = 10, mu = 0, scale = .1
+  ), conv_checker = convergence_auto(500L),
+  thin = 10, seed = 444
+)))
+
+ans0b <- MCMC(
+  ll, initial = tail(ans0b, 0L), nsteps = 2000,
+  kernel = kernel_normal_reflective(
+    lb = 0, ub = 10, mu = 0, scale = .1
+  ), conv_checker = NULL,
+  thin = 10, burnin = 0L, seed = 548
+)
+
+expect_equal(ans0, ans0b)
+
 
 # Gelman autostop convergence
 expect_error({
@@ -52,7 +73,17 @@ ans1 <- suppressMessages(suppressWarnings(MCMC(
   ),
   thin         = 10,
   conv_checker = convergence_gelman(500L),
-  nchains      = 2
+  nchains      = 2, seed = 2
+)))
+
+ans1b <- suppressMessages(suppressWarnings(MCMC(
+  ll, initial = rep(5, 3), nsteps = 2000,
+  kernel = kernel_normal_reflective(
+    lb = 0, ub = 10, mu = 0, scale = .1
+  ),
+  thin         = 10,
+  conv_checker = convergence_auto(500L),
+  nchains      = 2, seed = 2
 )))
 
 ans1 <- MCMC(
@@ -62,8 +93,20 @@ ans1 <- MCMC(
   kernel = kernel_normal_reflective(
     lb = 0, ub = 10, mu = 0, scale = .1
   ), conv_checker = NULL,
-  thin = 10, burnin = 0L
+  thin = 10, burnin = 0L, seed = 22
 )
+
+ans1b <- MCMC(
+  ll,
+  initial = colMeans(do.call(rbind, tail(ans1b, 0))),
+  nsteps = 2000,
+  kernel = kernel_normal_reflective(
+    lb = 0, ub = 10, mu = 0, scale = .1
+  ), conv_checker = NULL,
+  thin = 10, burnin = 0L, seed = 22
+)
+
+expect_equal(ans1, ans1b)
 
 # Heidel autostop convergence
 expect_error({
@@ -97,7 +140,7 @@ sol <- c(1, .2, 2)
 expect_equivalent(colMeans(ans0), sol, tol = 0.2)
 expect_equivalent(colMeans(ans1), sol, tol = 0.2)
 expect_equivalent(colMeans(ans2), sol, tol = 0.2)
-  
+
 # Checking errors and warnigns -------------------------------------------------
 conv <- convergence_auto()
 expect_warning(conv(1))

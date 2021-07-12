@@ -8,6 +8,7 @@
 #' @param initial Either a numeric matrix or vector, or an object of class [coda::mcmc]
 #' or [coda::mcmc.list] (see details).
 #' initial values of the parameters for each chain (See details).
+#' @param seed If not null, passed to [set.seed].
 #' @param nsteps Integer scalar. Length of each chain.
 #' @param nchains Integer scalar. Number of chains to run (in parallel).
 #' @param cl A `cluster` object passed to [parallel::clusterApply].
@@ -222,6 +223,7 @@ MCMC <- function(
   fun,
   nsteps,
   ...,
+  seed         = NULL,
   nchains      = 1L,
   burnin       = 0L,
   thin         = 1L,
@@ -240,6 +242,7 @@ MCMC.mcmc <- function(
   fun,
   nsteps,
   ...,
+  seed         = NULL,
   nchains      = 1L,
   burnin       = 0L,
   thin         = 1L,
@@ -256,6 +259,7 @@ MCMC.mcmc <- function(
     fun          = fun,
     nsteps       = nsteps,
     ...,     
+    seed         = seed,
     nchains      = nchains,
     burnin       = burnin,
     thin         = thin,
@@ -276,6 +280,7 @@ MCMC.mcmc.list <- function(
   fun,
   nsteps,
   ...,
+  seed         = NULL,
   nchains      = 1L,
   burnin       = 0L,
   thin         = 1L,
@@ -297,7 +302,8 @@ MCMC.mcmc.list <- function(
     initial      = do.call(rbind, utils::tail(initial, 0)),
     fun          = fun,
     nsteps       = nsteps,
-    ...,     
+    ...,
+    seed         = seed,
     nchains      = nchains,
     burnin       = burnin,
     thin         = thin,
@@ -318,6 +324,7 @@ MCMC.default <- function(
   fun,
   nsteps,
   ...,
+  seed         = NULL,
   nchains      = 1L,
   burnin       = 0L,
   thin         = 1L,
@@ -336,6 +343,10 @@ MCMC.default <- function(
     MCMC_with_conv_checker
   else
     MCMC_without_conv_checker
+  
+  # Checking the seed
+  if (!is.null(seed))
+    set.seed(seed)
   
   ans <- MCMC_CALL(
     initial      = initial,
@@ -554,12 +565,15 @@ MCMC_without_conv_checker <- function(
   
   ans <- matrix(ncol = length(initial), nrow = nsteps,
                 dimnames = list(1:nsteps, cnames))
+  logpost   <- vector("numeric", nsteps)
   
   # We start assuming the first call is accepted
-  theta0    <- initial
-  theta1    <- theta0
-  f0        <- f(theta0)
-  ans[1L, ] <- theta0
+  i           <- 1L # Need that in case we have it
+  theta0      <- initial
+  theta1      <- theta0
+  logpost[1L] <- f(theta0)
+  f0          <- logpost[1L]
+  ans[1L, ]   <- theta0
   
   if (progress)
     progress_bar <- new_progress_bar(nsteps)
@@ -568,11 +582,12 @@ MCMC_without_conv_checker <- function(
   for (i in 2L:nsteps) {
 
     # Step 1. Propose
-    theta1[] <- kernel$proposal(environment())
-    f1       <- f(theta1)
+    theta1[]   <- kernel$proposal(environment())
+    logpost[i] <- f(theta1)
+    f1         <- logpost[i]
 
     # Checking f(theta1) (it must be a number, can be Inf)
-    if (is.nan(f1) | is.na(f1) | is.null(f1)) 
+    if (is.nan(logpost[i]) || is.na(logpost[i]) || is.null(logpost[i])) 
       stop(
         "fun(par) is undefined (", f1, "). ",
         "Check either -fun- or the -lb- and -ub- parameters. ",
@@ -586,7 +601,7 @@ MCMC_without_conv_checker <- function(
 
     if (R[i] < klogratio) {
       theta0 <- theta1
-      f0     <- f1
+      f0     <- logpost[i]
     }
       
     # Step 3. Saving the state
@@ -598,8 +613,17 @@ MCMC_without_conv_checker <- function(
   }
   
   # Thinning the data
-  if (burnin) ans <- ans[-c(1:burnin), , drop = FALSE]
-  if (thin)   ans <- ans[(1:nrow(ans) %% thin) == 0, , drop = FALSE]
+  if (burnin) {
+    ans     <- ans[-c(1:burnin), , drop = FALSE]
+    logpost <- logpost[-c(1:burnin)]
+  }
+  if (thin) {
+    logpost <- logpost[(1:nrow(ans) %% thin) == 0]
+    ans     <- ans[(1:nrow(ans) %% thin) == 0, , drop = FALSE]
+  }
+  
+  # Storing the logpost
+  set_last_mcmc_("logpost", logpost, chain_id)
   
   # Cleaning the space
   on.exit(rm(list = ls(envir = environment())))
@@ -640,6 +664,16 @@ MCMC_with_conv_checker <- function(
 
   # Getting the parent environment
   freq   <- attr(conv_checker, "freq")
+  if (is.null(freq)) {
+    
+    freq <- floor(nsteps/2)
+    
+    warning(
+      "The -conv_checker- function has no freq attribute. ",
+      "Default value set to be ", freq, call. = FALSE, immediate. = TRUE
+      )
+    
+  }
 
   # Correcting the freq
   if (freq * 2L > nsteps) 
@@ -659,9 +693,10 @@ MCMC_with_conv_checker <- function(
   bulks[1] <- bulks[1] + burnin
   
   # Do while no convergence
-  converged <- FALSE
-  i         <- 0L
-  ans       <- NULL
+  converged   <- FALSE
+  i           <- 0L
+  ans         <- NULL
+  logpost     <- NULL
   free_params <- NULL
   
   # Cleaning the convergence environment
@@ -705,7 +740,13 @@ MCMC_with_conv_checker <- function(
       tmp <- coda::as.mcmc.list(tmp)
     
     # Appending retults
-    ans <- append_chains(ans, tmp)
+    ans     <- append_chains(ans, tmp)
+    if (nchains > 1L)
+      LAST_MCMC[["logpost"]] <- lapply(LAST_MCMC[["logpost"]], function(m) {
+        stats::setNames(m, rownames(ans[[1]]))
+      })
+    else
+      LAST_MCMC[["logpost"]] <- stats::setNames(LAST_MCMC[["logpost"]], rownames(ans))
     
     # Checking the set of free parameters
     if (is.null(free_params)) {

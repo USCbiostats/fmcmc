@@ -15,7 +15,7 @@
 \alias{convergence_auto}
 \title{Convergence Monitoring}
 \format{
-An object of class \code{environment} of length 1.
+An object of class \code{fmcmc_last_conv_check} (inherits from \code{environment}) of length 1.
 }
 \usage{
 LAST_CONV_CHECK
@@ -93,5 +93,75 @@ for \code{convergence_gelman} and \code{convergence_geweke}. This function retur
 convergence checker that will be either of the other two depending on whether
 \code{nchains} in \code{MCMC} is greater than one--in which case it will use the Gelman
 test--or not--in which case it will use the Geweke test.
+}
+\section{Building a convergence checker}{
+
+Convergence checkers are simply a function that receives as argument a matrix
+(or list of them) with sampled values, and returns a logical scalar with the
+value \code{TRUE} if the chain converged. An example of a personalized convergence
+checker is provided below. The frequency with which the check is performed is
+retrieved from the attribute \code{"freq"} from the convergence checker function,
+i.e., \code{attr(..., "freq")}. If missing, convergence will be checked halfway
+the number of steps in the chain, i.e., \code{floor(nsteps/2)}.
+}
+
+\examples{
+# Example 1: Presonalized conv checker --------------------------------------
+# Dummy rule, if acceptance rate is near between .2 and .3.
+convergence_example <- function(x) {
+  arate <- 1 - coda::rejectionRate(x)
+  all(
+    abs(arate - .25) < .05
+  )
+}
+
+# Tell fmcmc::MCMC what is the frequency
+attr(convergence_example, "freq") <- 2e3
+
+set.seed(223)
+x <- rnorm(1000)
+y <- x * 2 + rnorm(1000)
+logpost <- function(p) {
+  sum(dnorm(y, mean = x * p, log = TRUE))
+}
+
+ans <- MCMC(
+  initial = 0, fun = logpost, nsteps = 5e4,
+  kernel= kernel_ram(),
+  conv_checker = convergence_example
+)
+
+# Example 2: Adding information ---------------------------------------------
+# Here we do two things: Save a value and set a message for the user
+convergence_example_with_info <- structure(function(x) {
+  arate <- 1 - coda::rejectionRate(x)
+  
+  # Saving a value
+  if (!exists("arates", envir = LAST_CONV_CHECK)) {
+    convergence_data_set(list(arates = arate))
+  } else {
+    convergence_data_set(list(
+      arates = rbind(convergence_data_get("arates"), arate)
+    ))
+  }
+  
+  # Setting up the message
+  convergence_msg_set(
+    sprintf("Current Avg. Accept. Rate: \%.2f", mean(arate))
+  )
+  
+  all(
+    abs(arate - .25) < .05
+  )
+}, freq = 2000)
+
+
+ans <- MCMC(
+  initial = 0, fun = logpost, nsteps = 5e4,
+  kernel= kernel_ram(),
+  conv_checker = convergence_example_with_info,
+  seed = 112,
+  progress = FALSE
+)
 }
 \keyword{datasets}

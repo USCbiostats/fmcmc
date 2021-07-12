@@ -10,6 +10,7 @@
 \alias{last_kernel}
 \alias{last_conv_checker}
 \alias{last_}
+\alias{get_logpost}
 \title{Information about the last \code{MCMC} call}
 \format{
 An object of class \code{fmcmc_last} (inherits from \code{environment}) of length 0.
@@ -28,6 +29,8 @@ last_kernel()
 last_conv_checker()
 
 last_(x)
+
+get_logpost()
 }
 \arguments{
 \item{x}{Character scalar. Name of an argument to retrieve. If \code{x} was not
@@ -46,5 +49,9 @@ This environment holds a copy of the last call to \link{MCMC}, including the sta
 and end time (to compute total elapsed time) of the call. Since the resulting
 object of \code{MCMC} is an object of class \link[coda:mcmc]{coda::mcmc}, this is a way to capture
 more information in case the user needs it.
+}
+\details{
+The function \code{get_logpost} returns the \code{logposterior} value at each
+iteration. The values correspond to a named numeric vector.
 }
 \keyword{datasets}

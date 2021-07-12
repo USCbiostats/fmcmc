@@ -3,6 +3,15 @@
 * The function `fun` passed to `MCMC` is now called two times less. It shouldn't
   significantly affect any previous results.
   
+* `convergence_gelman` now stores the Gelman and Rubin's statistics in the correct
+  order, i.e., the most recent at the end of the array in `convergence_data_get("val")`.
+  
+* Users can now pass `seed` to `MCMC`. If `is.null(seed) != TRUE`, then `seed` is
+  passed to `set.seed()`.
+  
+* The function `convergence_auto()` now behaves as expected. Before it was not checking
+  convergence.
+  
 
 # fmcmc 0.4-0
 

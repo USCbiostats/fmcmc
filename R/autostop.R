@@ -25,18 +25,97 @@ NULL
 #' 
 #' The `msg` member of `LAST_CONV_CHECK` is resetted before `conv_checker` is
 #' called.
-LAST_CONV_CHECK <- new.env()
+LAST_CONV_CHECK <- structure(new.env(), class = c("fmcmc_last_conv_check", "environment"))
 assign("msg", NA_character_, envir = LAST_CONV_CHECK)
+
+
+#' @export
+print.fmcmc_last_conv_check <- function(x, ...) {
+  
+  cat("LAST_CONV_CHECK holds the following information:\n")
+  print(utils::ls.str(x))
+  
+  invisible(x)
+}
+
 
 convergence_data_flush <- function() {
   rm(list = ls(envir = LAST_CONV_CHECK, all.names = TRUE), envir = LAST_CONV_CHECK)
   assign("msg", NA_character_, envir = LAST_CONV_CHECK)
 }
 
+#' @rdname convergence-checker
+#' @section Building a convergence checker:
+#' Convergence checkers are simply a function that receives as argument a matrix
+#' (or list of them) with sampled values, and returns a logical scalar with the
+#' value `TRUE` if the chain converged. An example of a personalized convergence
+#' checker is provided below. The frequency with which the check is performed is
+#' retrieved from the attribute `"freq"` from the convergence checker function,
+#' i.e., `attr(..., "freq")`. If missing, convergence will be checked halfway
+#' the number of steps in the chain, i.e., `floor(nsteps/2)`.
+#' 
+#' @examples 
+#' # Example 1: Presonalized conv checker --------------------------------------
+#' # Dummy rule, if acceptance rate is near between .2 and .3.
+#' convergence_example <- function(x) {
+#'   arate <- 1 - coda::rejectionRate(x)
+#'   all(
+#'     abs(arate - .25) < .05
+#'   )
+#' }
+#' 
+#' # Tell fmcmc::MCMC what is the frequency
+#' attr(convergence_example, "freq") <- 2e3
+#' 
+#' set.seed(223)
+#' x <- rnorm(1000)
+#' y <- x * 2 + rnorm(1000)
+#' logpost <- function(p) {
+#'   sum(dnorm(y, mean = x * p, log = TRUE))
+#' }
+#' 
+#' ans <- MCMC(
+#'   initial = 0, fun = logpost, nsteps = 5e4,
+#'   kernel= kernel_ram(),
+#'   conv_checker = convergence_example
+#' )
+#' 
+#' # Example 2: Adding information ---------------------------------------------
+#' # Here we do two things: Save a value and set a message for the user
+#' convergence_example_with_info <- structure(function(x) {
+#'   arate <- 1 - coda::rejectionRate(x)
+#'   
+#'   # Saving a value
+#'   if (!exists("arates", envir = LAST_CONV_CHECK)) {
+#'     convergence_data_set(list(arates = arate))
+#'   } else {
+#'     convergence_data_set(list(
+#'       arates = rbind(convergence_data_get("arates"), arate)
+#'     ))
+#'   }
+#'   
+#'   # Setting up the message
+#'   convergence_msg_set(
+#'     sprintf("Current Avg. Accept. Rate: %.2f", mean(arate))
+#'   )
+#'   
+#'   all(
+#'     abs(arate - .25) < .05
+#'   )
+#' }, freq = 2000)
+#' 
+#' 
+#' ans <- MCMC(
+#'   initial = 0, fun = logpost, nsteps = 5e4,
+#'   kernel= kernel_ram(),
+#'   conv_checker = convergence_example_with_info,
+#'   seed = 112,
+#'   progress = FALSE
+#' )
+
 #' @export
 #' @param x In the case of `convergence_data_set`, a named list. For 
 #' `convergence_data_get`, a character vector.
-#' @rdname convergence-checker
 convergence_data_set <- function(x) {
   
   if (!is.list(x))
@@ -137,16 +216,17 @@ convergence_gelman <- function(
         
       }
       
-      # Depending on multivariate or not
-      val <- ifelse(coda::nvar(x) > 1L, d$mpsrf, d$psrf[1,"Point est."])
-      
       # Updating the convergence checker
       if (exists("dat", envir = LAST_CONV_CHECK)) {
-        convergence_data_set(list(dat = c(val, convergence_data_get("dat"))))
+        convergence_data_set(list(
+          dat = c(convergence_data_get("dat"), stats::setNames(list(d), stats::end(x)))
+          ))
       } else {
-        convergence_data_set(list(dat = val))
+        convergence_data_set(list(dat = stats::setNames(list(d), stats::end(x))))
       }
       
+      # Depending on multivariate or not
+      val <- ifelse(coda::nvar(x) > 1L, d$mpsrf, d$psrf[1,"Point est."])
       convergence_msg_set(sprintf("Gelman-Rubin's R: %.4f.", val))
       
       
@@ -203,9 +283,11 @@ convergence_geweke <- function(freq = 1000L, threshold=.025, check_invariant=TRU
     
     # Updating the convergence checker
     if (exists("dat", envir = LAST_CONV_CHECK)) {
-      convergence_data_set(list(dat = rbind(d, convergence_data_get("dat"))))
+      convergence_data_set(list(
+        dat = c(convergence_data_get("dat"), stats::setNames(list(d), stats::end(x)))
+      ))
     } else {
-      convergence_data_set(list(dat = d))
+      convergence_data_set(list(dat = stats::setNames(list(d), stats::end(x))))
     }
     
     convergence_msg_set(sprintf("avg Geweke's Z: %.4f.", mean(d[is.finite(d)])))
@@ -257,10 +339,13 @@ convergence_heildel <- function(freq = 1000L, ..., check_invariant=TRUE) {
 
     # Updating the convergence checker
     if (exists("dat", envir = LAST_CONV_CHECK)) {
-      convergence_data_set(list(dat = rbind(tests, convergence_data_get("dat"))))
+      convergence_data_set(list(
+        dat = c(convergence_data_get("dat"), stats::setNames(list(d), stats::end(x)))
+      ))
     } else {
-      convergence_data_set(list(dat = tests))
+      convergence_data_set(list(dat = stats::setNames(list(d), stats::end(x))))
     }
+    
     convergence_msg_set(sprintf("Heidel's Avg. pval: %.2f", mean(d[,"pvalue"])))
     
     
@@ -288,12 +373,9 @@ convergence_auto <- function(freq = 1000L) {
   structure(function(x) {
     
     who <- as.character(sys.call(-1L)[[1]])
-    if (is.null(who) | (who != "with_autostop")) {
+    if (!length(who) || (who != "with_autostop"))
       warning("This function should not be used in a context other than ",
               "the argument `conv_checker` in `MCMC`.")
-      
-      return(FALSE)
-    }
     
     env <- parent.frame()
     
@@ -305,89 +387,3 @@ convergence_auto <- function(freq = 1000L) {
   }, freq = freq)
   
 }
-
-#' #' Run MCMC with convergence checker
-#' #' @noRd
-#' #' @param expr The expression to parse
-#' #' @param conv_checker A function to be used as a convergence checker.
-#' #' @param free_params An integer indicating the set of parameters of the
-#' #' chain that should be considered in the model.
-#' with_autostop <- function(expr, conv_checker, free_params) {
-#'   
-#'   # Getting the parent environment
-#'   freq   <- attr(conv_checker, "freq")
-#'   parenv <- parent.frame()
-#'   
-#'   # Retrieving parameters from the MCMC call
-#'   nsteps    <- parenv$nsteps
-#'   nchains   <- parenv$nchains
-#' 
-#'   # Correcting the freq
-#'   if (freq*2 > nsteps) 
-#'     freq <- 0L
-#' 
-#'   # Capturing the expression
-#'   expr <- sys.call()[[2]]
-#'   
-#'   # Calculating lengths. The bulk vector sets what will be
-#'   # nsteps in each call. This excludes burnin
-#'   bulks <- if (freq > 0L)
-#'     rep(freq, (nsteps - parenv$burnin) %/% freq)
-#'   else
-#'     nsteps
-#'     
-#'   if (freq > 0 && (nsteps - parenv$burnin) %% freq)
-#'     bulks <- c(bulks, (nsteps - parenv$burnin) - sum(bulks))
-#'   
-#'   # We need to add the burnin to the first
-#'   bulks[1] <- bulks[1] + parenv$burnin
-#'   
-#'   # Do while no convergence
-#'   converged <- FALSE
-#'   i         <- 0L
-#'   ans       <- NULL
-#'   for (i in seq_along(bulks)) {
-#'     
-#'     # Updating the nsteps argument
-#'     parenv$nsteps <- bulks[i]
-#' 
-#'     if (i > 1) {
-#'       parenv$burnin  <- 0L
-#'       parenv$initial <- ans[coda::niter(ans),]
-#'       if (coda::is.mcmc.list(ans))
-#'         parenv$initial <- do.call(rbind, parenv$initial)
-#'     }
-#'       
-#'     # Running the MCMC and adding it to the tail
-#'     tmp <- eval(expr, envir = parenv)
-#'     if (is.list(tmp) & !coda::is.mcmc.list(tmp))
-#'       tmp <- coda::as.mcmc.list(tmp)
-#'     
-#'     # Appending retults
-#'     ans <- append_chains(ans, tmp)
-#'     
-#'     if ((converged <- conv_checker(ans[, free_params, drop = FALSE]))) {
-#'       message(
-#'         "Convergence has been reached with ", sum(bulks[1:i]), " steps (",
-#'         coda::niter(ans), " final count of samples)."
-#'         )
-#'       break
-#'     } else {
-#'       message(
-#'         "No convergence yet (steps count: ", sum(bulks[1:i]), "). ",
-#'         "Trying with the next bulk."
-#'       )
-#'     }
-#'     
-#'   }
-#'   
-#'   # Did it converged?
-#'   if (!is.null(conv_checker) && (i == length(bulks) & !converged))
-#'     message("No convergence reached after ", sum(bulks[1:i]), " steps (",
-#'             coda::niter(ans), " final count of samples).")
-#'   
-#'   # Returning
-#'   return(ans)
-#'   
-#' }
-#' 

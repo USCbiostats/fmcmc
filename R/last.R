@@ -23,15 +23,43 @@ print.fmcmc_last <- function(x, ...) {
   invisible(x)
 }
 
+LAST_MCMC_add <- function(...) {
+  
+  if (any(is.na(...names())))
+    stop(
+      "All elements passed to -LAST_MCMC_add- should have a name.",
+      call. = FALSE
+    )
+  
+  for (i in 1:...length()) {
+    
+    assign(
+      x = ...names()[i],
+      value = ...elt(i),
+      envir = LAST_MCMC
+      )
+    
+    LAST_MCMC$.internal_elements <- c(
+      LAST_MCMC$.internal_elements,
+      ...names()[i]
+    )
+    
+  }
+  
+  invisible()
+}
+
 MCMC_init <- function(...) {
   
   # Getting the caller environment
-  LAST_MCMC$time_start   <- proc.time()
+  # LAST_MCMC$time_start   <- proc.time()
+  LAST_MCMC_add(time_start = proc.time())
   env <- parent.frame()
   
   # Initializing the variables
   for (n in names(env))
     if (n != "...") 
+      
       assign(n, get(n, envir = env), envir = LAST_MCMC)
     
   # Assigning dots
@@ -46,7 +74,8 @@ MCMC_init <- function(...) {
 }
 
 MCMC_finalize <- function() {
-  LAST_MCMC$time_end <- proc.time()
+  LAST_MCMC_add(time_end = proc.time())
+  # LAST_MCMC$time_end <- proc.time()
 }
 
 
@@ -95,4 +124,34 @@ last_ <- function(x) {
   LAST_MCMC[[x]]
 }
 
+#' @export
+#' @rdname last-mcmc
+#' @details The function `get_logpost` returns the `logposterior` value at each
+#' iteration. The values correspond to a named numeric vector.
+get_logpost <- function() {
+  
+  last_("logpost")
+  
+}
 
+#' @noRd
+#' Sets the the value for LAST_MCMC prob
+set_last_mcmc_ <- function(x, value, nchain) {
+  
+  # Making space
+  if (!exists(x, envir = LAST_MCMC))
+    assign(x, rep(NULL, last_nchains()), envir = LAST_MCMC)
+  
+  if (last_nchains() > 1L) {
+    
+    LAST_MCMC[[x]][[nchain]] <- c(LAST_MCMC[[x]][[nchain]], value)
+    
+  } else {
+    
+    LAST_MCMC[[x]] <- c(LAST_MCMC[[x]], value)
+    
+  }
+  
+  invisible()
+  
+}
