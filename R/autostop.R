@@ -25,12 +25,12 @@ NULL
 #' 
 #' The `msg` member of `LAST_CONV_CHECK` is resetted before `conv_checker` is
 #' called.
-LAST_CONV_CHECK <- structure(new.env(), class = c("fmcmc_last_conv_check", "environment"))
+LAST_CONV_CHECK <- structure(new.env(), class = c("fmcmc_run_conv_check", "environment"))
 assign("msg", NA_character_, envir = LAST_CONV_CHECK)
 
 
 #' @export
-print.fmcmc_last_conv_check <- function(x, ...) {
+print.fmcmc_run_conv_check <- function(x, ...) {
   
   cat("LAST_CONV_CHECK holds the following information:\n")
   print(utils::ls.str(x))

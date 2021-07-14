@@ -3,7 +3,7 @@
 \docType{data}
 \name{last-mcmc}
 \alias{last-mcmc}
-\alias{LAST_MCMC}
+\alias{LAST_RUN}
 \alias{last_elapsed}
 \alias{last_nsteps}
 \alias{last_nchains}
@@ -13,10 +13,10 @@
 \alias{get_logpost}
 \title{Information about the last \code{MCMC} call}
 \format{
-An object of class \code{fmcmc_last} (inherits from \code{environment}) of length 0.
+An object of class \code{fmcmc_run} (inherits from \code{environment}) of length 0.
 }
 \usage{
-LAST_MCMC
+LAST_RUN
 
 last_elapsed()
 

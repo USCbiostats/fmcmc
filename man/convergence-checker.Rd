@@ -15,7 +15,7 @@
 \alias{convergence_auto}
 \title{Convergence Monitoring}
 \format{
-An object of class \code{fmcmc_last_conv_check} (inherits from \code{environment}) of length 1.
+An object of class \code{fmcmc_run_conv_check} (inherits from \code{environment}) of length 1.
 }
 \usage{
 LAST_CONV_CHECK

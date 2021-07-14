@@ -337,6 +337,9 @@ MCMC.default <- function(
 ) {
   
   # Initializing recording of variables
+  LAST_RUN$clear(nchains = nchains)
+  LAST_RUN$set_ptr(1L)
+  
   MCMC_init(...)
   
   MCMC_CALL <- if (!is.null(conv_checker))
@@ -439,6 +442,13 @@ MCMC_without_conv_checker <- function(
   if (multicore) {
     parallel::clusterExport(cl, "kernel", envir = environment())
     parallel::clusterEvalQ(cl, FMCMC_PLL_KERNEL <- new.env())
+    
+    # Exporting runs
+    parallel::clusterExport(cl, "ptr", envir = LAST_RUN)
+    parallel::clusterEvalQ(cl, {
+      LAST_RUN$clear(1, get("ptr", envir = .GlobalEnv))
+      LAST_RUN$set_ptr(1)
+    })
   }
     
   if (nchains > 1L && multicore) {
@@ -484,6 +494,9 @@ MCMC_without_conv_checker <- function(
     kernel_list <- parallel::clusterEvalQ(cl, get("kernel", envir = FMCMC_PLL_KERNEL))
     update_kernel(kernel, do.call(c, kernel_list))
     
+    # Updating run
+    LAST_RUN$data. <- parallel::clusterEvalQ(cl, get("ptr", envir = LAST_RUN))
+    
     # Appending the chains
     return(coda::as.mcmc.list(ans))
     
@@ -491,7 +504,11 @@ MCMC_without_conv_checker <- function(
     
     # Recursively calling the function
     ans <- vector("list", nchains)
-    for (i in seq_len(nchains))
+    for (i in seq_len(nchains)) {
+      
+      # Where to record logpost and other stuff
+      LAST_RUN$set_ptr(i)
+      
       ans[[i]] <- MCMC_without_conv_checker(
         initial      = initial[i,,drop=FALSE],
         fun          = fun,
@@ -507,6 +524,8 @@ MCMC_without_conv_checker <- function(
         chain_id     = i,
         ...
         )
+      
+    }
     
     # Appending the chains
     return(coda::as.mcmc.list(ans))
@@ -622,8 +641,10 @@ MCMC_without_conv_checker <- function(
     ans     <- ans[(1:nrow(ans) %% thin) == 0, , drop = FALSE]
   }
   
+  names(logpost) <- rownames(ans)
+  
   # Storing the logpost
-  set_last_mcmc_("logpost", logpost, chain_id)
+  LAST_RUN$c_("logpost", logpost)
   
   # Cleaning the space
   on.exit(rm(list = ls(envir = environment())))
@@ -655,7 +676,7 @@ MCMC_with_conv_checker <- function(
   conv_checker , 
   cl           ,
   progress     ,
-  chain_id     
+  chain_id
 ){
   
   if (is.null(conv_checker))
@@ -735,21 +756,12 @@ MCMC_with_conv_checker <- function(
     if (multicore && !is.null(cl))
       parallel::clusterEvalQ(cl, gc())
     
-    
-    if (is.list(tmp) & !coda::is.mcmc.list(tmp))
-      tmp <- coda::as.mcmc.list(tmp)
-    
     # Appending retults
-    ans     <- append_chains(ans, tmp)
-    if (nchains > 1L)
-      LAST_MCMC[["logpost"]] <- lapply(LAST_MCMC[["logpost"]], function(m) {
-        stats::setNames(m, rownames(ans[[1]]))
-      })
-    else
-      LAST_MCMC[["logpost"]] <- stats::setNames(LAST_MCMC[["logpost"]], rownames(ans))
+    ans <- append_chains(ans, tmp)
     
     # Checking the set of free parameters
     if (is.null(free_params)) {
+      
       free_params <- if (inherits(kernel, "fmcmc_kernel_list"))
         kernel[[1]]$fixed
       else
@@ -759,6 +771,7 @@ MCMC_with_conv_checker <- function(
         free_params <- seq_along(initial)
       else
         free_params <- which(!free_params)
+      
     }
     
     # Resetting the convergence message
@@ -788,6 +801,14 @@ MCMC_with_conv_checker <- function(
       )
     }
     
+  }
+  
+  # Wrapping logpost
+  for (d in LAST_RUN$data.) {
+    if (nchains > 1L)
+      d[["logpost"]] <- structure(d[["logpost"]], names = rownames(ans[[1L]]))
+    else 
+      d[["logpost"]] <- structure(d[["logpost"]], names = rownames(ans))
   }
   
   # Did it converged?
