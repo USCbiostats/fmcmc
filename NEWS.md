@@ -1,4 +1,4 @@
-# fmcmc 0.4-1
+# fmcmc 0.5-0
 
 * The function `fun` passed to `MCMC` is now called two times less. It shouldn't
   significantly affect any previous results.
@@ -11,6 +11,15 @@
   
 * The function `convergence_auto()` now behaves as expected. Before it was not checking
   convergence.
+  
+* The set of functions `last_*` and `LAST_MCMC` will be deprecated in favor of
+  `get_*` and `MCMC_INFO`.
+  
+* The new function `get_logpost()` returns the computed values of the objective
+  function from the last `MCMC` run.
+  
+* The function `append_chains()` was randomly dropping one sample of the final
+  set.
   
 
 # fmcmc 0.4-0

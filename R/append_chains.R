@@ -95,7 +95,7 @@ append_chains.mcmc <- function(...) {
   rn <- c(as.character(rn[[1]]), unlist(midnames))
   
   # Correcting endings
-  end[-1] <- end[-1] + 1 - start[-1]
+  end[-1] <- end[-1] + thin[-1] - start[-1]
   
   
   dat <- do.call(rbind, unclass(dots))

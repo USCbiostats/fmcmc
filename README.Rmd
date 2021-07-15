@@ -212,6 +212,17 @@ plot(ans_AM)
 1 - rejectionRate(ans_AM)
 ```
 
+Finally, if needed, we can also access information about the last run using `MCMC_INFO`.
+For example, if we wanted to look at the trace of the logposterior function, we could
+use the `get_logpost()` function:
+
+```{r get_}
+plot(get_logpost(), type = "l")
+```
+
+If the previous run featured multiple chains, then `get_logpost()` would return a list
+instead of length `get_nchains()`. 
+
 ## Automatic stop
 
 Now, suppose that the algorithm actually takes a lot of time to actually reach

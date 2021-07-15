@@ -2,7 +2,8 @@
 # fmcmc: A friendly MCMC framework <img src="man/figures/logo.png" align="right" height="140"/>
 
 [![DOI](http://joss.theoj.org/papers/10.21105/joss.01427/status.svg)](https://doi.org/10.21105/joss.01427)
-[![R CI](https://github.com/USCbiostats/fmcmc/actions/workflows/ci.yml/badge.svg)](https://github.com/USCbiostats/fmcmc/actions/workflows/ci.yml)
+[![R
+CI](https://github.com/USCbiostats/fmcmc/actions/workflows/ci.yml/badge.svg)](https://github.com/USCbiostats/fmcmc/actions/workflows/ci.yml)
 [![Build
 status](https://ci.appveyor.com/api/projects/status/lirawn11ssw9cq07/branch/master?svg=true)](https://ci.appveyor.com/project/gvegayon/fmcmc/branch/master)
 [![Coverage
@@ -14,7 +15,8 @@ status](https://www.r-pkg.org/badges/version/fmcmc)](https://cran.r-project.org/
 [![CRAN
 downloads](http://cranlogs.r-pkg.org/badges/grand-total/fmcmc)](https://cran.r-project.org/package=fmcmc)
 [![status](https://tinyverse.netlify.com/badge/fmcmc)](https://CRAN.R-project.org/package=fmcmc)
-[![Integrative Methods of Analysis for Genetic Epidemiology](https://raw.githubusercontent.com/USCbiostats/badges/master/tommy-image-badge.svg)](https://image.usc.edu)
+[![Integrative Methods of Analysis for Genetic
+Epidemiology](https://raw.githubusercontent.com/USCbiostats/badges/master/tommy-image-badge.svg)](https://image.usc.edu)
 
 ## What
 
@@ -50,15 +52,15 @@ While a lot of users rely on MCMC tools such as Stan (via the
 settings either these tools are not enough or provide too much for
 things that do not need that much. So, this tool is for you if:
 
-  - You have a simple model to estimate with Metropolis-Hastings.
+-   You have a simple model to estimate with Metropolis-Hastings.
 
-  - You want to run multiple chains of your model using out-of-the-box
+-   You want to run multiple chains of your model using out-of-the-box
     parallel computing.
 
-  - You don’t want (or cannot) rely on external tools (so you just need
+-   You don’t want (or cannot) rely on external tools (so you just need
     good-old base R only for your models).
 
-  - You want to implement a model in which your model parameters are
+-   You want to implement a model in which your model parameters are
     either bounded (like a standard error, for example), or are not,
     say, continuous (e.g., a size variable in a Binomial distribution),
     so you need your own transition kernel.
@@ -88,28 +90,26 @@ install.packages("fmcmc")
 
 # Citation
 
-``` 
 
-To cite fmcmc in publications use:
+    To cite fmcmc in publications use:
 
-  Vega Yon et al., (2019). fmcmc: A friendly MCMC framework. Journal of
-  Open Source Software, 4(39), 1427,
-  https://doi.org/10.21105/joss.01427
+      Vega Yon et al., (2019). fmcmc: A friendly MCMC framework. Journal of
+      Open Source Software, 4(39), 1427,
+      https://doi.org/10.21105/joss.01427
 
-A BibTeX entry for LaTeX users is
+    A BibTeX entry for LaTeX users is
 
-  @Article{,
-    title = {fmcmc: A friendly MCMC framework},
-    author = {George {Vega Yon} and Paul Marjoram},
-    journal = {The Journal of Open Source Software},
-    year = {2019},
-    month = {jul},
-    volume = {4},
-    number = {39},
-    doi = {10.21105/joss.01427},
-    url = {https://doi.org/10.21105/joss.01427},
-  }
-```
+      @Article{,
+        title = {fmcmc: A friendly MCMC framework},
+        author = {George {Vega Yon} and Paul Marjoram},
+        journal = {The Journal of Open Source Software},
+        year = {2019},
+        month = {jul},
+        volume = {4},
+        number = {39},
+        doi = {10.21105/joss.01427},
+        url = {https://doi.org/10.21105/joss.01427},
+      }
 
 # Example: Linear regression model
 
@@ -127,8 +127,8 @@ y <- 3.0 + 2.0*X + rnorm(n, sd = 4)
 ```
 
 As you can see, in this case we have three parameters to estimate, the
-constant (2.0), the \(\beta\) coefficient (2.0), and the standard
-deviation parameter of the error (1.5).
+constant (2.0), the *β* coefficient (2.0), and the standard deviation
+parameter of the error (1.5).
 
 To estimate this model, we can either maximize the log-likelihood
 function–which is what is usually done–or we could do it using MCMC. In
@@ -194,17 +194,17 @@ summary(ans)
     ## 1. Empirical mean and standard deviation for each variable,
     ##    plus standard error of the mean:
     ## 
-    ##       Mean     SD Naive SE Time-series SE
-    ## par1 3.126 0.1893 0.002677        0.03128
-    ## par2 1.943 0.1234 0.001746        0.04176
-    ## par3 4.093 0.0930 0.001315        0.01168
+    ##       Mean      SD Naive SE Time-series SE
+    ## par1 3.113 0.17593 0.002488       0.024341
+    ## par2 1.975 0.10647 0.001506       0.022105
+    ## par3 4.093 0.07843 0.001109       0.005951
     ## 
     ## 2. Quantiles for each variable:
     ## 
     ##       2.5%   25%   50%   75% 97.5%
-    ## par1 2.951 3.013 3.112 3.172 3.511
-    ## par2 1.763 1.892 1.956 2.026 2.171
-    ## par3 3.979 4.064 4.106 4.134 4.186
+    ## par1 2.975 3.029 3.068 3.255 3.354
+    ## par2 1.749 1.907 1.980 2.020 2.145
+    ## par3 3.978 4.070 4.101 4.102 4.226
 
 While the summary statistics look very good (we got very close to the
 original parameters), the trace of the parameters looks vary bad (poor
@@ -227,7 +227,7 @@ plot(ans)
 
 ![](man/figures/summary-and-plot1-1.png)<!-- -->
 
-Much better\! Now, what if we use Vihola (2012) Robust Adaptive
+Much better! Now, what if we use Vihola (2012) Robust Adaptive
 Metropolis (which is also implemented in the R package
 [adaptMCMC](https://cran.r-project.org/package=adaptMCMC))
 
@@ -250,7 +250,7 @@ plot(ans_RAM)
 ```
 
     ##      par1      par2      par3 
-    ## 0.3486697 0.3486697 0.3486697
+    ## 0.3522705 0.3522705 0.3522705
 
 We can also try using Haario et al (2001) Adaptive Metropolis
 
@@ -273,7 +273,20 @@ plot(ans_AM)
 ```
 
     ##      par1      par2      par3 
-    ## 0.5593119 0.5593119 0.5593119
+    ## 0.5457091 0.5457091 0.5457091
+
+Finally, if needed, we can also access information about the last run
+using `MCMC_INFO`. For example, if we wanted to look at the trace of the
+logposterior function, we could use the `get_logpost()` function:
+
+``` r
+plot(get_logpost(), type = "l")
+```
+
+![](man/figures/get_-1.png)<!-- -->
+
+If the previous run featured multiple chains, then `get_logpost()` would
+return a list instead of length `get_nchains()`.
 
 ## Automatic stop
 
@@ -297,9 +310,31 @@ ans <- MCMC(
   )
 ```
 
-    ## No convergence yet (steps count: 200). Gelman-Rubin's R: 4.5253. Trying with the next bulk.
+    ## No convergence yet (steps count: 200). Gelman-Rubin's R: 4.5843. Trying with the next bulk.
 
-    ## Convergence has been reached with 400 steps. Gelman-Rubin's R: 1.0897. (400 final count of samples).
+    ## No convergence yet (steps count: 400). Gelman-Rubin's R: 1.1877. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 600). Gelman-Rubin's R: 1.4297. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 800). Gelman-Rubin's R: 1.1582. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 1000). Gelman-Rubin's R: 1.3414. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 1200). Gelman-Rubin's R: 1.2727. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 1400). Gelman-Rubin's R: 1.4456. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 1600). Gelman-Rubin's R: 1.3792. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 1800). Gelman-Rubin's R: 1.2069. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 2000). Gelman-Rubin's R: 1.1789. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 2200). Gelman-Rubin's R: 1.1208. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 2400). Gelman-Rubin's R: 1.1196. Trying with the next bulk.
+
+    ## Convergence has been reached with 2600 steps. Gelman-Rubin's R: 1.0792. (2600 final count of samples).
 
 As a difference from the previous case, now we didn’t had to wait until
 the 5,000 steps were done, but the algorithm stopped for us, allowing us
@@ -324,12 +359,12 @@ ll <- function(p, X., y.) {
 }
 ```
 
-Much simpler function\! Let’s do the call of the MCMC function
-specifying the right transition kernel to increase the acceptance rate.
-In this example, we will set the max of all parameters to be 5.0, and
-the min to be -5.0 for the constant and 0 for the beta coefficient and
-the variance parameter, all this using the `kernel_normal_reflective`
-(which implements a normal kernel with boundaries) function:
+Much simpler function! Let’s do the call of the MCMC function specifying
+the right transition kernel to increase the acceptance rate. In this
+example, we will set the max of all parameters to be 5.0, and the min to
+be -5.0 for the constant and 0 for the beta coefficient and the variance
+parameter, all this using the `kernel_normal_reflective` (which
+implements a normal kernel with boundaries) function:
 
 ``` r
 set.seed(1215) # Same seed as before
@@ -349,9 +384,31 @@ ans <- MCMC(
   )
 ```
 
-    ## No convergence yet (steps count: 200). Gelman-Rubin's R: 3.0834. Trying with the next bulk.
+    ## No convergence yet (steps count: 200). Gelman-Rubin's R: 3.7891. Trying with the next bulk.
 
-    ## Convergence has been reached with 400 steps. Gelman-Rubin's R: 1.0583. (400 final count of samples).
+    ## No convergence yet (steps count: 400). Gelman-Rubin's R: 1.1257. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 600). Gelman-Rubin's R: 1.4696. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 800). Gelman-Rubin's R: 1.1313. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 1000). Gelman-Rubin's R: 1.4384. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 1200). Gelman-Rubin's R: 1.3696. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 1400). Gelman-Rubin's R: 1.5243. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 1600). Gelman-Rubin's R: 1.3720. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 1800). Gelman-Rubin's R: 1.1722. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 2000). Gelman-Rubin's R: 1.1492. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 2200). Gelman-Rubin's R: 1.1004. Trying with the next bulk.
+
+    ## No convergence yet (steps count: 2400). Gelman-Rubin's R: 1.1161. Trying with the next bulk.
+
+    ## Convergence has been reached with 2600 steps. Gelman-Rubin's R: 1.0815. (2600 final count of samples).
 
 Again, as the proposal kernel has lower and upper bounds, then we are
 guaranteed that all proposed states are within the support of the
@@ -359,13 +416,13 @@ parameter space.
 
 # Other tools
 
-  - <https://cran.r-project.org/web/packages/mcmc/mcmc.pdf>
+-   <https://cran.r-project.org/web/packages/mcmc/mcmc.pdf>
 
-  - <https://cran.r-project.org/web/packages/HybridMC/HybridMC.pdf>
+-   <https://cran.r-project.org/web/packages/HybridMC/HybridMC.pdf>
 
-  - <https://cran.r-project.org/web/packages/adaptMCMC/adaptMCMC.pdf>
+-   <https://cran.r-project.org/web/packages/adaptMCMC/adaptMCMC.pdf>
 
-  - <https://cran.r-project.org/web/packages/elhmc/elhmc.pdf>
+-   <https://cran.r-project.org/web/packages/elhmc/elhmc.pdf>
 
 # Contributing to `fmcmc`
 

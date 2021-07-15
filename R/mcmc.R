@@ -337,8 +337,8 @@ MCMC.default <- function(
 ) {
   
   # Initializing recording of variables
-  LAST_RUN$clear(nchains = nchains)
-  LAST_RUN$set_ptr(1L)
+  MCMC_INFO$clear(nchains = nchains)
+  MCMC_INFO$set_ptr(1L)
   
   MCMC_init(...)
   
@@ -443,12 +443,19 @@ MCMC_without_conv_checker <- function(
     parallel::clusterExport(cl, "kernel", envir = environment())
     parallel::clusterEvalQ(cl, FMCMC_PLL_KERNEL <- new.env())
     
-    # Exporting runs
-    parallel::clusterExport(cl, "ptr", envir = LAST_RUN)
+    # Exporting data
+    invisible(
+      parallel::parLapply(
+        cl, MCMC_INFO$data., function(i) assign("ptr__", i, envir = .GlobalEnv)
+        )
+    )
+    
+    # Setting up data
     parallel::clusterEvalQ(cl, {
-      LAST_RUN$clear(1, get("ptr", envir = .GlobalEnv))
-      LAST_RUN$set_ptr(1)
+      MCMC_INFO$clear(1L, get("ptr__", envir = .GlobalEnv))
+      MCMC_INFO$set_ptr(1L)
     })
+    
   }
     
   if (nchains > 1L && multicore) {
@@ -495,7 +502,7 @@ MCMC_without_conv_checker <- function(
     update_kernel(kernel, do.call(c, kernel_list))
     
     # Updating run
-    LAST_RUN$data. <- parallel::clusterEvalQ(cl, get("ptr", envir = LAST_RUN))
+    MCMC_INFO$data. <- parallel::clusterEvalQ(cl, get("ptr", envir = MCMC_INFO))
     
     # Appending the chains
     return(coda::as.mcmc.list(ans))
@@ -507,7 +514,7 @@ MCMC_without_conv_checker <- function(
     for (i in seq_len(nchains)) {
       
       # Where to record logpost and other stuff
-      LAST_RUN$set_ptr(i)
+      MCMC_INFO$set_ptr(i)
       
       ans[[i]] <- MCMC_without_conv_checker(
         initial      = initial[i,,drop=FALSE],
@@ -545,14 +552,14 @@ MCMC_without_conv_checker <- function(
 
   # ... has extra args
   if (length(passedargs)) {
-    # ... has stuff that fun doesnt
+    # ... has stuff that fun doesn't
     if (any(!(passedargs %in% funargs))) {
       
       stop("The following arguments passed via -...- are not present in -fun-:\n - ",
            paste(setdiff(passedargs, funargs), collapse=",\n - "),".\nThe function",
            "was expecting:\n - ", paste0(funargs, collapse=",\n - "), ".", call. = FALSE)
     
-    # fun has stuff that ... doesnt
+    # fun has stuff that ... doesn't
     } else if (length(funargs) > 1 && any(!(funargs[-1] %in% passedargs))) {
       
       stop("-fun- requires more arguments to be passed via -...-.", call. = FALSE)
@@ -644,7 +651,7 @@ MCMC_without_conv_checker <- function(
   names(logpost) <- rownames(ans)
   
   # Storing the logpost
-  LAST_RUN$c_("logpost", logpost)
+  MCMC_INFO$c_("logpost", logpost)
   
   # Cleaning the space
   on.exit(rm(list = ls(envir = environment())))
@@ -804,7 +811,7 @@ MCMC_with_conv_checker <- function(
   }
   
   # Wrapping logpost
-  for (d in LAST_RUN$data.) {
+  for (d in MCMC_INFO$data.) {
     if (nchains > 1L)
       d[["logpost"]] <- structure(d[["logpost"]], names = rownames(ans[[1L]]))
     else 

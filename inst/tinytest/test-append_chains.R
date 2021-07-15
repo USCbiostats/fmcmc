@@ -19,6 +19,32 @@ ans1 <- MCMC(
 ans <- append_chains(ans0, ans1)
 expect_true(all(rownames(ans) == 1:(nsteps*2)))
 
+# With thinning
+ans0 <- MCMC(
+  c(1,1), logpost, nsteps = nsteps, nchains = 1, thin = 5,
+  kernel = kernel_normal_reflective(lb = c(-1, 0))
+)
+ans1 <- MCMC(
+  c(1,1), logpost, nsteps = nsteps, nchains = 1, thin = 5,
+  kernel = kernel_normal_reflective(lb = c(-1, 0))
+)
+
+ans <- append_chains(ans0, ans1)
+expect_true(all(rownames(ans) == (1:(nsteps*2))[ (1:(nsteps*2) %% 5) == 0 ]))
+
+# With thinning and burnin
+ans0 <- MCMC(
+  c(1,1), logpost, nsteps = nsteps, nchains = 1, thin = 5,
+  kernel = kernel_normal_reflective(lb = c(-1, 0)), burnin = 200
+)
+ans1 <- MCMC(
+  c(1,1), logpost, nsteps = nsteps, nchains = 1, thin = 5,
+  kernel = kernel_normal_reflective(lb = c(-1, 0))
+)
+
+ans <- append_chains(ans0, ans1)
+expect_true(all(rownames(ans) == (201:(nsteps*2))[ (201:(nsteps*2) %% 5) == 0 ]))
+
 # MCMC lists -------------------------------------------------------------------
 ans0 <- MCMC(
   matrix(runif(4), nrow = 2), logpost, nsteps = nsteps, nchains = 2,
