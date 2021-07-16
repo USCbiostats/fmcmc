@@ -42,7 +42,8 @@ way:
     `kernel_normal_reflective`, `kernel_unif`, `kernel_mirror`, or
     `kernel_unif_reflective`.
 
-All the above without requiring compiled code.
+All the above without requiring compiled code. For the latest about
+`fmcmc`, checkout the [NEWS.md](NEWS.md) section.
 
 ## Who is this for?
 
@@ -284,6 +285,15 @@ plot(get_logpost(), type = "l")
 ```
 
 ![](man/figures/get_-1.png)<!-- -->
+
+The set of proposed values is also available using the `get_draws()`
+function:
+
+``` r
+boxplot(get_draws(), type = "l")
+```
+
+![](man/figures/get_draws-1.png)<!-- -->
 
 If the previous run featured multiple chains, then `get_logpost()` would
 return a list instead of length `get_nchains()`.

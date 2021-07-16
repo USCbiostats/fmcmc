@@ -45,7 +45,8 @@ following in a flexible way:
     example: `kernel_adapt`, `kernel_ram`, `kernel_normal_reflective`, `kernel_unif`,
     `kernel_mirror`, or `kernel_unif_reflective`.
     
-All the above without requiring compiled code.
+All the above without requiring compiled code. For the latest about `fmcmc`, checkout
+the [NEWS.md](NEWS.md) section.
 
 ## Who is this for?
 

@@ -3,6 +3,7 @@
 \name{MCMC}
 \alias{MCMC}
 \alias{Metropolis-Hastings}
+\alias{MCMC_without_conv_checker}
 \title{Markov Chain Monte Carlo}
 \usage{
 MCMC(
@@ -11,6 +12,22 @@ MCMC(
   nsteps,
   ...,
   seed = NULL,
+  nchains = 1L,
+  burnin = 0L,
+  thin = 1L,
+  kernel = kernel_normal(),
+  multicore = FALSE,
+  conv_checker = NULL,
+  cl = NULL,
+  progress = interactive() && !multicore,
+  chain_id = 1L
+)
+
+MCMC_without_conv_checker(
+  initial,
+  fun,
+  nsteps,
+  ...,
   nchains = 1L,
   burnin = 0L,
   thin = 1L,
@@ -75,6 +92,9 @@ The function also allows using convergence diagnostics tests to set-up a
 criterion for automatically stopping the algorithm  (see \link{convergence-checker}).
 
 We now give details of the various options included in the function.
+
+The function \code{MCMC_without_conv_checker} is for internal use
+only.
 }
 \section{Starting point}{
 

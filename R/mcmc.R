@@ -374,9 +374,10 @@ MCMC.default <- function(
 
 }
 
-#' @details The functions `MCMC_without_conv_checker` and `MCMC_with_conv_checker`
-#' should not be directly called by the user. These are for internal use only.
-#' @noRd
+#' @export
+#' @details The function `MCMC_without_conv_checker` is for internal use
+#' only.
+#' @rdname MCMC
 MCMC_without_conv_checker <- function(
   initial,
   fun,
