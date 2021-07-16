@@ -6,6 +6,7 @@
 \alias{MCMC_INFO}
 \alias{get_}
 \alias{get_logpost}
+\alias{get_draws}
 \alias{get_elapsed}
 \alias{get_nsteps}
 \alias{get_nchains}
@@ -16,7 +17,7 @@
 \alias{get_thin}
 \title{Information about the last \code{MCMC} call}
 \format{
-An object of class \code{fmcmc_last_mcmc} (inherits from \code{fmcmc_info}, \code{environment}) of length 7.
+An object of class \code{fmcmc_info} (inherits from \code{environment}) of length 8.
 }
 \usage{
 MCMC_INFO
@@ -24,6 +25,8 @@ MCMC_INFO
 get_(x)
 
 get_logpost()
+
+get_draws()
 
 get_elapsed()
 
@@ -60,6 +63,9 @@ The function \code{get_logpost} returns the \code{logposterior} value at each
 iteration. The values correspond to a named numeric vector. If \code{nchains > 1}
 then it will return a list of length \code{nchains} with the corresponding logpost
 values for each chain.
+
+The function \code{get_draws()} retrieves the proposed samples from the
+kernel function.
 }
 \examples{
 set.seed(23133)

@@ -20,7 +20,6 @@ benchmarks\.Rmd
 ^man-roxygen$
 ^data-raw$
 ^docker$
-doc
 .*\.Rcheck
 .*\.tar\.gz
 \.github

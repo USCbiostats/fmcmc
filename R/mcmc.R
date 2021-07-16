@@ -374,10 +374,9 @@ MCMC.default <- function(
 
 }
 
-#' @export
-#' @rdname MCMC
 #' @details The functions `MCMC_without_conv_checker` and `MCMC_with_conv_checker`
 #' should not be directly called by the user. These are for internal use only.
+#' @noRd
 MCMC_without_conv_checker <- function(
   initial,
   fun,
@@ -441,18 +440,21 @@ MCMC_without_conv_checker <- function(
   # We need to actively export these so we can capture it later
   if (multicore) {
     parallel::clusterExport(cl, "kernel", envir = environment())
-    parallel::clusterEvalQ(cl, FMCMC_PLL_KERNEL <- new.env())
+    parallel::clusterEvalQ(cl, {
+      .FMCMC_PLL_KERNEL <- new.env()
+      .FMCMC_MCMC_INFO  <- new.env()
+      })
     
     # Exporting data
     invisible(
       parallel::parLapply(
-        cl, MCMC_INFO$data., function(i) assign("ptr__", i, envir = .GlobalEnv)
+        cl, MCMC_INFO$data., function(i) assign("ptr__", i, envir = .FMCMC_MCMC_INFO)
         )
     )
     
     # Setting up data
     parallel::clusterEvalQ(cl, {
-      MCMC_INFO$clear(1L, get("ptr__", envir = .GlobalEnv))
+      MCMC_INFO$clear(1L, get("ptr__", envir = .FMCMC_MCMC_INFO))
       MCMC_INFO$set_ptr(1L)
     })
     
@@ -484,7 +486,7 @@ MCMC_without_conv_checker <- function(
         )
         
         # Making sure we are returning the right kernel
-        assign("kernel", kernel[[i]], envir = FMCMC_PLL_KERNEL)
+        assign("kernel", kernel[[i]], envir = .FMCMC_PLL_KERNEL)
         
         res.
       },
@@ -498,7 +500,7 @@ MCMC_without_conv_checker <- function(
     )
     
     # Updating the kernel
-    kernel_list <- parallel::clusterEvalQ(cl, get("kernel", envir = FMCMC_PLL_KERNEL))
+    kernel_list <- parallel::clusterEvalQ(cl, get("kernel", envir = .FMCMC_PLL_KERNEL))
     update_kernel(kernel, do.call(c, kernel_list))
     
     # Updating run
@@ -591,13 +593,18 @@ MCMC_without_conv_checker <- function(
   
   ans <- matrix(ncol = length(initial), nrow = nsteps,
                 dimnames = list(1:nsteps, cnames))
-  logpost   <- vector("numeric", nsteps)
+  logpost <- vector("numeric", nsteps)
+  draws   <- matrix(
+    NA_real_, nrow = nsteps, ncol = length(initial),
+    dimnames = list(1:nsteps, cnames)
+    )
   
   # We start assuming the first call is accepted
   i           <- 1L # Need that in case we have it
   theta0      <- initial
   theta1      <- theta0
   logpost[1L] <- f(theta0)
+  draws[1L,]  <- initial
   f0          <- logpost[1L]
   ans[1L, ]   <- theta0
   
@@ -608,12 +615,13 @@ MCMC_without_conv_checker <- function(
   for (i in 2L:nsteps) {
 
     # Step 1. Propose
-    theta1[]   <- kernel$proposal(environment())
-    logpost[i] <- f(theta1)
-    f1         <- logpost[i]
+    draws[i,] <- kernel$proposal(environment())
+    theta1[]       <- draws[i,]
+    logpost[i]     <- f(theta1)
+    f1             <- logpost[i]
 
     # Checking f(theta1) (it must be a number, can be Inf)
-    if (is.nan(logpost[i]) || is.na(logpost[i]) || is.null(logpost[i])) 
+    if (is.nan(f1) || is.na(f1) || is.null(f1)) 
       stop(
         "fun(par) is undefined (", f1, "). ",
         "Check either -fun- or the -lb- and -ub- parameters. ",
@@ -626,8 +634,10 @@ MCMC_without_conv_checker <- function(
     klogratio <- kernel$logratio(environment())
 
     if (R[i] < klogratio) {
+      
       theta0 <- theta1
       f0     <- logpost[i]
+      
     }
       
     # Step 3. Saving the state
@@ -640,18 +650,28 @@ MCMC_without_conv_checker <- function(
   
   # Thinning the data
   if (burnin) {
-    ans     <- ans[-c(1:burnin), , drop = FALSE]
-    logpost <- logpost[-c(1:burnin)]
+    
+    ans     <- ans[-c(1L:burnin), , drop = FALSE]
+    logpost <- logpost[-c(1L:burnin)]
+    draws   <- draws[-c(1:burnin), , drop=FALSE]
+    
   }
+  
   if (thin) {
-    logpost <- logpost[(1:nrow(ans) %% thin) == 0]
-    ans     <- ans[(1:nrow(ans) %% thin) == 0, , drop = FALSE]
+    
+    to_include <- which((1L:nrow(ans) %% thin) == 0L)
+    logpost    <- logpost[to_include]
+    ans        <- ans[to_include, , drop = FALSE]
+    draws      <- draws[to_include, , drop=FALSE]
+    
   }
   
-  names(logpost) <- rownames(ans)
+  names(logpost)  <- rownames(ans)
+  rownames(draws) <- names(logpost)
   
-  # Storing the logpost
+  # Storing the logpost and draws
   MCMC_INFO$c_("logpost", logpost)
+  MCMC_INFO$rbind_("draws", draws)
   
   # Cleaning the space
   on.exit(rm(list = ls(envir = environment())))
@@ -668,8 +688,7 @@ MCMC_without_conv_checker <- function(
   
 }
 
-#' @export
-#' @rdname MCMC
+#' @noRd
 MCMC_with_conv_checker <- function(
   initial,
   fun,
@@ -812,10 +831,19 @@ MCMC_with_conv_checker <- function(
   
   # Wrapping logpost
   for (d in MCMC_INFO$data.) {
-    if (nchains > 1L)
+    
+    if (nchains > 1L) {
+      
       d[["logpost"]] <- structure(d[["logpost"]], names = rownames(ans[[1L]]))
-    else 
+      d[["draws"]] <- structure(d[["draws"]], names = rownames(ans[[1L]]))
+      
+    } else {
+      
       d[["logpost"]] <- structure(d[["logpost"]], names = rownames(ans))
+      d[["draws"]] <- structure(d[["draws"]], names = rownames(ans))
+      
+    }
+    
   }
   
   # Did it converged?

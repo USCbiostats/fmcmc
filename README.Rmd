@@ -220,6 +220,12 @@ use the `get_logpost()` function:
 plot(get_logpost(), type = "l")
 ```
 
+The set of proposed values is also available using the `get_draws()` function:
+
+```{r get_draws}
+boxplot(get_draws(), type = "l")
+```
+
 If the previous run featured multiple chains, then `get_logpost()` would return a list
 instead of length `get_nchains()`. 
 

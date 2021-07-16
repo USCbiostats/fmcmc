@@ -9,6 +9,8 @@ $(PKGNAME)_$(VERSION).tar.gz: R/*.R inst/NEWS README.md
 	$(MAKE) clean && \
 		R CMD build --no-build-vignettes --no-manual . 
 
+build: $(PKGNAME)_$(VERSION).tar.gz
+
 inst/NEWS: NEWS.md
 	Rscript -e "rmarkdown::pandoc_convert('NEWS.md', 'plain', output='inst/NEWS')"&& \
 	head -n 80 inst/NEWS

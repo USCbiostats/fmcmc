@@ -18,8 +18,14 @@
 * The new function `get_logpost()` returns the computed values of the objective
   function from the last `MCMC` run.
   
+* The new function `get_draws()` returns the MCMC draws from the kernel's 
+  proposal function.
+  
 * The function `append_chains()` was randomly dropping one sample of the final
   set.
+  
+* A new artificial dataset `lifeexpect` is shipped with the package. This simulates
+  1,000 observations of `age` at death using US's statistics.
   
 
 # fmcmc 0.4-0

@@ -12,7 +12,7 @@
 \alias{last_}
 \title{Deprecated methods in fmcmc}
 \format{
-An object of class \code{fmcmc_last_mcmc} (inherits from \code{fmcmc_info}, \code{environment}) of length 7.
+An object of class \code{fmcmc_last_mcmc} of length 0.
 }
 \usage{
 LAST_MCMC
@@ -40,6 +40,6 @@ returns the difference between the two (\code{time_end - time_start}).
 }
 \description{
 These functions will no longer be included starting version 0.6-0. Instead,
-use the function sin \link{fmcmc-info}.
+use the functions in \link{fmcmc-info}.
 }
 \keyword{datasets}

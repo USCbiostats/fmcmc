@@ -86,7 +86,7 @@ kern <- kernel_ram(arate = .3, warmup = 1000)
 \references{
 Vihola, M. (2012). Robust adaptive Metropolis algorithm with coerced acceptance
 rate. Statistics and Computing, 22(5), 997–1008.
-\url{https://doi.org/10.1007/s11222-011-9269-5}
+\doi{10.1007/s11222-011-9269-5}
 }
 \seealso{
 Other kernels: 

@@ -29,7 +29,7 @@ MCMC_INFO$clear <- function(nchains, env) {
   if (missing(env))
     MCMC_INFO$data. <- replicate(
       nchains, list2env({
-        list(logpost = numeric())
+        list(logpost = numeric(), draws = NULL)
       }
       ), simplify = FALSE)
   else {
@@ -67,6 +67,14 @@ MCMC_INFO$set_ptr <- function(i) {
 MCMC_INFO$c_ <- function(x, val) {
   
   assign(x = x, value = c(MCMC_INFO$ptr[[x]], val), envir = MCMC_INFO$ptr)
+  
+}
+
+#' Combine
+#' @noRd
+MCMC_INFO$rbind_ <- function(x, val) {
+  
+  assign(x = x, value = rbind(MCMC_INFO$ptr[[x]], val), envir = MCMC_INFO$ptr)
   
 }
 
@@ -176,6 +184,19 @@ get_logpost <- function() {
   
 }
 
+#' @export
+#' @details The function `get_draws()` retrieves the proposed samples from the
+#' kernel function.
+#' @rdname fmcmc-info
+get_draws <- function() {
+  
+  if (get_nchains() == 1L)
+    return(get_("draws")[[1L]])
+  else
+    return(get_("draws"))
+  
+}
+
 
 #' @export
 #' @rdname fmcmc-info
@@ -214,13 +235,24 @@ get_thin <- function() get_("seed")
 
 #' @export
 #' @rdname fmcmc-deprecated
-LAST_MCMC <- MCMC_INFO
-class(LAST_MCMC) <- c("fmcmc_last_mcmc", class(LAST_MCMC))
+LAST_MCMC <- structure(list(), class = "fmcmc_last_mcmc")
+
+#' @export
+`[[.fmcmc_last_mcmc` <- function(i, j, ..., exact=TRUE) {
+  .Deprecated("MCMC_INFO", old = "LAST_MCMC")
+  MCMC_INFO[[i]]
+}
+
+#' @export
+`$.fmcmc_last_mcmc` <- function(x, name) {
+  .Deprecated("MCMC_INFO", old = "LAST_MCMC")
+  MCMC_INFO[[name]]
+}
 
 #' Deprecated methods in fmcmc
 #' 
 #' These functions will no longer be included starting version 0.6-0. Instead,
-#' use the function sin [fmcmc-info].
+#' use the functions in [fmcmc-info].
 #' 
 #' @export
 #' @name fmcmc-deprecated

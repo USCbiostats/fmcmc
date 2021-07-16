@@ -34,11 +34,11 @@
 #' @references 
 #' Thawornwattana, Y., Dalquen, D., & Yang, Z. (2018). Designing Simple and
 #' Efficient Markov Chain Monte Carlo Proposal Kernels. Bayesian Analysis, 13(4),
-#' 1037–1063. \url{https://doi.org/10.1214/17-BA1084}
+#' 1037–1063. \doi{10.1214/17-BA1084}
 #' 
 #' Yang, Z., & Rodriguez, C. E. (2013). Searching for efficient Markov chain
 #' Monte Carlo proposal kernels. Proceedings of the National Academy of Sciences,
-#' 110(48), 19307–19312. \url{https://doi.org/10.1073/pnas.1311790110}
+#' 110(48), 19307–19312. \doi{10.1073/pnas.1311790110}
 #' @name kernel_mirror
 #' @examples 
 #' # Normal mirror kernel with 5 adaptations and 1000 steps of warmup (burnin)
