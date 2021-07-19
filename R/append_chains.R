@@ -34,8 +34,11 @@
 #' ans_tot <- append_chains(ans0, ans1, ans2)
 #' 
 #' # Looking at the posterior distributions (see ?lifeexpect for info about
-#' # the model) 
-#' plot(ans_tot)
+#' # the model). Only the trace
+#' op <- par(mfrow = c(2,2))
+#' for (i in 1:4)
+#'   coda::traceplot(ans_tot[, i, drop=FALSE])
+#' par(op)
 #' 
 #' 
 append_chains <- function(...) UseMethod("append_chains")

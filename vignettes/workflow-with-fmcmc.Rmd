@@ -26,10 +26,10 @@ out <- glm(y ~ x1 + x2 + x3 + x4, data = logit, family = binomial, x = TRUE)
 beta.init <- as.numeric(coefficients(out))
 ```
 
-To be able to use the Metropolis-Hastings MCMC algorithm the function should be
+To use the Metropolis-Hastings MCMC algorithm, the function should be
 (in principle) the log unnormalized posterior. The following block of code,
-which was extracted from the `mcmc` package vignette "MCMC Package Example"
-creates the function that we will be using
+extracted from the `mcmc` package vignette "MCMC Package Example,"
+creates the function that we will be using:
 
 ```{r log-unnorm-posterior}
 lupost_factory <- function(x, y) function(beta) {
@@ -43,7 +43,7 @@ lupost_factory <- function(x, y) function(beta) {
 lupost <- lupost_factory(out$x, out$y)
 ```
 
-Let's give it a first try. In this case we will use the beta estimates from the
+Let's give it the first try. In this case, we will use the beta estimates from the
 estimated GLM model as a starting point for the algorithm, and we will ask it to
 sample 1e4 points from the posterior distribution (`nsteps`).
 
@@ -79,8 +79,8 @@ out <- MCMC(
 )
 ```
 
-The `kernel_normal`, which is the default kernel in the `MCMC` function, returns
-an object of class `fmcmc_kernel`. In principle it consists on a list of two
+The `kernel_normal`--the default kernel in the `MCMC` function--returns
+an object of class `fmcmc_kernel`. In principle, it consists of a list of two
 functions that are used by the `MCMC` routine: `proposal`, the proposal kernel
 function, and `logratio`, the function that returns the log of the
 Metropolis-Hastings ratio. We will talk more about `fmcmc_kernel` objects later.
@@ -107,16 +107,17 @@ out <- MCMC(
 ```
 
 
-A bit better. As announced by `MCMC`, the chain has reach a stationary state.
+A bit better. As announced by `MCMC`, the `convergence_geweke` checker suggests
+that the chain reached a stationary state.
 With this in hand, we can now rerun the algorithm such that we start from the
-last couple of step of the chain, this time, without convergence monitoring as
+last couple of steps of the chain, this time, without convergence monitoring as
 it is no longer necessary.
 
-We will increase the number of steps (sample size), use 2 chains using parallel
+We will increase the number of steps (sample size), use two chains using parallel
 computing, and add some thinning to reduce autocorrelation:
 
 ```{r estimation2.0}
-# Now we change the seed so we get a different stream of
+# Now, we change the seed, so we get a different stream of
 # pseudo random numbers
 set.seed(112) 
 
@@ -131,8 +132,8 @@ out_final <- MCMC(
   )
 ```
 
-Observed that, instead of specifying what are the 2 starting points for each
-chain, we passed the `out` to the initial set of parameters. By default, if
+Notice that, instead of specifying the starting points for each
+chain, we passed the `out` object to `initial`. By default, if
 `initial` is of class `mcmc`, `MCMC` will take the last `nchains` points from
 the chain as starting point for the new sequence. If `initial` is of class
 `mcmc.list`, the number of chains in `initial` must match the `nchains`
@@ -151,9 +152,9 @@ summary(out_final[, 1:3])
 While the `MCMC` function only returns the `mcmc` class object (as defined in
 the `coda` package), users can exploit the fact that the kernel objects are
 environments to reuse them or inspect them once the `MCMC` function returns.
-
-This could be particularly useful in the case of adaptive kernels as users can
-review the covariance structure (for example) or other components of the kernel.
+For example, `fmcmc_kernel` objects can be useful with adaptive
+kernels as users can review the covariance structure or other
+components.
 
 To illustrate this, let's re-do the MCMC chain of the previous example but using
 an adaptive kernel instead, in particular, Haario's 2010 adaptive metropolis.
@@ -162,10 +163,10 @@ an adaptive kernel instead, in particular, Haario's 2010 adaptive metropolis.
 khaario <- kernel_adapt(freq = 1, warmup = 500)
 ```
 
-This kernel object will be updated at every step (`freq = 1`) and adaptation will
-start from step 500 (`warmup = 500`). We can see that some of its components haven't
-been initialized or have default starting values before the call of the `MCMC`
-function:
+The MCMC function will update the kernel at every step (`freq = 1`), and the
+adaptation will start from step 500 (`warmup = 500`). We can see that some of
+its components haven't been initialized or have a default starting value before
+the call of the `MCMC` function:
 
 ```{r haario-first-inspect}
 # Number of iterations (absolute count, starts in 0)
@@ -233,8 +234,8 @@ abline(v = 500, col = "red", lwd = 2, lty=2)
 ```
 
 As shown in the plot, since the warmup period already passed for the kernel object,
-the adaptation process is happening continuously so we don't see a big break at
-step 500 as before. Let's see now the counts and the covariance matrix and compare
+the adaptation process is happening at every step, so we don't see a big break at
+step 500 as before. Let's see the counts and the covariance matrix and compare
 it with the previous one:
 
 ```{r haario-third-inspect}
@@ -245,7 +246,7 @@ khaario$abs_iter
 # Variance covariance matrix (now is not empty)
 (Sigma2 <- khaario$Sigma)
 
-# How different these are?
+# How different are these?
 Sigma1 - Sigma2
 ```
 
@@ -258,4 +259,31 @@ more technical details on how `fmcmc_kernel` objects work see the manual
 `?fmcmc_kernel` or the vignette "User-defined kernels" included in the package
 `vignette("user-defined-kernels", package = "fmcmc")`.
 
+# Accessing other elements of the chain
+
+In some situations, you may want to access the computed unnormalized log-posterior
+probabilities, the states proposed by the kernel, or other process components.
+In those cases, the functions with the prefix `get_*` can help you.
+
+Starting version 0.5-0, we replaced the family of functions `last_*` with
+`get_*`; a re-design of this "memory" component that gives users access
+to data generated during the Markov process. After each run of the `MCMC` function,
+information regarding the last execution is stored in the environment
+`MCMC_INFO`.
+
+If you wanted to look at the logposterior of the last call and proposed states,
+you can do the following:
+
+```{r get-logpost-draws}
+head(get_logpost()) # The first 5
+head(get_draws()) 
+```
+
+The `MCMC_INFO` environment also contains the arguments passed to `MCMC`:
+
+```{r get-arguments}
+get_("initial") 
+get_("fun")
+get_("kernel")
+```
 

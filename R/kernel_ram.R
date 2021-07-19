@@ -30,6 +30,20 @@
 #' will decrease the rate of adaptation exponentially as a function of the iteration
 #' number.
 #' 
+#' \deqn{%latex
+#' Y_n\equiv X_{n-1} + S_{n-1}U_n,\quad\mbox{where }U_n\sim q\mbox{ (the \texttt{qfun})}%
+#' }{%
+#' Y_n := X_{n-1} + S_{n-1} U_n , where U_n ∼ q (the qfun)%
+#' }
+#' 
+#' And the \eqn{S_n} matrix is updated according to the following equation:
+#' 
+#' \deqn{% latex
+#' S_nS_n^T = S_{n-1}\left(I + \eta_n(\alpha_n - \alpha_*)\frac{U_nU_n^T}{\|U_n\|^2}\right)S_{n-1}^T%
+#' }{%
+#' S_n S_n^T = S_{n-1} {I + eta_n[alpha_n - alpha_*] U_n U_n^T/norm(U_n)^2} S_{n-1}^T%
+#' }
+#' 
 #' @return An object of class [fmcmc_kernel].
 #' 
 #' @references 

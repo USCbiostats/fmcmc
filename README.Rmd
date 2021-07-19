@@ -28,8 +28,8 @@ downloads](http://cranlogs.r-pkg.org/badges/grand-total/fmcmc)](https://cran.r-p
 
 The `fmcmc` R package provides a lightweight general framework for implementing
 Markov Chain Monte Carlo methods based on the Metropolis-Hastings algorithm. This
-implementation's main purpose lies in the fact that the user can incorporate the
-following in a flexible way:
+implementation's primary purpose lies in the fact that the user can incorporate the
+following flexibly:
 
 1.  **Automatic convergence checker**: The algorithm splits the MCMC runs according
     to the frequency with which it needs to check convergence. Users can
@@ -109,7 +109,7 @@ X <- rnorm(n)
 y <- 3.0 + 2.0*X + rnorm(n, sd = 4)
 ```
 
-As you can see, in this case we have three parameters to estimate, the constant
+In this case, we have three parameters to estimate, the constant
 (2.0), the $\beta$ coefficient (2.0), and the standard deviation parameter of the
 error (1.5).
 
@@ -133,8 +133,8 @@ ll <- function(p, X., y.) {
 }
 ```
 
-Notice that the function has more than 1 argument, in this case, `p`, which is
-the vector of parameters, `X.` and `y.`, which hold the data of our model.
+Notice that the function has more than one argument, in this case, `p`, 
+the vector of parameters, `X.` and `y.`, the data of our model.
 
 Let's do a first run of the MCMC algorithm using the function of the same name
 (first, load the package, of course):
@@ -163,9 +163,9 @@ summary(ans)
 ```
 
 While the summary statistics look very good (we got very close to the original
-parameters), the trace of the parameters looks vary bad (poor mixing). We can
+parameters), the trace of the parameters looks very bad (poor mixing). We can
 re-run the algorithm changing the scale parameter in the `kernel_normal` function.
-In order to do so, we can simply pass `ans` as the `initial` argument so that
+To do so, we can pass `ans` as the `initial` argument so that
 the function starts from the last point of that chain:
 
 
@@ -198,7 +198,7 @@ plot(ans_RAM)
 1 - rejectionRate(ans_RAM)
 ```
 
-We can also try using Haario et al (2001) Adaptive Metropolis
+We can also try using Haario et al. (2001) Adaptive Metropolis
 
 ```{r summary-and-plot-adapt}
 ans_AM <- MCMC(
@@ -253,8 +253,8 @@ ans <- MCMC(
   )
 ```
 
-As a difference from the previous case, now we didn't had to wait until the 5,000
-steps were done, but the algorithm stopped for us, allowing us to start generating
+As a difference from the previous case, now we didn't have to wait until the 5,000
+completed, but the algorithm stopped for us, allowing us to start generating
 the desired sample much quicker.
 
 ## Kernels: Making sure that we get positive values
@@ -264,7 +264,7 @@ corresponds to a transition kernel which makes proposals within certain boundari
 in particular, we want the algorithm to propose only positive values for the `sd`
 parameter, which we now must be positive.
 
-More over, since we now from a fact that we will only get positive values, we
+Moreover, since we know from that we will only get positive values, we
 can go further and modify `ll` skipping the check for finite values:
 
 ```{r ll2}

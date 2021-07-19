@@ -91,7 +91,33 @@ it allows easy parallel implementation running multiple chains in parallel.
 The function also allows using convergence diagnostics tests to set-up a
 criterion for automatically stopping the algorithm  (see \link{convergence-checker}).
 
-We now give details of the various options included in the function.
+The canonical form of the Metropolis Hastings algorithm consists on accepting
+a move from state \eqn{x} to state \eqn{y} based on the Hastings ratio \eqn{r(x,y)}:
+
+\deqn{%
+r(x,y) = \frac{h(y)q(y,x)}{h(x)q(x,y)},%
+}{%
+r(x,y) = [h(y)q(y,x)]/[h(x)q(x,y)],%
+}
+
+where \eqn{h} is the unnormalized density of the specified distribution (
+the posterior probability), and \eqn{q} has the conditional probability of
+moving from state \eqn{x} to \eqn{y} (the proposal density). The move
+\eqn{x \to y}{x->y} is then accepted with probability
+
+\deqn{%
+\alpha(x,y) = \min\left(1, r(x,y)\right)%
+}{%
+alpha(x, y) = min {1, r(x, y)}%
+}
+
+Observe that, in the case that \eqn{q()} is symmetric, meaning \eqn{q(x, y) = q(y, x)},
+the Hastings ration reduces to \eqn{h(y)/h(x)}. Starting version 0.5-0, the value
+of the log unnormalized density and the proposed states \code{y} can be accessed using
+the functions \code{\link[=get_logpost]{get_logpost()}} and \code{\link[=get_draws]{get_draws()}}.
+
+We now give details of the
+various options included in the function.
 
 The function \code{MCMC_without_conv_checker} is for internal use
 only.
@@ -281,4 +307,8 @@ summary(ans)
 \references{
 Brooks, S., Gelman, A., Jones, G. L., & Meng, X. L. (2011). Handbook of
 Markov Chain Monte Carlo. Handbook of Markov Chain Monte Carlo.
+}
+\seealso{
+\code{\link[=get_logpost]{get_logpost()}}, \code{\link[=get_logpost]{get_logpost()}} for post execution of \code{MCMC}, and
+\code{\link[=ith_step]{ith_step()}} for accessing objects within an \code{MCMC} call.
 }

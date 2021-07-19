@@ -5,16 +5,59 @@
 #' object of `MCMC` is an object of class [coda::mcmc], this is a way to capture
 #' more information in case the user needs it.
 #' 
+#' 
 #' @name fmcmc-info
-#' @return `get_*` returns the corresponding variable passed to the last call
+#' @return The `MCMC_INFO` object is an environment of class, 
+#' `c("fmcmc_info", "environment")` that has the following structure:
+#' 
+#' - `time_start`, `time_end` Objects of class [proc.time]. Mark the start and
+#'   end of the `MCMC` call.
+#' 
+#' - `data.` A list of environments of length `get_nchains()`. Each environment
+#'   will hold information about the particular chain. By default, each environment
+#'   holds the elements `logpost` (named numeric vector) and `draws` (numeric matrix).
+#'   
+#'   The `draws` matrix contains the draws from the proposal kernel function. Both 
+#'   `logpost` and `draws` have indices that match those of the chain. (see details).
+#'   
+#'   `data.` can also be accessed by the user to store information if needed.
+#'   
+#' - `ptr` An environment. This is used as a pointer that is defined at the beginning
+#'   of the MCMC process. The environment will be pointing to the current chain, thus,
+#'   if `MCMC` is running chain 2 of 4, `ptr = data.[[2]]`.
+#'   
+#' - `i` Integer. Index of the current chain, so if `MCMC` is running chain 3 of 4,
+#'   then `i = 3` (and `ptr = data.[[3]]`, get it?).
+#'   
+#' - `nchains` Integer. The number of chains specified in `MCMC`.
+#' 
+#' - `...` further arguments passed to `MCMC`, e.g., `initial`, `fun`, `nsteps`,
+#'   `kernel`, `thin`, etc.
+#'   
+#' It also contains the following **helper functions**:
+#' 
+#' - `c_(x, val)` Combine elements. It will access the current value of `x` in
+#'   `ptr`, and will combine it with `val` using [c()]. 
+#' 
+#' - `rbind_(x, val)` Row-combine elements. It will access the current value of `x` in
+#'   `ptr`, and will combine it with `val` using [rbind()].
+#' 
+#' - `cbind_(x, val)` Column-combine elements. It will access the current value of `x` in
+#'   `ptr`, and will combine it with `val` using [cbind()].
+#' 
+#' 
+#' `get_*` returns the corresponding variable passed to the last call
 #' of [MCMC].
 #' @export
 MCMC_INFO <- structure(
   list2env(list(
-    data.   = list(),
-    ptr     = NULL,
-    i       = NA_integer_,
-    nchains = 0L
+    time_start = NULL,
+    time_end   = NULL,
+    data.      = list(),
+    ptr        = NULL,
+    i          = NA_integer_,
+    nchains    = 0L,
+    loop_envir = NULL   
   ), envir = new.env()),
   class = c("fmcmc_info", "environment"))
 
@@ -75,6 +118,14 @@ MCMC_INFO$c_ <- function(x, val) {
 MCMC_INFO$rbind_ <- function(x, val) {
   
   assign(x = x, value = rbind(MCMC_INFO$ptr[[x]], val), envir = MCMC_INFO$ptr)
+  
+}
+
+#' Combine
+#' @noRd
+MCMC_INFO$cbind_ <- function(x, val) {
+  
+  assign(x = x, value = cbind(MCMC_INFO$ptr[[x]], val), envir = MCMC_INFO$ptr)
   
 }
 
@@ -166,6 +217,7 @@ get_ <- function(x) {
 #' then it will return a list of length `nchains` with the corresponding logpost
 #' values for each chain.
 #' @examples 
+#' # Getting the logpost -------------------------------------------------------
 #' set.seed(23133)
 #' x <- rnorm(200)
 #' y <- x*2 + rnorm(200)
@@ -175,6 +227,74 @@ get_ <- function(x) {
 #' 
 #' ans <- MCMC(fun = f, initial = c(0), nsteps=2000)
 #' plot(get_logpost(), type = "l") # Plotting the logpost from the last run
+#' 
+#' 
+#' # Printing information every 500 step ---------------------------------------
+#' # for this we use ith_step()
+#' 
+#' f <- function(p) {
+#' 
+#'   # Capturing info from within the loop
+#'   i      <- ith_step("i")
+#'   nsteps <- ith_step("nsteps")
+#'   
+#'   if (!(i %% 500)) {
+#'   
+#'     cat(
+#'       "////////////////////////////////////////////////////\n",
+#'       "Step ", i, " of ", nsteps,". Values in the loop:\n",
+#'       "theta0: ", ith_step("theta0"), "\n",
+#'       "theta1: ", ith_step()$theta1, "\n",
+#'       sep = ""
+#'     )
+
+#'   }
+#'     
+#' 
+#'   sum(dnorm(y - x*p, log = TRUE))
+#' }
+#' 
+#' MCMC(fun = f, initial = c(0), nsteps=2000, progress = FALSE, seed = 22)
+#' # ////////////////////////////////////////////////////
+#' # Step 500 of 2000. Values in the loop:
+#' # theta0: 2.025379
+#' # theta1: 1.04524
+#' # ////////////////////////////////////////////////////
+#' # Step 1000 of 2000. Values in the loop:
+#' # theta0: 2.145967
+#' # theta1: 0.2054037
+#' # ////////////////////////////////////////////////////
+#' # Step 1500 of 2000. Values in the loop:
+#' # theta0: 2.211691
+#' # theta1: 2.515361
+#' # ////////////////////////////////////////////////////
+#' # Step 2000 of 2000. Values in the loop:
+#' # theta0: 1.998789
+#' # theta1: 1.33034
+#' 
+#' 
+#' # Printing information if the current logpost is greater than max -----------
+#' f <- function(p) {
+#' 
+#'   i            <- ith_step("i")
+#'   logpost_prev <- max(ith_step("logpost")[1:(i-1)])
+#'   logpost_curr <- sum(dnorm(y - x*p, log = TRUE))
+#'   
+#'   # Only worthwhile after the first step
+#'   if ((i > 1L) && logpost_prev < logpost_curr)
+#'     cat("At a higher point!:", logpost_curr, ", step:", i,"\n")
+#'     
+#'   return(logpost_curr)
+#' 
+#' }
+#' MCMC(fun = f, initial = c(0), nsteps=1000, progress = FALSE, seed = 22)
+#' # At a higher point!: -357.3584 , step: 2 
+#' # At a higher point!: -272.6816 , step: 6 
+#' # At a higher point!: -270.9969 , step: 7 
+#' # At a higher point!: -269.8128 , step: 24 
+#' # At a higher point!: -269.7435 , step: 46 
+#' # At a higher point!: -269.7422 , step: 543 
+#' # At a higher point!: -269.7421 , step: 788 
 get_logpost <- function() {
   
   if (get_nchains() == 1L)
@@ -185,7 +305,7 @@ get_logpost <- function() {
 }
 
 #' @export
-#' @details The function `get_draws()` retrieves the proposed samples from the
+#' @details The function `get_draws()` retrieves the proposed states from the
 #' kernel function.
 #' @rdname fmcmc-info
 get_draws <- function() {
@@ -286,4 +406,47 @@ last_conv_checker <- function() last_("conv_checker")
 last_ <- function(x) {
   .Deprecated("get_", "The -last_*- methods will be deprecated in the next version of -fmcmc-. Use -get_*- instead.")
   get_(x)
+}
+
+#' @export
+#' @section Advanced usage:
+#' The function [ith_step(x)] is a convenience function that provides
+#' access to the environment within which the main loop of the MCMC call is
+#' being evaluated. This is a wrapper of `MCMC_INFO$loop_envir` that will
+#' either return the value `x` of the entire environment if `x` is missing. If
+#' `ith_step()` is called outside of the `MCMC` call, then it will return with
+#' an error.
+#' 
+#' For example, if you wanted to print information if the current value
+#' of logpost is greater than the previous value of logpost, you could define
+#' the objective function as follows:
+#' 
+#' ```
+#' f <- function(p) {
+#' 
+#'   i            <- ith_step("i")
+#'   logpost_prev <- ith_step("logpost")[i - 1L]
+#'   logpost_curr <- sum(dnorm(y - x*p, log = TRUE))
+#'   
+#'   if (logpost_prev < logpost_curr)
+#'     cat("At a higher point!\n")
+#'     
+#'   return(logpost_curr)
+#' 
+#' }
+#' ```
+#' 
+#' More examples below.
+#' 
+#' @rdname fmcmc-info
+ith_step <- function(x) {
+  
+  if (is.null(MCMC_INFO$loop_envir))
+    stop("-ith_step()- should only be used within an -MCMC()- call.", call. = FALSE)
+  
+  if (missing(x))
+    return(MCMC_INFO$loop_envir)
+  else
+    return(get(x, envir = MCMC_INFO$loop_envir))
+  
 }

@@ -15,9 +15,10 @@
 \alias{get_seed}
 \alias{get_burnin}
 \alias{get_thin}
+\alias{ith_step}
 \title{Information about the last \code{MCMC} call}
 \format{
-An object of class \code{fmcmc_info} (inherits from \code{environment}) of length 8.
+An object of class \code{fmcmc_info} (inherits from \code{environment}) of length 12.
 }
 \usage{
 MCMC_INFO
@@ -43,12 +44,47 @@ get_seed()
 get_burnin()
 
 get_thin()
+
+ith_step(x)
 }
 \arguments{
 \item{x}{Character scalar. Name of an argument to retrieve. If \code{x} was not
 passed to the last call, the function returns with an error.}
 }
 \value{
+The \code{MCMC_INFO} object is an environment of class,
+\code{c("fmcmc_info", "environment")} that has the following structure:
+\itemize{
+\item \code{time_start}, \code{time_end} Objects of class \link{proc.time}. Mark the start and
+end of the \code{MCMC} call.
+\item \code{data.} A list of environments of length \code{get_nchains()}. Each environment
+will hold information about the particular chain. By default, each environment
+holds the elements \code{logpost} (named numeric vector) and \code{draws} (numeric matrix).
+
+The \code{draws} matrix contains the draws from the proposal kernel function. Both
+\code{logpost} and \code{draws} have indices that match those of the chain. (see details).
+
+\code{data.} can also be accessed by the user to store information if needed.
+\item \code{ptr} An environment. This is used as a pointer that is defined at the beginning
+of the MCMC process. The environment will be pointing to the current chain, thus,
+if \code{MCMC} is running chain 2 of 4, \code{ptr = data.[[2]]}.
+\item \code{i} Integer. Index of the current chain, so if \code{MCMC} is running chain 3 of 4,
+then \code{i = 3} (and \code{ptr = data.[[3]]}, get it?).
+\item \code{nchains} Integer. The number of chains specified in \code{MCMC}.
+\item \code{...} further arguments passed to \code{MCMC}, e.g., \code{initial}, \code{fun}, \code{nsteps},
+\code{kernel}, \code{thin}, etc.
+}
+
+It also contains the following \strong{helper functions}:
+\itemize{
+\item \code{c_(x, val)} Combine elements. It will access the current value of \code{x} in
+\code{ptr}, and will combine it with \code{val} using \code{\link[=c]{c()}}.
+\item \code{rbind_(x, val)} Row-combine elements. It will access the current value of \code{x} in
+\code{ptr}, and will combine it with \code{val} using \code{\link[=rbind]{rbind()}}.
+\item \code{cbind_(x, val)} Column-combine elements. It will access the current value of \code{x} in
+\code{ptr}, and will combine it with \code{val} using \code{\link[=cbind]{cbind()}}.
+}
+
 \verb{get_*} returns the corresponding variable passed to the last call
 of \link{MCMC}.
 }
@@ -64,10 +100,39 @@ iteration. The values correspond to a named numeric vector. If \code{nchains > 1
 then it will return a list of length \code{nchains} with the corresponding logpost
 values for each chain.
 
-The function \code{get_draws()} retrieves the proposed samples from the
+The function \code{get_draws()} retrieves the proposed states from the
 kernel function.
 }
+\section{Advanced usage}{
+
+The function \link{ith_step(x)} is a convenience function that provides
+access to the environment within which the main loop of the MCMC call is
+being evaluated. This is a wrapper of \code{MCMC_INFO$loop_envir} that will
+either return the value \code{x} of the entire environment if \code{x} is missing. If
+\code{ith_step()} is called outside of the \code{MCMC} call, then it will return with
+an error.
+
+For example, if you wanted to print information if the current value
+of logpost is greater than the previous value of logpost, you could define
+the objective function as follows:\preformatted{f <- function(p) \{
+
+  i            <- ith_step("i")
+  logpost_prev <- ith_step("logpost")[i - 1L]
+  logpost_curr <- sum(dnorm(y - x*p, log = TRUE))
+  
+  if (logpost_prev < logpost_curr)
+    cat("At a higher point!\\n")
+    
+  return(logpost_curr)
+
+\}
+}
+
+More examples below.
+}
+
 \examples{
+# Getting the logpost -------------------------------------------------------
 set.seed(23133)
 x <- rnorm(200)
 y <- x*2 + rnorm(200)
@@ -77,5 +142,72 @@ f <- function(p) {
 
 ans <- MCMC(fun = f, initial = c(0), nsteps=2000)
 plot(get_logpost(), type = "l") # Plotting the logpost from the last run
+
+
+# Printing information every 500 step ---------------------------------------
+# for this we use ith_step()
+
+f <- function(p) {
+
+  # Capturing info from within the loop
+  i      <- ith_step("i")
+  nsteps <- ith_step("nsteps")
+  
+  if (!(i \%\% 500)) {
+  
+    cat(
+      "////////////////////////////////////////////////////\n",
+      "Step ", i, " of ", nsteps,". Values in the loop:\n",
+      "theta0: ", ith_step("theta0"), "\n",
+      "theta1: ", ith_step()$theta1, "\n",
+      sep = ""
+    )
+  }
+    
+
+  sum(dnorm(y - x*p, log = TRUE))
+}
+
+MCMC(fun = f, initial = c(0), nsteps=2000, progress = FALSE, seed = 22)
+# ////////////////////////////////////////////////////
+# Step 500 of 2000. Values in the loop:
+# theta0: 2.025379
+# theta1: 1.04524
+# ////////////////////////////////////////////////////
+# Step 1000 of 2000. Values in the loop:
+# theta0: 2.145967
+# theta1: 0.2054037
+# ////////////////////////////////////////////////////
+# Step 1500 of 2000. Values in the loop:
+# theta0: 2.211691
+# theta1: 2.515361
+# ////////////////////////////////////////////////////
+# Step 2000 of 2000. Values in the loop:
+# theta0: 1.998789
+# theta1: 1.33034
+
+
+# Printing information if the current logpost is greater than max -----------
+f <- function(p) {
+
+  i            <- ith_step("i")
+  logpost_prev <- max(ith_step("logpost")[1:(i-1)])
+  logpost_curr <- sum(dnorm(y - x*p, log = TRUE))
+  
+  # Only worthwhile after the first step
+  if ((i > 1L) && logpost_prev < logpost_curr)
+    cat("At a higher point!:", logpost_curr, ", step:", i,"\n")
+    
+  return(logpost_curr)
+
+}
+MCMC(fun = f, initial = c(0), nsteps=1000, progress = FALSE, seed = 22)
+# At a higher point!: -357.3584 , step: 2 
+# At a higher point!: -272.6816 , step: 6 
+# At a higher point!: -270.9969 , step: 7 
+# At a higher point!: -269.8128 , step: 24 
+# At a higher point!: -269.7435 , step: 46 
+# At a higher point!: -269.7422 , step: 543 
+# At a higher point!: -269.7421 , step: 788 
 }
 \keyword{datasets}

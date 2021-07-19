@@ -15,7 +15,7 @@ To generate kernels efficiently, we can make use of the following:
 
 4.  Because of the previous it makes sense to make the function more modular, or more over, more flexible. Instead of working with vectors, a function can be written such that it receives a list of arguments instead in which the first is assumed to be the parameters over which we are working on, for example:
     
-    
+
     
     ```{r, eval=FALSE}
     # The actual function

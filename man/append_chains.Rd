@@ -44,8 +44,11 @@ ans2 <- MCMC(initial = ans1, fun = logpost, nsteps = 2000, seed = 1155, kernel =
 ans_tot <- append_chains(ans0, ans1, ans2)
 
 # Looking at the posterior distributions (see ?lifeexpect for info about
-# the model) 
-plot(ans_tot)
+# the model). Only the trace
+op <- par(mfrow = c(2,2))
+for (i in 1:4)
+  coda::traceplot(ans_tot[, i, drop=FALSE])
+par(op)
 
 
 }

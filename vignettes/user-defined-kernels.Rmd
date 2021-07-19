@@ -21,25 +21,25 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-One of the biggest benefits of the `fcmc` package is the fact that it allows you
-creating personalized kernel functions. `fmcmc_kernel` objects are created with
-the `kernel_new` function (a function factory), and require (at least) one
+One of the most significant benefits of the `fcmc` package is that it
+allows creating personalized kernel functions. `fmcmc_kernel` objects are built
+with the `kernel_new` function (a function factory) and require (at least) one
 parameter, the `proposal` function. In what follows, we show an example where
 the user specifies a transition kernel used to estimate an integer parameter,
-the `n` parameter from a binomial distribution.
+the `n` parameter of a binomial distribution.
 
 ## Size parameter in a binomial distribution
 
-For this example, imagine that we are interested on learning what is the size of
-a population given that we already now the prevalence of a particular phenomena,
-for example, a disease. Furthermore, assume that 20\% of the population acquire
-this disease, and we have a random sample from this population
+Imagine that we are interested in learning the size of
+a population given an observed proportion. In this case, we already
+know about the prevalence of a disease. Furthermore, assume that 20\% of the
+individuals acquire this disease, and we have a random sample from the population
 $y \sim \mbox{Binomial}(0.2, N)$. We don't know $N$.
 
-Such scenario, while perhaps a bit uncommon, needs a special treatment in a
-Bayesian/MCMC framework. The parameter to estimate is not continuous so we would
+Such a scenario, while perhaps a bit uncommon, needs special treatment in a
+Bayesian/MCMC framework. The parameter to estimate is not continuous, so we would
 like to draw samples from a discrete distribution. Using the "normal" (pun
-intended) transition kernel may still be able to estimate something, but does
+intended) transition kernel may still be able to estimate something but does
 not provide us with the correct posterior distribution. In this case, a
 transition kernel that makes discrete proposals would be desired.
 
@@ -80,7 +80,7 @@ kernel_unif_int <- kernel_new(
 Here, the kernel is in the form of
 $\theta_1 = \theta_0 + R, R\sim \mbox{U}\{-3, ..., 3\}$, this is, proposals are
 done by adding a number $R$ drawn from a discrete uniform distribution with
-values between -3 and 3. While in this example we could have skipped the
+values between -3 and 3. While in this example, we could have skipped the
 `logratio` function (as this transition kernel is symmetric), but we defined it
 so that the user can see an example of it.[^kernel_new] Let's take a look at the
 object:
@@ -93,10 +93,9 @@ manual page of `kernel_new`.
 kernel_unif_int
 ```
 
-The object itself is actually an R environment. If we added more parameters to
+The object itself is an R environment. If we added more parameters to
 `kernel_new`, we would have seen those as well. Now that we have our transition
-kernel, let's give it a first try and see what can we get with this new
-`kernel_unif_int` object we just created with the MCMC function.
+kernel, let's give it a first try with the `MCMC` function.
 
 ```{r first-run}
 ans <- MCMC(
@@ -109,25 +108,25 @@ ans <- MCMC(
   )
 ```
 
-Notice that for the initial guess we are using the max of `y`, which is a
-reasonable starting point (the $N$ parameter MUST be at least the max of `y`).
+Notice that for the initial guess, we are using the max of `y', which is a
+reasonable starting point (the $N$ parameter MUST be at least the max of `y').
 Since the returning object is an object of class `mcmc` from the `coda` R
-package, we can use any method available for it. Let's start by plotting the
+package, we can use any available method. Let's start by plotting the
 chain:
 
-```{r plot1}
+"`{r plot1}
 plot(ans)
 ```
 
-As you can see, the trace pf the parameter started to go up right away and then
+As you can see, the trace of the parameter started to go up right away, and then
 stayed around 500, the actual population parameter $N$. As the first part of the
-chain is useless (we are essentially moving away from the starting point), it is
+chain is useless (we are essentially moving away from the starting point); it is
 wise (if not necessary) to start the MCMC chain from the last point of `ans`.
-We can easily do so by just passing `ans` as an starting point, since `MCMC`
-will automatically take the last value of the chain as starting point of this
+We can easily do so by just passing `ans` as a starting point, since `MCMC`
+will automatically take the last value of the chain as the starting point of this
 new one. This time, let's increase the sample size as well:
 
-```{r second-run}
+"`{r second-run}
 ans <- MCMC(
   ll,
   initial = ans,             # MCMC will use tail(ans, 0) automatically
@@ -146,6 +145,5 @@ summary(ans)
 table(ans)
 ```
 
-A very nice mixing (at least visually) and a posterior distribution from which
+A very lovely mixing (at least visually) and a posterior distribution from which
 we can safely sample parameters.
-

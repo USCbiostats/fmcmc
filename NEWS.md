@@ -19,7 +19,7 @@
   function from the last `MCMC` run.
   
 * The new function `get_draws()` returns the MCMC draws from the kernel's 
-  proposal function.
+  proposal function (proposed states).
   
 * The function `append_chains()` was randomly dropping one sample of the final
   set.

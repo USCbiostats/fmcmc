@@ -36,7 +36,33 @@
 #' The function also allows using convergence diagnostics tests to set-up a
 #' criterion for automatically stopping the algorithm  (see [convergence-checker]).
 #' 
-#' We now give details of the various options included in the function.
+#' The canonical form of the Metropolis Hastings algorithm consists on accepting
+#' a move from state \eqn{x} to state \eqn{y} based on the Hastings ratio \eqn{r(x,y)}:
+#' 
+#' \deqn{%
+#' r(x,y) = \frac{h(y)q(y,x)}{h(x)q(x,y)},%
+#' }{%
+#' r(x,y) = [h(y)q(y,x)]/[h(x)q(x,y)],%
+#' }
+#' 
+#' where \eqn{h} is the unnormalized density of the specified distribution (
+#' the posterior probability), and \eqn{q} has the conditional probability of
+#' moving from state \eqn{x} to \eqn{y} (the proposal density). The move
+#' \eqn{x \to y}{x->y} is then accepted with probability
+#' 
+#' \deqn{%
+#' \alpha(x,y) = \min\left(1, r(x,y)\right)%
+#' }{%
+#' alpha(x, y) = min {1, r(x, y)}%
+#' }
+#' 
+#' Observe that, in the case that \eqn{q()} is symmetric, meaning \eqn{q(x, y) = q(y, x)},
+#' the Hastings ration reduces to \eqn{h(y)/h(x)}. Starting version 0.5-0, the value 
+#' of the log unnormalized density and the proposed states `y` can be accessed using
+#' the functions [get_logpost()] and [get_draws()].
+#' 
+#' We now give details of the
+#' various options included in the function.
 #' 
 #' @section Starting point:
 #' 
@@ -218,6 +244,8 @@
 #' }
 #' 
 #' @aliases Metropolis-Hastings
+#' @seealso [get_logpost()], [get_logpost()] for post execution of `MCMC`, and
+#' [ith_step()] for accessing objects within an `MCMC` call.
 MCMC <- function(
   initial,
   fun,
@@ -589,6 +617,9 @@ MCMC_without_conv_checker <- function(
   
   # MCMC algorithm -----------------------------------------------------------
   
+  MCMC_INFO$loop_envir <- environment()
+  on.exit(MCMC_INFO$loop_envir <- NULL, add = TRUE)
+  
   # The updates can be done jointly or sequentially
   R <- matrix(log(stats::runif(nsteps)), nrow = nsteps)
   
@@ -675,7 +706,7 @@ MCMC_without_conv_checker <- function(
   MCMC_INFO$rbind_("draws", draws)
   
   # Cleaning the space
-  on.exit(rm(list = ls(envir = environment())))
+  on.exit(rm(list = ls(envir = environment())), add = TRUE)
   
   # Returning an mcmc object from the coda package
   return(
