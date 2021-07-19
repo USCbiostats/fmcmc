@@ -173,6 +173,40 @@ it will join chains using the <a href='https://rdrr.io/r/base/cbind.html'>rbind<
     <p>If <code>mcmc.list</code>, an object of class <code>mcmc.list</code>, otherwise,
 an object of class <code>mcmc</code>.</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># Appending two chains</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"lifeexpect"</span><span class='op'>)</span>
+<span class='va'>logpost</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>p</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/with.html'>with</a></span><span class='op'>(</span><span class='va'>lifeexpect</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>dnorm</a></span><span class='op'>(</span>
+    <span class='va'>age</span> <span class='op'>-</span> <span class='va'>p</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>-</span> <span class='va'>smoke</span> <span class='op'>*</span> <span class='va'>p</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span> <span class='op'>-</span> <span class='va'>female</span> <span class='op'>*</span> <span class='va'>p</span><span class='op'>[</span><span class='fl'>3</span><span class='op'>]</span>,
+    sd <span class='op'>=</span> <span class='va'>p</span><span class='op'>[</span><span class='fl'>4</span><span class='op'>]</span>, log <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+  <span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+<span class='co'># Using the RAM kernel</span>
+<span class='va'>kern</span> <span class='op'>&lt;-</span> <span class='fu'><a href='kernel_ram.html'>kernel_ram</a></span><span class='op'>(</span>lb <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>100</span>, <span class='op'>-</span><span class='fl'>100</span>, <span class='op'>-</span><span class='fl'>100</span>, <span class='fl'>.00001</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='va'>init</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>
+  avg_age <span class='op'>=</span> <span class='fl'>70</span>,
+  smoke   <span class='op'>=</span> <span class='fl'>0</span>,
+  female  <span class='op'>=</span> <span class='fl'>0</span>,
+  sd      <span class='op'>=</span> <span class='fl'>1</span>
+<span class='op'>)</span>
+
+<span class='va'>ans0</span> <span class='op'>&lt;-</span> <span class='fu'><a href='MCMC.html'>MCMC</a></span><span class='op'>(</span>initial <span class='op'>=</span> <span class='va'>init</span>, fun <span class='op'>=</span> <span class='va'>logpost</span>, nsteps <span class='op'>=</span> <span class='fl'>1000</span>, seed <span class='op'>=</span> <span class='fl'>22</span>, kernel <span class='op'>=</span> <span class='va'>kern</span><span class='op'>)</span>
+<span class='va'>ans1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='MCMC.html'>MCMC</a></span><span class='op'>(</span>initial <span class='op'>=</span> <span class='va'>ans0</span>, fun <span class='op'>=</span> <span class='va'>logpost</span>, nsteps <span class='op'>=</span> <span class='fl'>2000</span>, seed <span class='op'>=</span> <span class='fl'>55</span>, kernel <span class='op'>=</span> <span class='va'>kern</span><span class='op'>)</span>
+<span class='va'>ans2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='MCMC.html'>MCMC</a></span><span class='op'>(</span>initial <span class='op'>=</span> <span class='va'>ans1</span>, fun <span class='op'>=</span> <span class='va'>logpost</span>, nsteps <span class='op'>=</span> <span class='fl'>2000</span>, seed <span class='op'>=</span> <span class='fl'>1155</span>, kernel <span class='op'>=</span> <span class='va'>kern</span><span class='op'>)</span>
+<span class='va'>ans_tot</span> <span class='op'>&lt;-</span> <span class='fu'>append_chains</span><span class='op'>(</span><span class='va'>ans0</span>, <span class='va'>ans1</span>, <span class='va'>ans2</span><span class='op'>)</span>
+
+<span class='co'># Looking at the posterior distributions (see ?lifeexpect for info about</span>
+<span class='co'># the model). Only the trace</span>
+<span class='va'>op</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+<span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span><span class='op'>)</span>
+  <span class='fu'>coda</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/coda/man/traceplot.html'>traceplot</a></span><span class='op'>(</span><span class='va'>ans_tot</span><span class='op'>[</span>, <span class='va'>i</span>, drop<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>]</span><span class='op'>)</span>
+</div><div class='img'><img src='append_chains-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
+
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -101,7 +101,7 @@
       <h1 data-toc-skip>User-defined kernels</h1>
                         <h4 class="author">George G. Vega Yon</h4>
             
-            <h4 class="date">2021-07-15</h4>
+            <h4 class="date">2021-07-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/USCbiostats/fmcmc/blob/master/vignettes/user-defined-kernels.Rmd"><code>vignettes/user-defined-kernels.Rmd</code></a></small>
       <div class="hidden name"><code>user-defined-kernels.Rmd</code></div>
@@ -113,13 +113,13 @@
 <div id="introduction" class="section level2">
 <h2 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h2>
-<p>One of the biggest benefits of the <code>fcmc</code> package is the fact that it allows you creating personalized kernel functions. <code>fmcmc_kernel</code> objects are created with the <code>kernel_new</code> function (a function factory), and require (at least) one parameter, the <code>proposal</code> function. In what follows, we show an example where the user specifies a transition kernel used to estimate an integer parameter, the <code>n</code> parameter from a binomial distribution.</p>
+<p>One of the most significant benefits of the <code>fcmc</code> package is that it allows creating personalized kernel functions. <code>fmcmc_kernel</code> objects are built with the <code>kernel_new</code> function (a function factory) and require (at least) one parameter, the <code>proposal</code> function. In what follows, we show an example where the user specifies a transition kernel used to estimate an integer parameter, the <code>n</code> parameter of a binomial distribution.</p>
 </div>
 <div id="size-parameter-in-a-binomial-distribution" class="section level2">
 <h2 class="hasAnchor">
 <a href="#size-parameter-in-a-binomial-distribution" class="anchor"></a>Size parameter in a binomial distribution</h2>
-<p>For this example, imagine that we are interested on learning what is the size of a population given that we already now the prevalence of a particular phenomena, for example, a disease. Furthermore, assume that 20% of the population acquire this disease, and we have a random sample from this population <span class="math inline">\(y \sim \mbox{Binomial}(0.2, N)\)</span>. We don’t know <span class="math inline">\(N\)</span>.</p>
-<p>Such scenario, while perhaps a bit uncommon, needs a special treatment in a Bayesian/MCMC framework. The parameter to estimate is not continuous so we would like to draw samples from a discrete distribution. Using the “normal” (pun intended) transition kernel may still be able to estimate something, but does not provide us with the correct posterior distribution. In this case, a transition kernel that makes discrete proposals would be desired.</p>
+<p>Imagine that we are interested in learning the size of a population given an observed proportion. In this case, we already know about the prevalence of a disease. Furthermore, assume that 20% of the individuals acquire this disease, and we have a random sample from the population <span class="math inline">\(y \sim \mbox{Binomial}(0.2, N)\)</span>. We don’t know <span class="math inline">\(N\)</span>.</p>
+<p>Such a scenario, while perhaps a bit uncommon, needs special treatment in a Bayesian/MCMC framework. The parameter to estimate is not continuous, so we would like to draw samples from a discrete distribution. Using the “normal” (pun intended) transition kernel may still be able to estimate something but does not provide us with the correct posterior distribution. In this case, a transition kernel that makes discrete proposals would be desired.</p>
 <p>Let’s simulate some data, say, 300 observations from this Binomial random variable with parameters <span class="math inline">\(p = .2\)</span> and <span class="math inline">\(N = 500\)</span>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/fmcmc">fmcmc</a></span><span class="op">)</span>
@@ -141,7 +141,7 @@
     proposal <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">env</span><span class="op">)</span> <span class="va">env</span><span class="op">$</span><span class="va">theta0</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span>,
     logratio <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">env</span><span class="op">)</span> <span class="va">env</span><span class="op">$</span><span class="va">f1</span> <span class="op">-</span> <span class="va">env</span><span class="op">$</span><span class="va">f0</span> <span class="co"># We could have skipped this</span>
     <span class="op">)</span></code></pre></div>
-<p>Here, the kernel is in the form of <span class="math inline">\(\theta_1 = \theta_0 + R, R\sim \mbox{U}\{-3, ..., 3\}\)</span>, this is, proposals are done by adding a number <span class="math inline">\(R\)</span> drawn from a discrete uniform distribution with values between -3 and 3. While in this example we could have skipped the <code>logratio</code> function (as this transition kernel is symmetric), but we defined it so that the user can see an example of it.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> Let’s take a look at the object:</p>
+<p>Here, the kernel is in the form of <span class="math inline">\(\theta_1 = \theta_0 + R, R\sim \mbox{U}\{-3, ..., 3\}\)</span>, this is, proposals are done by adding a number <span class="math inline">\(R\)</span> drawn from a discrete uniform distribution with values between -3 and 3. While in this example, we could have skipped the <code>logratio</code> function (as this transition kernel is symmetric), but we defined it so that the user can see an example of it.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> Let’s take a look at the object:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">kernel_unif_int</span>
 <span class="co">#&gt; </span>
@@ -149,7 +149,7 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; logratio : function (env)  </span>
 <span class="co">#&gt; proposal : function (env)</span></code></pre></div>
-<p>The object itself is actually an R environment. If we added more parameters to <code>kernel_new</code>, we would have seen those as well. Now that we have our transition kernel, let’s give it a first try and see what can we get with this new <code>kernel_unif_int</code> object we just created with the MCMC function.</p>
+<p>The object itself is an R environment. If we added more parameters to <code>kernel_new</code>, we would have seen those as well. Now that we have our transition kernel, let’s give it a first try with the <code>MCMC</code> function.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ans</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MCMC.html">MCMC</a></span><span class="op">(</span>
   <span class="va">ll</span>,                        <span class="co"># The log-likleihood function</span>
@@ -159,47 +159,57 @@
   thin    <span class="op">=</span> <span class="fl">10</span>,              <span class="co"># We will sample every 10</span>
   p.      <span class="op">=</span> <span class="va">p</span>                <span class="co"># Passing extra parameters to be used by `ll`.</span>
   <span class="op">)</span></code></pre></div>
-<p>Notice that for the initial guess we are using the max of <code>y</code>, which is a reasonable starting point (the <span class="math inline">\(N\)</span> parameter MUST be at least the max of <code>y</code>). Since the returning object is an object of class <code>mcmc</code> from the <code>coda</code> R package, we can use any method available for it. Let’s start by plotting the chain:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">ans</span><span class="op">)</span></code></pre></div>
-<p><img src="user-defined-kernels_files/figure-html/plot1-1.png" width="80%"></p>
-<p>As you can see, the trace pf the parameter started to go up right away and then stayed around 500, the actual population parameter <span class="math inline">\(N\)</span>. As the first part of the chain is useless (we are essentially moving away from the starting point), it is wise (if not necessary) to start the MCMC chain from the last point of <code>ans</code>. We can easily do so by just passing <code>ans</code> as an starting point, since <code>MCMC</code> will automatically take the last value of the chain as starting point of this new one. This time, let’s increase the sample size as well:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ans</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MCMC.html">MCMC</a></span><span class="op">(</span>
-  <span class="va">ll</span>,
-  initial <span class="op">=</span> <span class="va">ans</span>,             <span class="co"># MCMC will use tail(ans, 0) automatically</span>
-  kernel  <span class="op">=</span> <span class="va">kernel_unif_int</span>, <span class="co"># same as before</span>
-  nsteps  <span class="op">=</span> <span class="fl">10000</span>,           <span class="co"># More steps this time</span>
-  thin    <span class="op">=</span> <span class="fl">10</span>,              <span class="co"># same as before</span>
-  p.      <span class="op">=</span> <span class="va">p</span>                <span class="co"># same as before</span>
-<span class="op">)</span></code></pre></div>
+<p>Notice that for the initial guess, we are using the max of <code>y', which is a reasonable starting point (the $N$ parameter MUST be at least the max of</code>y’). Since the returning object is an object of class <code>mcmc</code> from the <code>coda</code> R package, we can use any available method. Let’s start by plotting the chain:</p>
+<p>"`{r plot1} plot(ans)</p>
+<pre><code>
+As you can see, the trace of the parameter started to go up right away, and then
+stayed around 500, the actual population parameter $N$. As the first part of the
+chain is useless (we are essentially moving away from the starting point); it is
+wise (if not necessary) to start the MCMC chain from the last point of `ans`.
+We can easily do so by just passing `ans` as a starting point, since `MCMC`
+will automatically take the last value of the chain as the starting point of this
+new one. This time, let's increase the sample size as well:
+
+"`{r second-run}
+ans &lt;- MCMC(
+  ll,
+  initial = ans,             # MCMC will use tail(ans, 0) automatically
+  kernel  = kernel_unif_int, # same as before
+  nsteps  = 10000,           # More steps this time
+  thin    = 10,              # same as before
+  p.      = p                # same as before
+)</code></pre>
 <p>Let’s take a look at the posterior distribution:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">ans</span><span class="op">)</span></code></pre></div>
 <p><img src="user-defined-kernels_files/figure-html/plot2-1.png" width="80%"></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">ans</span><span class="op">)</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Iterations = 10:10000</span>
+<span class="co">#&gt; Iterations = 10:1000</span>
 <span class="co">#&gt; Thinning interval = 10 </span>
 <span class="co">#&gt; Number of chains = 1 </span>
-<span class="co">#&gt; Sample size per chain = 1000 </span>
+<span class="co">#&gt; Sample size per chain = 100 </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; 1. Empirical mean and standard deviation for each variable,</span>
 <span class="co">#&gt;    plus standard error of the mean:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt;           Mean             SD       Naive SE Time-series SE </span>
-<span class="co">#&gt;      504.30500        2.67902        0.08472        0.09960 </span>
+<span class="co">#&gt;         428.55         113.03          11.30          80.75 </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; 2. Quantiles for each variable:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt;  2.5%   25%   50%   75% 97.5% </span>
-<span class="co">#&gt;   499   503   504   506   510</span>
+<span class="co">#&gt; 164.8 369.8 501.0 504.0 508.0</span>
 <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">ans</span><span class="op">)</span>
 <span class="co">#&gt; ans</span>
-<span class="co">#&gt; 497 498 499 500 501 502 503 504 505 506 507 508 509 510 511 512 513 </span>
-<span class="co">#&gt;   3   9  25  44  69  89 144 150 143 127  82  57  28  17   8   4   1</span></code></pre></div>
-<p>A very nice mixing (at least visually) and a posterior distribution from which we can safely sample parameters.</p>
+<span class="co">#&gt; 133 150 162 168 177 188 199 211 218 222 235 250 259 271 278 292 301 312 327 339 </span>
+<span class="co">#&gt;   1   1   1   1   2   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1 </span>
+<span class="co">#&gt; 346 350 359 369 370 380 385 394 402 405 415 417 429 440 444 455 461 469 479 486 </span>
+<span class="co">#&gt;   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1 </span>
+<span class="co">#&gt; 499 500 501 502 503 504 505 506 507 508 509 512 </span>
+<span class="co">#&gt;   2   6   4   7   7  13   3   5   4   6   1   1</span></code></pre></div>
+<p>A very lovely mixing (at least visually) and a posterior distribution from which we can safely sample parameters.</p>
 </div>
 <div class="footnotes">
 <hr>

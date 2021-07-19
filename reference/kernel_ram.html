@@ -250,11 +250,18 @@ target acceptance rate.</p>
 <p>The <code>eta</code> function regulates the rate of adaptation. The default implementation
 will decrease the rate of adaptation exponentially as a function of the iteration
 number.</p>
+<p>$$%latex
+Y_n\equiv X_{n-1} + S_{n-1}U_n,\quad\mbox{where }U_n\sim q\mbox{ (the \texttt{qfun})}%
+$$</p>
+<p>And the \(S_n\) matrix is updated according to the following equation:</p>
+<p>$$% latex
+S_nS_n^T = S_{n-1}\left(I + \eta_n(\alpha_n - \alpha_*)\frac{U_nU_n^T}{\|U_n\|^2}\right)S_{n-1}^T%
+$$</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Vihola, M. (2012). Robust adaptive Metropolis algorithm with coerced acceptance
 rate. Statistics and Computing, 22(5), 997–1008.
-<a href='https://doi.org/10.1007/s11222-011-9269-5'>https://doi.org/10.1007/s11222-011-9269-5</a></p>
+doi: <a href='https://doi.org/10.1007/s11222-011-9269-5'>10.1007/s11222-011-9269-5</a></p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other kernels: 
