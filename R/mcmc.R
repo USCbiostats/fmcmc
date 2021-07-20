@@ -635,10 +635,10 @@ MCMC_without_conv_checker <- function(
   i           <- 1L # Need that in case we have it
   theta0      <- initial
   theta1      <- theta0
-  logpost[1L] <- f(theta0)
   draws[1L,]  <- initial
-  f0          <- logpost[1L]
   ans[1L, ]   <- theta0
+  logpost[1L] <- f(theta0)
+  f0          <- logpost[1L]
   
   if (progress)
     progress_bar <- new_progress_bar(nsteps)

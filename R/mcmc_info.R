@@ -6,7 +6,7 @@
 #' more information in case the user needs it.
 #' 
 #' 
-#' @name fmcmc-info
+#' @name mcmc-info
 #' @return The `MCMC_INFO` object is an environment of class, 
 #' `c("fmcmc_info", "environment")` that has the following structure:
 #' 
@@ -98,12 +98,19 @@ MCMC_INFO$set_ptr <- function(i) {
   if (i > MCMC_INFO$nchains)
     stop("fmcmc_info pointer out of range.", call. = FALSE)
   
-  MCMC_INFO$ptr <- MCMC_INFO$data.[[i]]
+  MCMC_INFO$ptr <- structure(
+    MCMC_INFO$data.[[i]],
+    class = c("fmcmc_info_ptr", class(MCMC_INFO$data.[[i]]))
+    )
+  
   MCMC_INFO$i   <- i
   
   invisible()
   
 }
+
+# set_user_data <- function()
+# get_user_data
 
 #' Combine
 #' @noRd
@@ -154,7 +161,6 @@ print.fmcmc_last_mcmc <- function(x, ...) {
 MCMC_init <- function(...) {
   
   # Getting the caller environment
-  # MCMC_INFO$time_start   <- proc.time()
   MCMC_INFO$time_start <- proc.time()
   env <- parent.frame()
   
@@ -178,7 +184,7 @@ MCMC_finalize <- function() {
 
 
 #' @export
-#' @rdname fmcmc-info
+#' @rdname mcmc-info
 #' @param x Character scalar. Name of an argument to retrieve. If `x` was not
 #' passed to the last call, the function returns with an error.
 get_ <- function(x) {
@@ -211,7 +217,7 @@ get_ <- function(x) {
 }
 
 #' @export
-#' @rdname fmcmc-info
+#' @rdname mcmc-info
 #' @details The function `get_logpost` returns the `logposterior` value at each
 #' iteration. The values correspond to a named numeric vector. If `nchains > 1`
 #' then it will return a list of length `nchains` with the corresponding logpost
@@ -307,7 +313,7 @@ get_logpost <- function() {
 #' @export
 #' @details The function `get_draws()` retrieves the proposed states from the
 #' kernel function.
-#' @rdname fmcmc-info
+#' @rdname mcmc-info
 get_draws <- function() {
   
   if (get_nchains() == 1L)
@@ -319,101 +325,70 @@ get_draws <- function() {
 
 
 #' @export
-#' @rdname fmcmc-info
+#' @rdname mcmc-info
 get_elapsed <- function() {
   get_("time_end") - get_("time_start")
 }
 
 #' @export
-#' @rdname fmcmc-info
+#' @rdname mcmc-info
+get_initial <- function() get_("initial")
+
+#' @export
+#' @rdname mcmc-info
+get_fun <- function() get_("fun")
+
+#' @export
+#' @rdname mcmc-info
 get_nsteps <- function() get_("nsteps")
 
 #' @export
-#' @rdname fmcmc-info
-get_nchains <- function() get_("nchains")
-
-#' @export
-#' @rdname fmcmc-info
-get_kernel <- function() get_("kernel")
-
-#' @export
-#' @rdname fmcmc-info
-get_conv_checker <- function() get_("conv_checker")
-
-#' @export
-#' @rdname fmcmc-info
+#' @rdname mcmc-info
 get_seed <- function() get_("seed")
 
 #' @export
-#' @rdname fmcmc-info
-get_burnin <- function() get_("seed")
+#' @rdname mcmc-info
+get_nchains <- function() get_("nchains")
 
 #' @export
-#' @rdname fmcmc-info
-get_thin <- function() get_("seed")
-
-
-#' @export
-#' @rdname fmcmc-deprecated
-LAST_MCMC <- structure(list(), class = "fmcmc_last_mcmc")
+#' @rdname mcmc-info
+get_burnin <- function() get_("burnin")
 
 #' @export
-`[[.fmcmc_last_mcmc` <- function(i, j, ..., exact=TRUE) {
-  .Deprecated("MCMC_INFO", old = "LAST_MCMC")
-  MCMC_INFO[[i]]
-}
+#' @rdname mcmc-info
+get_thin <- function() get_("thin")
 
 #' @export
-`$.fmcmc_last_mcmc` <- function(x, name) {
-  .Deprecated("MCMC_INFO", old = "LAST_MCMC")
-  MCMC_INFO[[name]]
-}
-
-#' Deprecated methods in fmcmc
-#' 
-#' These functions will no longer be included starting version 0.6-0. Instead,
-#' use the functions in [fmcmc-info].
-#' 
-#' @export
-#' @name fmcmc-deprecated
-#' @return The function `last_elapsed` returns the elapsed time of the last call
-#' to [MCMC]. In particular, the `MCMC` function records the running time of R
-#' at the beginning and end of the function using [proc.time()]. So this function
-#' returns the difference between the two (`time_end - time_start`).
-last_elapsed <- function() {
-  last_("time_end") - last_("time_start")
-}
+#' @rdname mcmc-info
+get_kernel <- function() get_("kernel")
 
 #' @export
-#' @rdname fmcmc-deprecated
-last_nsteps <- function() last_("nsteps")
+#' @rdname mcmc-info
+get_multicore <- function() get_("multicore")
 
 #' @export
-#' @rdname fmcmc-deprecated
-last_nchains <- function() last_("nchains")
+#' @rdname mcmc-info
+get_conv_checker <- function() get_("conv_checker")
 
 #' @export
-#' @rdname fmcmc-deprecated
-last_kernel <- function() last_("kernel")
+#' @rdname mcmc-info
+get_cl <- function() get_("cl")
 
 #' @export
-#' @rdname fmcmc-deprecated
-last_conv_checker <- function() last_("conv_checker")
+#' @rdname mcmc-info
+get_progress <- function() get_("progress")
 
 #' @export
-#' @rdname fmcmc-deprecated
-#' @param x Name of the object to retrieve.
-last_ <- function(x) {
-  .Deprecated("get_", "The -last_*- methods will be deprecated in the next version of -fmcmc-. Use -get_*- instead.")
-  get_(x)
-}
+#' @rdname mcmc-info
+get_chain_id <- function() get_("chain_id")
+
 
 #' @export
 #' @section Advanced usage:
-#' The function [ith_step(x)] is a convenience function that provides
+#' The function [ith_step()] is a convenience function that provides
 #' access to the environment within which the main loop of the MCMC call is
 #' being evaluated. This is a wrapper of `MCMC_INFO$loop_envir` that will
-#' either return the value `x` of the entire environment if `x` is missing. If
+#' either return the value `x` or, if missing, the entire environment. If
 #' `ith_step()` is called outside of the `MCMC` call, then it will return with
 #' an error.
 #' 
@@ -438,7 +413,7 @@ last_ <- function(x) {
 #' 
 #' More examples below.
 #' 
-#' @rdname fmcmc-info
+#' @rdname mcmc-info
 ith_step <- function(x) {
   
   if (is.null(MCMC_INFO$loop_envir))
@@ -450,3 +425,4 @@ ith_step <- function(x) {
     return(get(x, envir = MCMC_INFO$loop_envir))
   
 }
+

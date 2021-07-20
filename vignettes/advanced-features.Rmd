@@ -1,0 +1,175 @@
+---
+title: "Advanced features"
+author: "George G. Vega Yon"
+date: "July 19th, 2021"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Advanced features}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.dim=c(9, 9), out.width=600, out.height=600)
+```
+
+# Life expectancy in the US
+
+Before we jump into coding, let's start by loading the package and
+the data that we will be using; the `lifeexpect` database.
+This data set was simulated using official statistics and research on life expectancy
+in the US (see `?lifeexpect` for more details). Each row corresponds to the
+observed age of an individual at the time of disease.
+
+```{r loading}
+library(fmcmc)
+data(lifeexpect)
+head(lifeexpect) # Taking a look at the data
+```
+
+The data is characterized by the following model:
+
+\begin{equation*}
+y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \sigma^2\right)
+\end{equation*}
+
+So the logposterior can be written as:
+
+\begin{equation*}
+\sum_i \log\phi\left(\frac{y_i - (\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i)}{\sigma}\right)
+\end{equation*}
+
+Where $y_i$ is the age of the i-th individual. Using R, we could write the
+logposterior as follows:
+
+```{r logpost}
+logpost <- function(p, D) {
+  sum(dnorm(
+    D$age - (p[1] + p[2] * D$smoke + p[3] * D$female),
+    sd = p[4],
+    log = TRUE
+  ))
+}
+```
+
+
+# Operating within the loop
+
+In some cases, the user would like to go beyond what `MCMC()`. In those cases,
+we can directly access the environment in which the main loop of the `MCMC`-call
+is being executed, using the function `ith_step()`.
+
+With `ith_step()`, we can access the environment containing the existing elements
+while the MCMC loop occurs. Among these, we have: `i` (the step number),
+`logpost` (a vector storing the trace of the unnormalized logposterior), `draws`,
+(a matrix storing the kernel's proposed states), etc. 
+
+For example, sometimes accidents happen, and your computing environment could
+crash (R, your PC, your server, etc.). It could be a good idea to keep track
+of the current state of the chain. A way to do this is printing out the state
+of the process every n-th step. 
+
+Using the `lifeexpect` data, let's rewrite the `logpost()` function using 
+`ith_step()`. We will print the latest accepted state every 1,000 steps:
+
+```{r logpost2}
+logpost2 <- function(p, D) {
+
+  # Getting the number of step
+  i <- ith_step("i")
+
+  # After the first iteration, every 1000 steps:
+  if (i > 1L && !(i %% 1000)) {
+
+    # The last accepted state. Accepted states are
+    # stored in -ans-.
+    s <- ith_step()$ans[i - 1L,]
+
+    cat("Step: ", i, " state: c(\n  ", paste(s, collapse = ", "), "\n)\n", sep = "")
+
+  }
+
+  # Just returning the previous value
+  logpost(p, D)
+
+}
+```
+
+Note that the posterior distribution, i.e., accepted states, is stored in the matrix
+`ans` within the MCMC loop. Let's use the Robust Adaptive Metropolis Kernel to fit this model.
+Since we need to estimate the standard error, we can set a lower-bound for the variables.
+For the starting point, let's use the vector `[70, 0, 0, sd(age)]` (more than a good
+guess!):
+
+```{r haario-with-ith-step, echo = TRUE}
+# Generating kernel
+kern <- kernel_ram(warmup = 1000, lb = c(-100,-100,-100,.001))
+
+# Running MCMC
+ans0 <- MCMC(
+  initial  = c(70, 0, 0, sd(lifeexpect$age)),
+  fun      = logpost2, 
+  nsteps   = 10000,    
+  kernel   = kern, 
+  seed     = 555,
+  D        = lifeexpect,
+  progress = FALSE
+  )
+
+```
+
+The `ith_step()` makes `MCMC` very easy to tailor. Now what happens when we deal
+with multiple chains?
+
+# Using ith_step() with multiple chains
+
+Using the function `ith_step()` could be of real help when dealing with multiple
+chains in a single run. In such a case, we can use the variable `chain_id` that
+can be found with `ith_step()`. From the previous example:
+
+```{r lupost3, eval = FALSE}
+logpost2 <- function(p, D) {
+
+  # Getting the number of step
+  i <- ith_step("i")
+
+  # After the first iteration, every 1000 steps:
+  if (i > 1L && !(i %% 1000)) {
+
+    # The last accepted state. Accepted states are
+    # stored in -ans-.
+    s <- ith_step()$ans[i - 1L,]
+    
+    chain <- ith_step("chain_id")
+
+    cat("Step: ", i, " chain: ", chain, " state: c(\n  ",
+        paste(s, collapse = ",\n  "), "\n)\n", sep = ""
+        )
+
+  }
+  
+  # Just returning the previous value
+  logpost(p, D)
+
+}
+
+# Rerunning using parallel chains
+ans1 <- MCMC(
+  initial   = ans0,
+  fun       = logpost2, # The new version of logpost includes chain
+  nsteps    = 1000,    
+  kernel    = kern,     # Reusing the kernel
+  thin      = 1,       
+  nchains   = 2L,       # Two chains, two different prints     
+  multicore = FALSE,
+  seed      = 555,
+  progress  = FALSE,
+  D         = lifeexpect
+  )
+```
+
+Using `ith_state()` increases the computational burden of the process. Yet,
+since most of the load lies on the objective function itself, the additional
+time can be neglected.
+
+# Saving information as it happens

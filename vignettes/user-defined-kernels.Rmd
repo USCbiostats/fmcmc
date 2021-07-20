@@ -114,7 +114,7 @@ Since the returning object is an object of class `mcmc` from the `coda` R
 package, we can use any available method. Let's start by plotting the
 chain:
 
-"`{r plot1}
+```{r plot1}
 plot(ans)
 ```
 
@@ -126,7 +126,7 @@ We can easily do so by just passing `ans` as a starting point, since `MCMC`
 will automatically take the last value of the chain as the starting point of this
 new one. This time, let's increase the sample size as well:
 
-"`{r second-run}
+```{r second-run}
 ans <- MCMC(
   ll,
   initial = ans,             # MCMC will use tail(ans, 0) automatically
