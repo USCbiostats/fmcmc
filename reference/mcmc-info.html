@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Information about the last MCMC call — fmcmc-info • fmcmc</title>
+<title>Information about the last MCMC call — mcmc-info • fmcmc</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,7 @@
 
 
 
-<meta property="og:title" content="Information about the last MCMC call — fmcmc-info" />
+<meta property="og:title" content="Information about the last MCMC call — mcmc-info" />
 <meta property="og:description" content="This environment holds a copy of the last call to MCMC, including the start
 and end time (to compute total elapsed time) of the call. Since the resulting
 object of MCMC is an object of class coda::mcmc, this is a way to capture
@@ -116,6 +116,9 @@ more information in case the user needs it." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/advanced-features.html">Advanced features</a>
+    </li>
+    <li>
       <a href="../articles/user-defined-kernels.html">User-defined kernels</a>
     </li>
     <li>
@@ -148,8 +151,8 @@ more information in case the user needs it." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Information about the last <code>MCMC</code> call</h1>
-    <small class="dont-index">Source: <a href='https://github.com/USCbiostats/fmcmc/blob/master/R/last.R'><code>R/last.R</code></a></small>
-    <div class="hidden name"><code>fmcmc-info.Rd</code></div>
+    <small class="dont-index">Source: <a href='https://github.com/USCbiostats/fmcmc/blob/master/R/mcmc_info.R'><code>R/mcmc_info.R</code></a></small>
+    <div class="hidden name"><code>mcmc-info.Rd</code></div>
     </div>
 
     <div class="ref-description">
@@ -169,19 +172,31 @@ more information in case the user needs it.</p>
 
 <span class='fu'>get_elapsed</span><span class='op'>(</span><span class='op'>)</span>
 
+<span class='fu'>get_initial</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>get_fun</span><span class='op'>(</span><span class='op'>)</span>
+
 <span class='fu'>get_nsteps</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>get_nchains</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_kernel</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_conv_checker</span><span class='op'>(</span><span class='op'>)</span>
-
 <span class='fu'>get_seed</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>get_nchains</span><span class='op'>(</span><span class='op'>)</span>
 
 <span class='fu'>get_burnin</span><span class='op'>(</span><span class='op'>)</span>
 
 <span class='fu'>get_thin</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>get_kernel</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>get_multicore</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>get_conv_checker</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>get_cl</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>get_progress</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>get_chain_id</span><span class='op'>(</span><span class='op'>)</span>
 
 <span class='fu'>ith_step</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span></pre>
 
@@ -243,10 +258,10 @@ kernel function.</p>
 
     
 
-<p>The function ith_step(x) is a convenience function that provides
+<p>The function <code>ith_step()</code> is a convenience function that provides
 access to the environment within which the main loop of the MCMC call is
 being evaluated. This is a wrapper of <code>MCMC_INFO$loop_envir</code> that will
-either return the value <code>x</code> of the entire environment if <code>x</code> is missing. If
+either return the value <code>x</code> or, if missing, the entire environment. If
 <code>ith_step()</code> is called outside of the <code>MCMC</code> call, then it will return with
 an error.</p>
 <p>For example, if you wanted to print information if the current value
@@ -278,7 +293,7 @@ the objective function as follows:</p><pre><span class='va'>f</span> <span class
 
 <span class='va'>ans</span> <span class='op'>&lt;-</span> <span class='fu'><a href='MCMC.html'>MCMC</a></span><span class='op'>(</span>fun <span class='op'>=</span> <span class='va'>f</span>, initial <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span><span class='op'>)</span>, nsteps<span class='op'>=</span><span class='fl'>2000</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'>get_logpost</span><span class='op'>(</span><span class='op'>)</span>, type <span class='op'>=</span> <span class='st'>"l"</span><span class='op'>)</span> <span class='co'># Plotting the logpost from the last run</span>
-</div><div class='img'><img src='fmcmc-info-1.png' alt='' width='700' height='433' /></div><div class='input'>
+</div><div class='img'><img src='mcmc-info-1.png' alt='' width='700' height='433' /></div><div class='input'>
 
 <span class='co'># Printing information every 500 step ---------------------------------------</span>
 <span class='co'># for this we use ith_step()</span>

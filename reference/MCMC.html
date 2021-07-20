@@ -115,6 +115,9 @@ stop criterion using a convergence check test." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/advanced-features.html">Advanced features</a>
+    </li>
+    <li>
       <a href="../articles/user-defined-kernels.html">User-defined kernels</a>
     </li>
     <li>
@@ -284,7 +287,7 @@ $$</p>
 <p>Observe that, in the case that \(q()\) is symmetric, meaning \(q(x, y) = q(y, x)\),
 the Hastings ration reduces to \(h(y)/h(x)\). Starting version 0.5-0, the value
 of the log unnormalized density and the proposed states <code>y</code> can be accessed using
-the functions <code><a href='fmcmc-info.html'>get_logpost()</a></code> and <code><a href='fmcmc-info.html'>get_draws()</a></code>.</p>
+the functions <code><a href='mcmc-info.html'>get_logpost()</a></code> and <code><a href='mcmc-info.html'>get_draws()</a></code>.</p>
 <p>We now give details of the
 various options included in the function.</p>
 <p>The function <code>MCMC_without_conv_checker</code> is for internal use
@@ -356,8 +359,8 @@ and <code>nsteps</code> rows. If <code>nchains &gt; 1</code>, then it returns a 
 Markov Chain Monte Carlo. Handbook of Markov Chain Monte Carlo.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='fmcmc-info.html'>get_logpost()</a></code>, <code><a href='fmcmc-info.html'>get_logpost()</a></code> for post execution of <code>MCMC</code>, and
-<code><a href='fmcmc-info.html'>ith_step()</a></code> for accessing objects within an <code>MCMC</code> call.</p></div>
+    <div class='dont-index'><p><code><a href='mcmc-info.html'>get_logpost()</a></code>, <code><a href='mcmc-info.html'>get_logpost()</a></code> for post execution of <code>MCMC</code>, and
+<code><a href='mcmc-info.html'>ith_step()</a></code> for accessing objects within an <code>MCMC</code> call.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Univariate distributed data with multiple parameters ----------------------</span>

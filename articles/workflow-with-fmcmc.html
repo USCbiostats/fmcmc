@@ -67,6 +67,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/advanced-features.html">Advanced features</a>
+    </li>
+    <li>
       <a href="../articles/user-defined-kernels.html">User-defined kernels</a>
     </li>
     <li>
@@ -233,7 +236,7 @@
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span> 
 
-<span class="va">out_harrio_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MCMC.html">MCMC</a></span><span class="op">(</span>
+<span class="va">out_haario_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MCMC.html">MCMC</a></span><span class="op">(</span>
   initial   <span class="op">=</span> <span class="va">out</span>,                       
   fun       <span class="op">=</span> <span class="va">lupost</span>, 
   nsteps    <span class="op">=</span> <span class="fl">1000</span>,    <span class="co"># We will only run the chain for 100 steps                    </span>
@@ -244,7 +247,7 @@
   <span class="op">)</span></code></pre></div>
 <p>Let’s inspect the output and mark when the adaptation starts:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/coda/man/traceplot.html">traceplot</a></span><span class="op">(</span><span class="va">out_harrio_1</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, main <span class="op">=</span> <span class="st">"Traceplot of the first parameter"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/coda/man/traceplot.html">traceplot</a></span><span class="op">(</span><span class="va">out_haario_1</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, main <span class="op">=</span> <span class="st">"Traceplot of the first parameter"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">500</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <p><img src="workflow-with-fmcmc_files/figure-html/haario-first-run-plots-1.png" width="600" height="600"></p>
 <p>If we look at the <code>khaario</code> kernel, the <code>fmcmc_kernel</code> object, we can see that things changed from the first time we ran it</p>
@@ -255,26 +258,27 @@
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Variance covariance matrix (now is not empty)</span>
 <span class="op">(</span><span class="va">Sigma1</span> <span class="op">&lt;-</span> <span class="va">khaario</span><span class="op">$</span><span class="va">Sigma</span><span class="op">)</span></code></pre></div>
-<pre><code>##              [,1]          [,2]          [,3]         [,4]         [,5]
-## [1,]  0.031997432 -0.0029414698 -0.0044975559 -0.048761681 -0.007203362
-## [2,] -0.002941470  0.0107696441 -0.0002261002  0.012565787 -0.011962297
-## [3,] -0.004497556 -0.0002261002  0.0117665015  0.019705220 -0.003477701
-## [4,] -0.048761681  0.0125657865  0.0197052196  0.108880548 -0.008469432
-## [5,] -0.007203362 -0.0119622968 -0.0034777013 -0.008469432  0.027920650</code></pre>
+<pre><code>##              [,1]         [,2]         [,3]         [,4]         [,5]
+## [1,]  0.017271652 -0.004935795 -0.005381160 -0.041395045  0.014022889
+## [2,] -0.004935795  0.007362067  0.004540219  0.012921200 -0.006319906
+## [3,] -0.005381160  0.004540219  0.009701356  0.005964857 -0.003818160
+## [4,] -0.041395045  0.012921200  0.005964857  0.147997374 -0.046271398
+## [5,]  0.014022889 -0.006319906 -0.003818160 -0.046271398  0.029099155</code></pre>
 <p>If we re-run the chain, using as starting point the last step of the first run, we can also continue using the kernel object:</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">out_harrio_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MCMC.html">MCMC</a></span><span class="op">(</span>
-  initial   <span class="op">=</span> <span class="va">out_harrio_1</span>,
+<code class="sourceCode R"><span class="va">out_haario_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MCMC.html">MCMC</a></span><span class="op">(</span>
+  initial   <span class="op">=</span> <span class="va">out_haario_1</span>,
   fun       <span class="op">=</span> <span class="va">lupost</span>, 
   nsteps    <span class="op">=</span> <span class="fl">2000</span>,    <span class="co"># We will only run the chain for 2000 steps now</span>
   kernel    <span class="op">=</span> <span class="va">khaario</span>, <span class="co"># Same as before, same kernel.</span>
   thin      <span class="op">=</span> <span class="fl">1</span>,       
   nchains   <span class="op">=</span> <span class="fl">1L</span>,      
-  multicore <span class="op">=</span> <span class="cn">FALSE</span>    
+  multicore <span class="op">=</span> <span class="cn">FALSE</span>,
+  seed      <span class="op">=</span> <span class="fl">555</span>      <span class="co"># We can also specify the seed in the MCMC function    </span>
   <span class="op">)</span></code></pre></div>
 <p>Let’s see again how does everything looks like:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/coda/man/traceplot.html">traceplot</a></span><span class="op">(</span><span class="va">out_harrio_2</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, main <span class="op">=</span> <span class="st">"Traceplot of the first parameter"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/coda/man/traceplot.html">traceplot</a></span><span class="op">(</span><span class="va">out_haario_2</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, main <span class="op">=</span> <span class="st">"Traceplot of the first parameter"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">500</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <p><img src="workflow-with-fmcmc_files/figure-html/haario-second-run-plots-1.png" width="600" height="600"></p>
 <p>As shown in the plot, since the warmup period already passed for the kernel object, the adaptation process is happening at every step, so we don’t see a big break at step 500 as before. Let’s see the counts and the covariance matrix and compare it with the previous one:</p>
@@ -286,21 +290,21 @@
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Variance covariance matrix (now is not empty)</span>
 <span class="op">(</span><span class="va">Sigma2</span> <span class="op">&lt;-</span> <span class="va">khaario</span><span class="op">$</span><span class="va">Sigma</span><span class="op">)</span></code></pre></div>
-<pre><code>##              [,1]         [,2]        [,3]         [,4]        [,5]
-## [1,]  0.072751923  0.004856583  0.03073121 -0.002196328  0.01505307
-## [2,]  0.004856583  0.092261376 -0.02241129 -0.025737259 -0.03436184
-## [3,]  0.030731206 -0.022411290  0.12486220  0.043613434  0.01059161
-## [4,] -0.002196328 -0.025737259  0.04361343  0.208599307 -0.02180500
-## [5,]  0.015053067 -0.034361841  0.01059161 -0.021804998  0.11058044</code></pre>
+<pre><code>##             [,1]        [,2]         [,3]        [,4]         [,5]
+## [1,]  0.06301272  0.01260646  0.013684829 -0.02439227  0.012002205
+## [2,]  0.01260646  0.08594208 -0.025300678 -0.02030928 -0.027581369
+## [3,]  0.01368483 -0.02530068  0.096117378  0.03635492 -0.003109739
+## [4,] -0.02439227 -0.02030928  0.036354918  0.18163588 -0.020042700
+## [5,]  0.01200220 -0.02758137 -0.003109739 -0.02004270  0.122174706</code></pre>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># How different are these?</span>
 <span class="va">Sigma1</span> <span class="op">-</span> <span class="va">Sigma2</span></code></pre></div>
-<pre><code>##              [,1]         [,2]        [,3]        [,4]        [,5]
-## [1,] -0.040754491 -0.007798053 -0.03522876 -0.04656535 -0.02225643
-## [2,] -0.007798053 -0.081491732  0.02218519  0.03830305  0.02239954
-## [3,] -0.035228762  0.022185189 -0.11309570 -0.02390821 -0.01406931
-## [4,] -0.046565353  0.038303046 -0.02390821 -0.09971876  0.01333557
-## [5,] -0.022256430  0.022399544 -0.01406931  0.01333557 -0.08265979</code></pre>
+<pre><code>##              [,1]        [,2]          [,3]        [,4]          [,5]
+## [1,] -0.045741072 -0.01754225 -0.0190659887 -0.01700278  0.0020206838
+## [2,] -0.017542251 -0.07858002  0.0298408979  0.03323048  0.0212614627
+## [3,] -0.019065989  0.02984090 -0.0864160214 -0.03039006 -0.0007084216
+## [4,] -0.017002780  0.03323048 -0.0303900603 -0.03363851 -0.0262286982
+## [5,]  0.002020684  0.02126146 -0.0007084216 -0.02622870 -0.0930755506</code></pre>
 <p>Things have changed since the last time we used the kernel, as expected. Kernel objects in the <code>fmcmc</code> package can also be used with multiple chains and in parallel. The <code>MCMC</code> function is smart enough to create independent copies of <code>fmcmc_kernel</code> objects when running multiple chains, and keep the original kernel objects up-to-date even when using multiple cores to run <code>MCMC</code>. For more technical details on how <code>fmcmc_kernel</code> objects work see the manual <code><a href="../reference/kernel_new.html">?fmcmc_kernel</a></code> or the vignette “User-defined kernels” included in the package <code><a href="../articles/user-defined-kernels.html">vignette("user-defined-kernels", package = "fmcmc")</a></code>.</p>
 </div>
 <div id="accessing-other-elements-of-the-chain" class="section level1">
@@ -310,29 +314,33 @@
 <p>Starting version 0.5-0, we replaced the family of functions <code>last_*</code> with <code>get_*</code>; a re-design of this “memory” component that gives users access to data generated during the Markov process. After each run of the <code>MCMC</code> function, information regarding the last execution is stored in the environment <code>MCMC_INFO</code>.</p>
 <p>If you wanted to look at the logposterior of the last call and proposed states, you can do the following:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/fmcmc-info.html">get_logpost</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="co"># The first 5</span></code></pre></div>
-<pre><code>##         1         2         3         4         5         6 
-## -46.97935 -47.04524 -49.19329 -46.51901 -46.81443 -45.22724</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="../reference/mcmc-info.html">get_logpost</a></span><span class="op">(</span><span class="op">)</span>, type<span class="op">=</span><span class="st">"l"</span><span class="op">)</span></code></pre></div>
+<p><img src="workflow-with-fmcmc_files/figure-html/get-logpost-draws-1.png" width="600" height="600"></p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Pretty figure showing proposed and accepted</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
+  <span class="fu"><a href="../reference/mcmc-info.html">get_draws</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, pch <span class="op">=</span> <span class="fl">20</span>, col <span class="op">=</span> <span class="st">"gray"</span>,
+  main <span class="op">=</span> <span class="st">"Haario's second run"</span>
+  <span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/points.html">points</a></span><span class="op">(</span><span class="va">out_haario_2</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"red"</span>, pch <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span><span class="op">(</span>
+  <span class="st">"topleft"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"proposed"</span>, <span class="st">"accepted"</span><span class="op">)</span>,
+  col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gray"</span>, <span class="st">"red"</span><span class="op">)</span>,
+  pch <span class="op">=</span> <span class="fl">20</span>,
+  bty <span class="op">=</span> <span class="st">"n"</span>
+<span class="op">)</span></code></pre></div>
+<p><img src="workflow-with-fmcmc_files/figure-html/get-logpost-draws-2.png" width="600" height="600"></p>
+<p>The <code>MCMC_INFO</code> environment also contains the arguments passed to <code><a href="../reference/MCMC.html">MCMC()</a></code>:</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/fmcmc-info.html">get_draws</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
-<pre><code>##        par1      par2      par3        par4     par5
-## 1 0.4881704 0.7390162 0.8953761  0.07540160 1.425363
-## 2 0.3165411 0.6136028 0.9417279  0.51844992 1.432701
-## 3 0.7356924 0.6390324 0.7446098 -0.32181198 1.322130
-## 4 0.5983637 0.5364305 0.9886452  0.33472525 1.472834
-## 5 0.7662156 0.6003683 0.9755639 -0.02161209 1.304729
-## 6 0.4597245 0.8028876 1.0427199  0.64486549 1.063495</code></pre>
-<p>The <code>MCMC_INFO</code> environment also contains the arguments passed to <code>MCMC</code>:</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/fmcmc-info.html">get_</a></span><span class="op">(</span><span class="st">"initial"</span><span class="op">)</span> </code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/mcmc-info.html">get_initial</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## Markov Chain Monte Carlo (MCMC) output:
 ## Start = 1000 
 ## End = 1000 
 ## Thinning interval = 1 
-##           par1      par2      par3      par4     par5
-## 1000 0.4881704 0.7390162 0.8953761 0.0754016 1.425363</code></pre>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/fmcmc-info.html">get_</a></span><span class="op">(</span><span class="st">"fun"</span><span class="op">)</span></code></pre></div>
+##           par1      par2     par3     par4      par5
+## 1000 0.4430418 0.8391033 1.191223 0.766331 0.7507183</code></pre>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/mcmc-info.html">get_fun</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## function(beta) {
 ##     eta &lt;- as.numeric(x %*% beta)
 ##     logp &lt;- ifelse(eta &lt; 0, eta - log1p(exp(eta)), - log1p(exp(- eta)))
@@ -340,10 +348,10 @@
 ##     logl &lt;- sum(logp[y == 1]) + sum(logq[y == 0])
 ##     return(logl - sum(beta^2) / 8)
 ## }
-## &lt;bytecode: 0x561b46a29490&gt;
-## &lt;environment: 0x561b472cf130&gt;</code></pre>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/fmcmc-info.html">get_</a></span><span class="op">(</span><span class="st">"kernel"</span><span class="op">)</span></code></pre></div>
+## &lt;bytecode: 0x5569bdf63900&gt;
+## &lt;environment: 0x5569be81b138&gt;</code></pre>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/mcmc-info.html">get_kernel</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## 
 ## An environment of class fmcmc_kernel:
 ## 
@@ -356,11 +364,11 @@
 ## k :  int 5
 ## lb :  num [1:5] -1.8e+308 -1.8e+308 -1.8e+308 -1.8e+308 -1.8e+308
 ## logratio : function (env)  
-## Mean_t_prev :  num [1, 1:5] 0.667 0.8 1.127 0.324 0.784
+## Mean_t_prev :  num [1, 1:5] 0.633 0.805 1.103 0.318 0.747
 ## mu :  num [1:5] 0 0 0 0 0
 ## proposal : function (env)  
 ## Sd :  num 1.15
-## Sigma :  num [1:5, 1:5] 0.07275 0.00486 0.03073 -0.0022 0.01505 ...
+## Sigma :  num [1:5, 1:5] 0.063 0.0126 0.0137 -0.0244 0.012 ...
 ## ub :  num [1:5] 1.8e+308 1.8e+308 1.8e+308 1.8e+308 1.8e+308
 ## until :  num Inf
 ## warmup :  num 500

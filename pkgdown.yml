@@ -2,7 +2,8 @@ pandoc: 2.11.4
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
+  advanced-features: advanced-features.html
   user-defined-kernels: user-defined-kernels.html
   workflow-with-fmcmc: workflow-with-fmcmc.html
-last_built: 2021-07-19T20:57Z
+last_built: 2021-07-20T00:48Z
 
