@@ -159,9 +159,10 @@
 <li><p><code>convergence_gelman</code> now stores the Gelman and Rubin’s statistics in the correct order, i.e., the most recent at the end of the array in <code><a href="../reference/convergence-checker.html">convergence_data_get("val")</a></code>.</p></li>
 <li><p>Users can now pass <code>seed</code> to <code>MCMC</code>. If <code>is.null(seed) != TRUE</code>, then <code>seed</code> is passed to <code><a href="https://rdrr.io/r/base/Random.html">set.seed()</a></code>.</p></li>
 <li><p>The function <code><a href="../reference/convergence-checker.html">convergence_auto()</a></code> now behaves as expected. Before it was not checking convergence.</p></li>
-<li><p>The set of functions <code>last_*</code> and <code>LAST_MCMC</code> will be deprecated in favor of <code>get_*</code> and <code>MCMC_INFO</code>.</p></li>
-<li><p>The new function <code><a href="../reference/mcmc-info.html">get_logpost()</a></code> returns the computed values of the objective function from the last <code>MCMC</code> run.</p></li>
-<li><p>The new function <code><a href="../reference/mcmc-info.html">get_draws()</a></code> returns the MCMC draws from the kernel’s proposal function (proposed states).</p></li>
+<li><p>The set of functions <code>last_*</code> and <code>LAST_MCMC</code> will be deprecated in favor of <code>get_*</code> and <code>MCMC_OUTPUT</code>.</p></li>
+<li><p>The new function <code><a href="../reference/mcmc-output.html">get_logpost()</a></code> returns the computed values of the objective function from the last <code>MCMC</code> run.</p></li>
+<li><p>The new function <code><a href="../reference/mcmc-output.html">get_draws()</a></code> returns the MCMC draws from the kernel’s proposal function (proposed states).</p></li>
+<li><p>The new function <code><a href="../reference/mcmc-loop.html">set_userdata(...)</a></code> allows storing information into a data.frame as the MCMC process runs. Users can retrieve the data with the function <code><a href="../reference/mcmc-loop.html">get_userdata()</a></code>.</p></li>
 <li><p>The function <code><a href="../reference/append_chains.html">append_chains()</a></code> was randomly dropping one sample of the final set.</p></li>
 <li><p>A new artificial dataset <code>lifeexpect</code> is shipped with the package. This simulates 1,000 observations of <code>age</code> at death using US’s statistics.</p></li>
 </ul>

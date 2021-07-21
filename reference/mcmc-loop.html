@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Information about the last MCMC call — mcmc-info • fmcmc</title>
+<title>Functions to interact with the main loop — mcmc-loop • fmcmc</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,11 +46,9 @@
 
 
 
-<meta property="og:title" content="Information about the last MCMC call — mcmc-info" />
-<meta property="og:description" content="This environment holds a copy of the last call to MCMC, including the start
-and end time (to compute total elapsed time) of the call. Since the resulting
-object of MCMC is an object of class coda::mcmc, this is a way to capture
-more information in case the user needs it." />
+<meta property="og:title" content="Functions to interact with the main loop — mcmc-loop" />
+<meta property="og:description" content="You can use these functions to read variables, store, and retrieve data
+during the MCMC process." />
 <meta property="og:image" content="/logo.svg" />
 
 
@@ -150,117 +148,47 @@ more information in case the user needs it." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Information about the last <code>MCMC</code> call</h1>
+    <h1>Functions to interact with the main loop</h1>
     <small class="dont-index">Source: <a href='https://github.com/USCbiostats/fmcmc/blob/master/R/mcmc_info.R'><code>R/mcmc_info.R</code></a></small>
-    <div class="hidden name"><code>mcmc-info.Rd</code></div>
+    <div class="hidden name"><code>mcmc-loop.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This environment holds a copy of the last call to <a href='MCMC.html'>MCMC</a>, including the start
-and end time (to compute total elapsed time) of the call. Since the resulting
-object of <code>MCMC</code> is an object of class <a href='https://rdrr.io/pkg/coda/man/mcmc.html'>coda::mcmc</a>, this is a way to capture
-more information in case the user needs it.</p>
+    <p>You can use these functions to read variables, store, and retrieve data
+during the MCMC process.</p>
     </div>
 
-    <pre class="usage"><span class='va'>MCMC_INFO</span>
+    <pre class="usage"><span class='fu'>ith_step</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
 
-<span class='fu'>get_</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
+<span class='fu'>set_userdata</span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span>
 
-<span class='fu'>get_logpost</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_draws</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_elapsed</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_initial</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_fun</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_nsteps</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_seed</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_nchains</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_burnin</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_thin</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_kernel</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_multicore</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_conv_checker</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_cl</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_progress</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>get_chain_id</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>ith_step</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span></pre>
+<span class='fu'>get_userdata</span><span class='op'>(</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>Character scalar. Name of an argument to retrieve. If <code>x</code> was not
-passed to the last call, the function returns with an error.</p></td>
+      <td><p>Name of the element to retrieve. If missing, it will return the entire
+environment in which the main MCMC loop is running.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Named values to be appended to the user data.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
-
-    <p>An object of class <code>fmcmc_info</code> (inherits from <code>environment</code>) of length 12.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>The <code>MCMC_INFO</code> object is an environment of class,
-<code><a href='https://rdrr.io/r/base/c.html'>c("fmcmc_info", "environment")</a></code> that has the following structure:</p><ul>
-<li><p><code>time_start</code>, <code>time_end</code> Objects of class <a href='https://rdrr.io/r/base/proc.time.html'>proc.time</a>. Mark the start and
-end of the <code>MCMC</code> call.</p></li>
-<li><p><code>data.</code> A list of environments of length <code>get_nchains()</code>. Each environment
-will hold information about the particular chain. By default, each environment
-holds the elements <code>logpost</code> (named numeric vector) and <code>draws</code> (numeric matrix).</p>
-<p>The <code>draws</code> matrix contains the draws from the proposal kernel function. Both
-<code>logpost</code> and <code>draws</code> have indices that match those of the chain. (see details).</p>
-<p><code>data.</code> can also be accessed by the user to store information if needed.</p></li>
-<li><p><code>ptr</code> An environment. This is used as a pointer that is defined at the beginning
-of the MCMC process. The environment will be pointing to the current chain, thus,
-if <code>MCMC</code> is running chain 2 of 4, <code>ptr = data.[[2]]</code>.</p></li>
-<li><p><code>i</code> Integer. Index of the current chain, so if <code>MCMC</code> is running chain 3 of 4,
-then <code>i = 3</code> (and <code>ptr = data.[[3]]</code>, get it?).</p></li>
-<li><p><code>nchains</code> Integer. The number of chains specified in <code>MCMC</code>.</p></li>
-<li><p><code>...</code> further arguments passed to <code>MCMC</code>, e.g., <code>initial</code>, <code>fun</code>, <code>nsteps</code>,
-<code>kernel</code>, <code>thin</code>, etc.</p></li>
-</ul>
-
-<p>It also contains the following <strong>helper functions</strong>:</p><ul>
-<li><p><code>c_(x, val)</code> Combine elements. It will access the current value of <code>x</code> in
-<code>ptr</code>, and will combine it with <code>val</code> using <code><a href='https://rdrr.io/r/base/c.html'>c()</a></code>.</p></li>
-<li><p><code>rbind_(x, val)</code> Row-combine elements. It will access the current value of <code>x</code> in
-<code>ptr</code>, and will combine it with <code>val</code> using <code><a href='https://rdrr.io/r/base/cbind.html'>rbind()</a></code>.</p></li>
-<li><p><code>cbind_(x, val)</code> Column-combine elements. It will access the current value of <code>x</code> in
-<code>ptr</code>, and will combine it with <code>val</code> using <code><a href='https://rdrr.io/r/base/cbind.html'>cbind()</a></code>.</p></li>
-</ul>
-
-<p><code>get_*</code> returns the corresponding variable passed to the last call
-of <a href='MCMC.html'>MCMC</a>.</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>The function <code>get_logpost</code> returns the <code>logposterior</code> value at each
-iteration. The values correspond to a named numeric vector. If <code>nchains &gt; 1</code>
-then it will return a list of length <code>nchains</code> with the corresponding logpost
-values for each chain.</p>
-<p>The function <code>get_draws()</code> retrieves the proposed states from the
-kernel function.</p>
+    <p>The function <code>set_userdata()</code> returns <code><a href='https://rdrr.io/r/base/invisible.html'>invisible()</a></code>. The only side
+effect is appending the information by row.</p>
     <h2 class="hasAnchor" id="advanced-usage"><a class="anchor" href="#advanced-usage"></a>Advanced usage</h2>
 
     
 
 <p>The function <code>ith_step()</code> is a convenience function that provides
 access to the environment within which the main loop of the MCMC call is
-being evaluated. This is a wrapper of <code>MCMC_INFO$loop_envir</code> that will
+being evaluated. This is a wrapper of <code>MCMC_OUTPUT$loop_envir</code> that will
 either return the value <code>x</code> or, if missing, the entire environment. If
 <code>ith_step()</code> is called outside of the <code>MCMC</code> call, then it will return with
 an error.</p>
@@ -283,7 +211,7 @@ the objective function as follows:</p><pre><span class='va'>f</span> <span class
 <p>More examples below.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Getting the logpost -------------------------------------------------------</span>
+    <pre class="examples"><div class='input'><span class='co'>#' # Getting the logpost -------------------------------------------------------</span>
 <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>23133</span><span class='op'>)</span>
 <span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>200</span><span class='op'>)</span>
 <span class='va'>y</span> <span class='op'>&lt;-</span> <span class='va'>x</span><span class='op'>*</span><span class='fl'>2</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>200</span><span class='op'>)</span>
@@ -292,8 +220,8 @@ the objective function as follows:</p><pre><span class='va'>f</span> <span class
 <span class='op'>}</span>
 
 <span class='va'>ans</span> <span class='op'>&lt;-</span> <span class='fu'><a href='MCMC.html'>MCMC</a></span><span class='op'>(</span>fun <span class='op'>=</span> <span class='va'>f</span>, initial <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span><span class='op'>)</span>, nsteps<span class='op'>=</span><span class='fl'>2000</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'>get_logpost</span><span class='op'>(</span><span class='op'>)</span>, type <span class='op'>=</span> <span class='st'>"l"</span><span class='op'>)</span> <span class='co'># Plotting the logpost from the last run</span>
-</div><div class='img'><img src='mcmc-info-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='mcmc-output.html'>get_logpost</a></span><span class='op'>(</span><span class='op'>)</span>, type <span class='op'>=</span> <span class='st'>"l"</span><span class='op'>)</span> <span class='co'># Plotting the logpost from the last run</span>
+</div><div class='img'><img src='mcmc-loop-1.png' alt='' width='700' height='433' /></div><div class='input'>
 
 <span class='co'># Printing information every 500 step ---------------------------------------</span>
 <span class='co'># for this we use ith_step()</span>
@@ -3389,6 +3317,27 @@ the objective function as follows:</p><pre><span class='va'>f</span> <span class
 <span class='co'># At a higher point!: -269.7435 , step: 46 </span>
 <span class='co'># At a higher point!: -269.7422 , step: 543 </span>
 <span class='co'># At a higher point!: -269.7421 , step: 788 </span>
+<span class='co'># Saving extra information --------------------------------------------------</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"lifeexpect"</span><span class='op'>)</span>
+
+<span class='co'># Defining the logposterior</span>
+<span class='va'>logpost</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>p</span><span class='op'>)</span> <span class='op'>{</span>
+
+  <span class='fu'>set_userdata</span><span class='op'>(</span>i <span class='op'>=</span> <span class='fu'>ith_step</span><span class='op'>(</span><span class='st'>"i"</span><span class='op'>)</span>, sum_of_p <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>p</span><span class='op'>)</span><span class='op'>)</span>
+
+  <span class='fu'><a href='https://rdrr.io/r/base/with.html'>with</a></span><span class='op'>(</span><span class='va'>lifeexpect</span>, <span class='op'>{</span>
+    <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>dnorm</a></span><span class='op'>(</span><span class='va'>age</span> <span class='op'>-</span> <span class='op'>(</span><span class='va'>p</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>+</span> <span class='va'>p</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span><span class='op'>*</span><span class='va'>smoke</span> <span class='op'>+</span> <span class='va'>p</span><span class='op'>[</span><span class='fl'>3</span><span class='op'>]</span><span class='op'>*</span><span class='va'>female</span><span class='op'>)</span>, sd <span class='op'>=</span> <span class='va'>p</span><span class='op'>[</span><span class='fl'>4</span><span class='op'>]</span>, log <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='op'>}</span><span class='op'>)</span>
+  
+<span class='op'>}</span>
+
+<span class='co'># A kernel where sd is positive, the first is average age, so we </span>
+<span class='co'># make it positive too</span>
+<span class='va'>kern</span> <span class='op'>&lt;-</span> <span class='fu'><a href='kernel_ram.html'>kernel_ram</a></span><span class='op'>(</span>lb <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>10</span>, <span class='op'>-</span><span class='fl'>20</span>, <span class='op'>-</span><span class='fl'>20</span>, <span class='fl'>.0001</span><span class='op'>)</span>, eps <span class='op'>=</span> <span class='fl'>.01</span><span class='op'>)</span>
+<span class='va'>ans</span> <span class='op'>&lt;-</span> <span class='fu'><a href='MCMC.html'>MCMC</a></span><span class='op'>(</span>
+  initial <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>70</span>, <span class='op'>-</span><span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>)</span>, fun <span class='op'>=</span> <span class='va'>logpost</span>, kernel <span class='op'>=</span> <span class='va'>kern</span>, nsteps <span class='op'>=</span> <span class='fl'>1000</span>, seed <span class='op'>=</span> <span class='fl'>1</span>
+  <span class='op'>)</span>
+
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
