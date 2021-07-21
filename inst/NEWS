@@ -17,7 +17,7 @@ FMCMC 0.5-0
     was not checking convergence.
 
 -   The set of functions last_* and LAST_MCMC will be deprecated in
-    favor of get_* and MCMC_INFO.
+    favor of get_* and MCMC_OUTPUT.
 
 -   The new function get_logpost() returns the computed values of the
     objective function from the last MCMC run.

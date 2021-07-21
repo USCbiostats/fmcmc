@@ -213,7 +213,7 @@ plot(ans_AM)
 1 - rejectionRate(ans_AM)
 ```
 
-Finally, if needed, we can also access information about the last run using `MCMC_INFO`.
+Finally, if needed, we can also access information about the last run using `MCMC_OUTPUT`.
 For example, if we wanted to look at the trace of the logposterior function, we could
 use the `get_logpost()` function:
 

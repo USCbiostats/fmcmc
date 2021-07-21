@@ -276,8 +276,8 @@ plot(ans_AM)
     ## 0.5457091 0.5457091 0.5457091
 
 Finally, if needed, we can also access information about the last run
-using `MCMC_INFO`. For example, if we wanted to look at the trace of the
-logposterior function, we could use the `get_logpost()` function:
+using `MCMC_OUTPUT`. For example, if we wanted to look at the trace of
+the logposterior function, we could use the `get_logpost()` function:
 
 ``` r
 plot(get_logpost(), type = "l")

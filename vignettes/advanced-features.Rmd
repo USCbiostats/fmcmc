@@ -127,8 +127,8 @@ Using the function `ith_step()` could be of real help when dealing with multiple
 chains in a single run. In such a case, we can use the variable `chain_id` that
 can be found with `ith_step()`. From the previous example:
 
-```{r lupost3, eval = FALSE}
-logpost2 <- function(p, D) {
+```{r lupost3, eval = TRUE}
+logpost3 <- function(p, D) {
 
   # Getting the number of step
   i <- ith_step("i")
@@ -156,7 +156,7 @@ logpost2 <- function(p, D) {
 # Rerunning using parallel chains
 ans1 <- MCMC(
   initial   = ans0,
-  fun       = logpost2, # The new version of logpost includes chain
+  fun       = logpost3, # The new version of logpost includes chain
   nsteps    = 1000,    
   kernel    = kern,     # Reusing the kernel
   thin      = 1,       
@@ -173,3 +173,51 @@ since most of the load lies on the objective function itself, the additional
 time can be neglected.
 
 # Saving information as it happens
+
+Another thing the user may need to do is storing data as the MCMC algorithm runs.
+In such cases, you can use the `set_userdata()` function, which, as the name suggests,
+will store the required data.
+
+For a simple example, suppose we wanted to store the state, we could do it in the
+following way:
+
+```{r lupost4}
+logpost4 <- function(p, D) {
+
+  # Timestamp
+  set_userdata(
+    p1 = p[1],
+    p2 = p[2],
+    p3 = p[3]
+  )
+
+  # Just returning the previous value
+  logpost(p, D)
+
+}
+
+# Rerunning using parallel chains
+ans1 <- MCMC(
+  initial   = ans0,
+  fun       = logpost4, # The new version of logpost includes chain
+  nsteps    = 1000,    
+  kernel    = kern,     # Reusing the kernel
+  thin      = 10,       # We are adding thinning
+  nchains   = 2L,       # Two chains, two different prints     
+  multicore = FALSE,
+  seed      = 555,
+  progress  = FALSE,
+  D         = lifeexpect
+  )
+```
+
+In this case, since `nchains == 2`, `MCMC` will store a list of length two
+with the user data. To retrieve the generated data frame, we can call the function
+`get_userdata()`. We can also inspect the `MCMC_OUTPUT` as follows:
+
+```{r inspect-and-plot}
+print(MCMC_OUTPUT)
+str(get_userdata())
+```
+
+

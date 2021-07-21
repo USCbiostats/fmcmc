@@ -115,14 +115,17 @@
 #' by the convergence checker function, and thus the algorithm will stop if,
 #' the `conv_checker` returns `TRUE`. For more information see [convergence-checker].
 #' 
-#' @section Value:
-#' An object of class [coda::mcmc] from the \CRANpkg{coda}
+#' @return 
+#' `MCMC` returns an object of class [coda::mcmc] from the \CRANpkg{coda}
 #' package. The \code{mcmc} object is a matrix with one column per parameter,
 #' and \code{nsteps} rows. If \code{nchains > 1}, then it returns a [coda::mcmc.list].
 #'    
 #' @references 
 #' Brooks, S., Gelman, A., Jones, G. L., & Meng, X. L. (2011). Handbook of
 #' Markov Chain Monte Carlo. Handbook of Markov Chain Monte Carlo.
+#' 
+#' Vega Yon, G., & Marjoram, P. (2019). fmcmc: A friendly MCMC framework.
+#' Journal of Open Source Software, 4(39), 1427. \doi{10.21105/joss.01427}
 #' 
 #' @export
 #'  
@@ -244,7 +247,7 @@
 #' }
 #' 
 #' @aliases Metropolis-Hastings
-#' @seealso [get_logpost()], [get_logpost()] for post execution of `MCMC`, and
+#' @seealso [get_logpost()], [get_logpost()] ([mcmc-output]) for post execution of `MCMC`, and
 #' [ith_step()] for accessing objects within an `MCMC` call.
 MCMC <- function(
   initial,
@@ -365,8 +368,8 @@ MCMC.default <- function(
 ) {
   
   # Initializing recording of variables
-  MCMC_INFO$clear(nchains = nchains)
-  MCMC_INFO$set_ptr(1L)
+  MCMC_OUTPUT$clear(nchains = nchains)
+  MCMC_OUTPUT$set_ptr(1L)
   
   MCMC_init(...)
   
@@ -449,6 +452,12 @@ MCMC_without_conv_checker <- function(
   # kernel.
   if (nchains > 1L && !is_kernel_list(kernel))
     rep_kernel(kernel, nchains = nchains)
+  else if (nchains == 1L && is_kernel_list(kernel))
+    stop(
+      "The passed kernel is for MCMC with more than one chain. ",
+      "Right now, -kernel- is of length ", length(kernel),
+      call. = FALSE
+      )
   
   # Filling the gap on parallel
   if (multicore && !length(cl)) {
@@ -470,22 +479,33 @@ MCMC_without_conv_checker <- function(
   if (multicore) {
     parallel::clusterExport(cl, "kernel", envir = environment())
     parallel::clusterEvalQ(cl, {
-      .FMCMC_PLL_KERNEL <- new.env()
-      .FMCMC_MCMC_INFO  <- new.env()
+      .FMCMC_PLL_KERNEL  <- new.env()
+      .FMCMC_MCMC_OUTPUT <- new.env()
+      .FMCMC_MCMC_OUTPUT_usr <- new.env()
       })
     
     # Exporting data
-    invisible(
+    invisible({
       parallel::parLapply(
-        cl, MCMC_INFO$data., function(i) assign("ptr__", i, envir = .FMCMC_MCMC_INFO)
+        cl, MCMC_OUTPUT$data., function(i) assign("ptr__", i, envir = .FMCMC_MCMC_OUTPUT)
         )
-    )
+      
+      parallel::parLapply(
+        cl, MCMC_OUTPUT$data_usr., function(i) assign("ptr_usr__", i, envir = .FMCMC_MCMC_OUTPUT_usr)
+      )
+    })
     
     # Setting up data
-    parallel::clusterEvalQ(cl, {
-      MCMC_INFO$clear(1L, get("ptr__", envir = .FMCMC_MCMC_INFO))
-      MCMC_INFO$set_ptr(1L)
-    })
+    invisible(parallel::clusterEvalQ(cl, {
+      
+      MCMC_OUTPUT$clear(
+        1L,
+        env_data     = get("ptr__", envir = .FMCMC_MCMC_OUTPUT),
+        env_data_usr = get("ptr_usr__", envir = .FMCMC_MCMC_OUTPUT_usr)
+        )
+      
+      MCMC_OUTPUT$set_ptr(1L)
+    }))
     
   }
     
@@ -533,7 +553,11 @@ MCMC_without_conv_checker <- function(
     update_kernel(kernel, do.call(c, kernel_list))
     
     # Updating run
-    MCMC_INFO$data. <- parallel::clusterEvalQ(cl, get("ptr", envir = MCMC_INFO))
+    MCMC_OUTPUT$data.     <- parallel::clusterEvalQ(cl, get("ptr", envir = MCMC_OUTPUT))
+    MCMC_OUTPUT$data_usr. <- parallel::clusterEvalQ(cl, get("ptr_usr", envir = MCMC_OUTPUT))
+    
+    # So things are pointing to the right place
+    MCMC_OUTPUT$set_ptr(1L)
     
     # Appending the chains
     return(coda::as.mcmc.list(ans))
@@ -545,7 +569,7 @@ MCMC_without_conv_checker <- function(
     for (i in seq_len(nchains)) {
       
       # Where to record logpost and other stuff
-      MCMC_INFO$set_ptr(i)
+      MCMC_OUTPUT$set_ptr(i)
       
       ans[[i]] <- MCMC_without_conv_checker(
         initial      = initial[i,,drop=FALSE],
@@ -617,8 +641,8 @@ MCMC_without_conv_checker <- function(
   
   # MCMC algorithm -----------------------------------------------------------
   
-  MCMC_INFO$loop_envir <- environment()
-  on.exit(MCMC_INFO$loop_envir <- NULL, add = TRUE)
+  MCMC_OUTPUT$loop_envir <- environment()
+  on.exit(MCMC_OUTPUT$loop_envir <- NULL, add = TRUE)
   
   # The updates can be done jointly or sequentially
   R <- matrix(log(stats::runif(nsteps)), nrow = nsteps)
@@ -683,9 +707,16 @@ MCMC_without_conv_checker <- function(
   # Thinning the data
   if (burnin) {
     
-    ans     <- ans[-c(1L:burnin), , drop = FALSE]
-    logpost <- logpost[-c(1L:burnin)]
-    draws   <- draws[-c(1:burnin), , drop=FALSE]
+    to_burn <- -c(1L:burnin)
+    
+    ans     <- ans[to_burn, , drop = FALSE]
+    logpost <- logpost[to_burn]
+    draws   <- draws[to_burn, , drop=FALSE]
+    
+    if (length(MCMC_OUTPUT$ptr_usr))
+      MCMC_OUTPUT$ptr_usr[["userdata"]] <- MCMC_OUTPUT$ptr_usr[["userdata"]][
+        to_burn, , drop = FALSE
+      ]
     
   }
   
@@ -696,14 +727,22 @@ MCMC_without_conv_checker <- function(
     ans        <- ans[to_include, , drop = FALSE]
     draws      <- draws[to_include, , drop=FALSE]
     
+    if (length(MCMC_OUTPUT$ptr_usr))
+      MCMC_OUTPUT$ptr_usr[["userdata"]] <- MCMC_OUTPUT$ptr_usr[["userdata"]][
+        to_include, , drop = FALSE
+      ]
+    
   }
   
   names(logpost)  <- rownames(ans)
   rownames(draws) <- names(logpost)
   
+  if (length(MCMC_OUTPUT$ptr_usr))
+    rownames(MCMC_OUTPUT$ptr_usr[["userdata"]]) <- names(logpost)
+  
   # Storing the logpost and draws
-  MCMC_INFO$c_("logpost", logpost)
-  MCMC_INFO$rbind_("draws", draws)
+  MCMC_OUTPUT$ptr[["logpost"]] <- logpost
+  MCMC_OUTPUT$ptr[["draws"]]   <- draws
   
   # Cleaning the space
   on.exit(rm(list = ls(envir = environment())), add = TRUE)
@@ -787,10 +826,22 @@ MCMC_with_conv_checker <- function(
     nsteps <- bulks[i]
     
     if (i > 1) {
+      
       burnin  <- 0L
       initial <- ans[coda::niter(ans),]
       if (coda::is.mcmc.list(ans))
         initial <- do.call(rbind, initial)
+      
+      # Retrieving information from the previous run (we need to combine it)
+      prev_logpost       <- get_logpost()
+      prev_draws         <- get_draws()
+      
+      # Userdata not always exists, so we only store if there's something
+      # to store!
+      prev_userdata <- tryCatch(get_userdata(), error = function(e) e)
+      if (inherits(prev_userdata, "error"))
+        prev_userdata <- NULL
+    
     }
     
     # Running the MCMC and adding it to the tail
@@ -841,6 +892,23 @@ MCMC_with_conv_checker <- function(
     # Anything to say?
     msg <- convergence_msg_get()
     
+    # Wrapping MCMC_DATA
+    rnames <- if (nchains > 1L)
+      rownames(ans[[1L]])
+    else
+      rownames(ans)
+    
+    if (i > 1L) {
+      MCMC_OUTPUT$append_("logpost", prev_logpost, "data.", "c", rnames)
+      MCMC_OUTPUT$append_("draws", prev_draws, "data.", "rbind", rnames)
+      
+      # Userdata not always exists, so we only append if there's something
+      # to append!
+      if (!is.null(prev_userdata))
+        MCMC_OUTPUT$append_("userdata", prev_userdata, "data_user.", "rbind", rnames)
+    }
+    
+    
     if (converged) {
       
       message(
@@ -857,23 +925,6 @@ MCMC_with_conv_checker <- function(
         ifelse(is.na(msg), "", paste0(msg, " ")),
         "Trying with the next bulk."
       )
-    }
-    
-  }
-  
-  # Wrapping logpost
-  for (d in MCMC_INFO$data.) {
-    
-    if (nchains > 1L) {
-      
-      d[["logpost"]] <- structure(d[["logpost"]], names = rownames(ans[[1L]]))
-      d[["draws"]] <- structure(d[["draws"]], names = rownames(ans[[1L]]))
-      
-    } else {
-      
-      d[["logpost"]] <- structure(d[["logpost"]], names = rownames(ans))
-      d[["draws"]] <- structure(d[["draws"]], names = rownames(ans))
-      
     }
     
   }

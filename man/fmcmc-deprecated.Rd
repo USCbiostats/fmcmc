@@ -40,6 +40,6 @@ returns the difference between the two (\code{time_end - time_start}).
 }
 \description{
 These functions will no longer be included starting version 0.6-0. Instead,
-use the functions in \link{mcmc-info}.
+use the functions in \link{mcmc-output}.
 }
 \keyword{datasets}

@@ -270,7 +270,7 @@ Starting version 0.5-0, we replaced the family of functions `last_*` with
 `get_*`; a re-design of this "memory" component that gives users access
 to data generated during the Markov process. After each run of the `MCMC` function,
 information regarding the last execution is stored in the environment
-`MCMC_INFO`.
+`MCMC_OUTPUT`.
 
 If you wanted to look at the logposterior of the last call and proposed states,
 you can do the following:
@@ -292,7 +292,7 @@ legend(
 )
 ```
 
-The `MCMC_INFO` environment also contains the arguments passed to `MCMC()`:
+The `MCMC_OUTPUT` environment also contains the arguments passed to `MCMC()`:
 
 ```{r get-arguments}
 get_initial()

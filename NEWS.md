@@ -13,13 +13,17 @@
   convergence.
   
 * The set of functions `last_*` and `LAST_MCMC` will be deprecated in favor of
-  `get_*` and `MCMC_INFO`.
+  `get_*` and `MCMC_OUTPUT`.
   
 * The new function `get_logpost()` returns the computed values of the objective
   function from the last `MCMC` run.
   
 * The new function `get_draws()` returns the MCMC draws from the kernel's 
   proposal function (proposed states).
+  
+* The new function `set_userdata(...)` allows storing information into a data.frame
+  as the MCMC process runs. Users can retrieve the data with the function
+  `get_userdata()`.
   
 * The function `append_chains()` was randomly dropping one sample of the final
   set.

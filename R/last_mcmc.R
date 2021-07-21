@@ -1,7 +1,7 @@
 #' Deprecated methods in fmcmc
 #' 
 #' These functions will no longer be included starting version 0.6-0. Instead,
-#' use the functions in [mcmc-info].
+#' use the functions in [mcmc-output].
 #' 
 #' @export
 #' @name fmcmc-deprecated
@@ -20,14 +20,14 @@ LAST_MCMC <- structure(list(), class = "fmcmc_last_mcmc")
 
 #' @export
 `[[.fmcmc_last_mcmc` <- function(i, j, ..., exact=TRUE) {
-  .Deprecated("MCMC_INFO", old = "LAST_MCMC")
-  MCMC_INFO[[i]]
+  .Deprecated("MCMC_OUTPUT", old = "LAST_MCMC")
+  MCMC_OUTPUT[[i]]
 }
 
 #' @export
 `$.fmcmc_last_mcmc` <- function(x, name) {
-  .Deprecated("MCMC_INFO", old = "LAST_MCMC")
-  MCMC_INFO[[name]]
+  .Deprecated("MCMC_OUTPUT", old = "LAST_MCMC")
+  MCMC_OUTPUT[[name]]
 }
 
 #' @export
