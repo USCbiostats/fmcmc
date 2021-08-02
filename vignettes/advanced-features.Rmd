@@ -62,7 +62,13 @@ is being executed, using the function `ith_step()`.
 With `ith_step()`, we can access the environment containing the existing elements
 while the MCMC loop occurs. Among these, we have: `i` (the step number),
 `logpost` (a vector storing the trace of the unnormalized logposterior), `draws`,
-(a matrix storing the kernel's proposed states), etc. 
+(a matrix storing the kernel's proposed states), etc. The complete list of available
+objects is available either in the manual or when printing the function:
+
+```{r print-help}
+# This will show the available objects
+ith_step
+```
 
 For example, sometimes accidents happen, and your computing environment could
 crash (R, your PC, your server, etc.). It could be a good idea to keep track

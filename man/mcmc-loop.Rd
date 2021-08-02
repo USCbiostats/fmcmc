@@ -20,6 +20,30 @@ environment in which the main MCMC loop is running.}
 \item{...}{Named values to be appended to the user data.}
 }
 \value{
+The function \code{ith_step()} provides access to the following elements:
+\itemize{
+\item \code{i}            : (int) Step (iteration) number.
+\item \code{nsteps}       : (int) Number of steps.
+\item \code{chain_id}     : (int) Id of the chain (goes from 1 to -nchains-)
+\item \code{theta0}       : (double vector) Current state of the chain.
+\item \code{theta1}       : (double vector) Proposed state of the chain.
+\item \code{ans}          : (double matrix) Set of accepted states (it will be NA for rows >= i).
+\item \code{draws}        : (double matrix) Set of proposed states (it will be NA for rows >= i).
+\item \code{logpost}      : (double vector) Value of -fun- (it will be NA for elements >= i).
+\item \code{R}            : (double vector) Random values from U(0,1). This is used with the Hastings ratio.
+\item \code{thin}         : (int) Thinning (applied after the last step).
+\item \code{burnin}       : (int) Burn-in (applied after the last step).
+\item \code{conv_checker} : (function) Convergence checker function.
+\item \code{kernel}       : (fmcmc_kernel) Kernel object.
+\item \code{fun}          : (function) Passed function to MCMC.
+\item \code{f}            : (function) Wrapper of -fun-.
+\item \code{initial}      : (double vector) Starting point of the chain.
+}
+
+The following objects always have fixed values (see ?ith_step): nchains, cl, multicore
+
+Other available objects: cnames, funargs, MCMC_OUTPUT, passedargs, progress
+
 The function \code{\link[=set_userdata]{set_userdata()}} returns \code{\link[=invisible]{invisible()}}. The only side
 effect is appending the information by row.
 }
@@ -52,7 +76,10 @@ the objective function as follows:\preformatted{f <- function(p) \{
 \}
 }
 
-More examples below.
+In the case of the objects \code{nchains}, \code{cl}, and \code{multicore}, the function will
+always return the default values 1, NULL, and FALSE, respectively. Thus, the
+user shouldn't rely on these objects to provide information regarding runs
+using multiple chains. More examples below.
 }
 
 \examples{

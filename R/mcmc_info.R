@@ -433,7 +433,11 @@ get_chain_id <- function() get_("chain_id")
 #' }
 #' ```
 #' 
-#' More examples below.
+#' In the case of the objects `nchains`, `cl`, and `multicore`, the function will
+#' always return the default values 1, NULL, and FALSE, respectively. Thus, the 
+#' user shouldn't rely on these objects to provide information regarding runs
+#' using multiple chains. More examples below.
+#' 
 #' @examples 
 #' #' # Getting the logpost -------------------------------------------------------
 #' set.seed(23133)
@@ -516,7 +520,31 @@ get_chain_id <- function() get_("chain_id")
 #' @name mcmc-loop
 #' @param x Name of the element to retrieve. If missing, it will return the entire
 #' environment in which the main MCMC loop is running.
-ith_step <- function(x) {
+#' @return The function `ith_step()` provides access to the following elements:
+#' 
+#'   - `i`            : (int) Step (iteration) number.
+#'   - `nsteps`       : (int) Number of steps.
+#'   - `chain_id`     : (int) Id of the chain (goes from 1 to -nchains-)
+#'   - `theta0`       : (double vector) Current state of the chain.
+#'   - `theta1`       : (double vector) Proposed state of the chain.
+#'   - `ans`          : (double matrix) Set of accepted states (it will be NA for rows >= i).
+#'   - `draws`        : (double matrix) Set of proposed states (it will be NA for rows >= i).
+#'   - `logpost`      : (double vector) Value of -fun- (it will be NA for elements >= i).
+#'   - `R`            : (double vector) Random values from U(0,1). This is used with the Hastings ratio.
+#'   - `thin`         : (int) Thinning (applied after the last step).
+#'   - `burnin`       : (int) Burn-in (applied after the last step).
+#'   - `conv_checker` : (function) Convergence checker function.
+#'   - `kernel`       : (fmcmc_kernel) Kernel object.
+#'   - `fun`          : (function) Passed function to MCMC.
+#'   - `f`            : (function) Wrapper of -fun-.
+#'   - `initial`      : (double vector) Starting point of the chain.
+#' 
+#' The following objects always have fixed values (see ?ith_step): nchains, cl, multicore
+#' 
+#' Other available objects: cnames, funargs, MCMC_OUTPUT, passedargs, progress
+#' 
+#' @format NULL
+ith_step <- structure(function(x) {
   
   if (is.null(MCMC_OUTPUT$loop_envir))
     stop("-ith_step()- should only be used within an -MCMC()- call.", call. = FALSE)
@@ -526,7 +554,77 @@ ith_step <- function(x) {
   else
     return(get(x, envir = MCMC_OUTPUT$loop_envir))
   
+}, class = c("fmcmc_ith_step", "function"))
+
+#' @export
+print.fmcmc_ith_step <- function(x, ...) {
+
+  tmpf <- tempfile()
+  sink(tmpf, type = "output")
+  f <- function(p) {
+    print(ls.str(ith_step()))
+    stop()
+  }
+  suppressWarnings({
+    tryCatch(MCMC(initial = 0, fun = f, nsteps = 1000), error = function(e) e)
+  })
+  sink()
+
+  txt <- readLines(tmpf)
+
+  # Main fmcmc objects
+  main_obj <- c(
+    i            = "(int) Step (iteration) number.", 
+    nsteps       = "(int) Number of steps.",
+    chain_id     = "(int) Id of the chain (goes from 1 to -nchains-)",
+    theta0       = "(double vector) Current state of the chain.",
+    theta1       = "(double vector) Proposed state of the chain.",
+    ans          = "(double matrix) Set of accepted states (it will be NA for rows >= i).",
+    draws        = "(double matrix) Set of proposed states (it will be NA for rows >= i).",
+    logpost      = "(double vector) Value of -fun- (it will be NA for elements >= i).",
+    R            = "(double vector) Random values from U(0,1). This is used with the Hastings ratio.",
+    thin         = "(int) Thinning (applied after the last step).",
+    burnin       = "(int) Burn-in (applied after the last step).",
+    conv_checker = "(function) Convergence checker function.",
+    kernel       = "(fmcmc_kernel) Kernel object.",
+    fun          = "(function) Passed function to MCMC.",
+    f            = "(function) Wrapper of -fun-.",
+    initial      = "(double vector) Starting point of the chain."
+    )
+
+  multicore_obj <- c(
+    nchains      = "(int) Number of chains. (this will always take the value of 1. See ?ith_step).",
+    cl           = "(cluster) If -multicore == TRUE- (always equal to NULL. See ?ith_step).",
+    multicore    = "(bool) TRUE when running multicore (always equal to NULL. See ?ith_step). "
+  )
+
+  txt_names <- gsub("\\s+:.+", "", txt)
+  to_include <- !txt_names %in% c(names(main_obj), names(multicore_obj))
+  txt <- txt[to_include]
+
+  cat(
+    "Available objects via the ith_step() function:\n",
+    sprintf("  - %-13s: %s\n", names(main_obj), main_obj),
+    "\n",
+    "The following objects always have fixed values (see ?ith_step): ",
+    paste0(names(multicore_obj), collapse = ", "),
+    "\n",
+    sep = ""
+    )
+
+  
+  cat(
+    "Other available objects: ",
+    paste(txt_names[to_include], collapse = ", "),
+    "\n",
+    sep = ""
+    )
+
+  invisible(x)
+
 }
+
+
 
 #' @export
 #' @rdname mcmc-loop
