@@ -9,7 +9,7 @@
 * Users can now pass `seed` to `MCMC`. If `is.null(seed) != TRUE`, then `seed` is
   passed to `set.seed()`.
   
-* The function `convergence_auto()` now behaves as expected. Before it was not checking
+* The function `convergence_auto()` now behaves as expected. Before, it was not checking
   convergence.
   
 * The set of functions `last_*` and `LAST_MCMC` will be deprecated in favor of
@@ -24,6 +24,10 @@
 * The new function `set_userdata(...)` allows storing information into a data.frame
   as the MCMC process runs. Users can retrieve the data with the function
   `get_userdata()`.
+
+* The new function `ith_step()` provides access to objects within the MCMC
+  loop during the run. The new function comes with a vignette that illustrates
+  its usage.
   
 * The function `append_chains()` was randomly dropping one sample of the final
   set.
