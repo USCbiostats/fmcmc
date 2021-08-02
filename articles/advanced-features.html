@@ -150,10 +150,33 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
 <h1 class="hasAnchor">
 <a href="#operating-within-the-loop" class="anchor"></a>Operating within the loop</h1>
 <p>In some cases, the user would like to go beyond what <code><a href="../reference/MCMC.html">MCMC()</a></code>. In those cases, we can directly access the environment in which the main loop of the <code>MCMC</code>-call is being executed, using the function <code><a href="../reference/mcmc-loop.html">ith_step()</a></code>.</p>
-<p>With <code><a href="../reference/mcmc-loop.html">ith_step()</a></code>, we can access the environment containing the existing elements while the MCMC loop occurs. Among these, we have: <code>i</code> (the step number), <code>logpost</code> (a vector storing the trace of the unnormalized logposterior), <code>draws</code>, (a matrix storing the kernel’s proposed states), etc.</p>
+<p>With <code><a href="../reference/mcmc-loop.html">ith_step()</a></code>, we can access the environment containing the existing elements while the MCMC loop occurs. Among these, we have: <code>i</code> (the step number), <code>logpost</code> (a vector storing the trace of the unnormalized logposterior), <code>draws</code>, (a matrix storing the kernel’s proposed states), etc. The complete list of available objects is available either in the manual or when printing the function:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># This will show the available objects</span>
+<span class="va">ith_step</span></code></pre></div>
+<pre><code>## Available objects via the ith_step() function:
+##   - i            : (int) Step (iteration) number.
+##   - nsteps       : (int) Number of steps.
+##   - chain_id     : (int) Id of the chain (goes from 1 to -nchains-)
+##   - theta0       : (double vector) Current state of the chain.
+##   - theta1       : (double vector) Proposed state of the chain.
+##   - ans          : (double matrix) Set of accepted states (it will be NA for rows &gt;= i).
+##   - draws        : (double matrix) Set of proposed states (it will be NA for rows &gt;= i).
+##   - logpost      : (double vector) Value of -fun- (it will be NA for elements &gt;= i).
+##   - R            : (double vector) Random values from U(0,1). This is used with the Hastings ratio.
+##   - thin         : (int) Thinning (applied after the last step).
+##   - burnin       : (int) Burn-in (applied after the last step).
+##   - conv_checker : (function) Convergence checker function.
+##   - kernel       : (fmcmc_kernel) Kernel object.
+##   - fun          : (function) Passed function to MCMC.
+##   - f            : (function) Wrapper of -fun-.
+##   - initial      : (double vector) Starting point of the chain.
+## 
+## The following objects always have fixed values (see ?ith_step): nchains, cl, multicore
+## Other available objects: cnames, funargs, MCMC_OUTPUT, passedargs, progress</code></pre>
 <p>For example, sometimes accidents happen, and your computing environment could crash (R, your PC, your server, etc.). It could be a good idea to keep track of the current state of the chain. A way to do this is printing out the state of the process every n-th step.</p>
 <p>Using the <code>lifeexpect</code> data, let’s rewrite the <code>logpost()</code> function using <code><a href="../reference/mcmc-loop.html">ith_step()</a></code>. We will print the latest accepted state every 1,000 steps:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">logpost2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span>, <span class="va">D</span><span class="op">)</span> <span class="op">{</span>
 
   <span class="co"># Getting the number of step</span>
@@ -175,7 +198,7 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
 
 <span class="op">}</span></code></pre></div>
 <p>Note that the posterior distribution, i.e., accepted states, is stored in the matrix <code>ans</code> within the MCMC loop. Let’s use the Robust Adaptive Metropolis Kernel to fit this model. Since we need to estimate the standard error, we can set a lower-bound for the variables. For the starting point, let’s use the vector <code>[70, 0, 0, sd(age)]</code> (more than a good guess!):</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Generating kernel</span>
 <span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/kernel_ram.html">kernel_ram</a></span><span class="op">(</span>warmup <span class="op">=</span> <span class="fl">1000</span>, lb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">100</span>,<span class="op">-</span><span class="fl">100</span>,<span class="op">-</span><span class="fl">100</span>,<span class="fl">.001</span><span class="op">)</span><span class="op">)</span>
 
@@ -252,7 +275,7 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
 <h1 class="hasAnchor">
 <a href="#using-ith_step-with-multiple-chains" class="anchor"></a>Using ith_step() with multiple chains</h1>
 <p>Using the function <code><a href="../reference/mcmc-loop.html">ith_step()</a></code> could be of real help when dealing with multiple chains in a single run. In such a case, we can use the variable <code>chain_id</code> that can be found with <code><a href="../reference/mcmc-loop.html">ith_step()</a></code>. From the previous example:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">logpost3</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span>, <span class="va">D</span><span class="op">)</span> <span class="op">{</span>
 
   <span class="co"># Getting the number of step</span>
@@ -322,7 +345,7 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
 <a href="#saving-information-as-it-happens" class="anchor"></a>Saving information as it happens</h1>
 <p>Another thing the user may need to do is storing data as the MCMC algorithm runs. In such cases, you can use the <code><a href="../reference/mcmc-loop.html">set_userdata()</a></code> function, which, as the name suggests, will store the required data.</p>
 <p>For a simple example, suppose we wanted to store the state, we could do it in the following way:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">logpost4</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span>, <span class="va">D</span><span class="op">)</span> <span class="op">{</span>
 
   <span class="co"># Timestamp</span>
@@ -351,7 +374,7 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
   D         <span class="op">=</span> <span class="va">lifeexpect</span>
   <span class="op">)</span></code></pre></div>
 <p>In this case, since <code>nchains == 2</code>, <code>MCMC</code> will store a list of length two with the user data. To retrieve the generated data frame, we can call the function <code><a href="../reference/mcmc-loop.html">get_userdata()</a></code>. We can also inspect the <code>MCMC_OUTPUT</code> as follows:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">MCMC_OUTPUT</span><span class="op">)</span></code></pre></div>
 <pre><code>## Last call to MCMC holds the following elements:
 ## Chain N: 1
@@ -380,7 +403,7 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
 ## 50 79.90929  -9.502281 5.229895
 ## 60 80.04301  -9.991739 5.558207
 ## ... 94  more...</code></pre>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="fu"><a href="../reference/mcmc-loop.html">get_userdata</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## List of 2
 ##  $ :'data.frame':    100 obs. of  3 variables:

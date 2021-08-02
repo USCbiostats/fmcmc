@@ -180,7 +180,28 @@ environment in which the main MCMC loop is running.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>The function <code>set_userdata()</code> returns <code><a href='https://rdrr.io/r/base/invisible.html'>invisible()</a></code>. The only side
+    <p>The function <code>ith_step()</code> provides access to the following elements:</p><ul>
+<li><p><code>i</code>            : (int) Step (iteration) number.</p></li>
+<li><p><code>nsteps</code>       : (int) Number of steps.</p></li>
+<li><p><code>chain_id</code>     : (int) Id of the chain (goes from 1 to -nchains-)</p></li>
+<li><p><code>theta0</code>       : (double vector) Current state of the chain.</p></li>
+<li><p><code>theta1</code>       : (double vector) Proposed state of the chain.</p></li>
+<li><p><code>ans</code>          : (double matrix) Set of accepted states (it will be NA for rows &gt;= i).</p></li>
+<li><p><code>draws</code>        : (double matrix) Set of proposed states (it will be NA for rows &gt;= i).</p></li>
+<li><p><code>logpost</code>      : (double vector) Value of -fun- (it will be NA for elements &gt;= i).</p></li>
+<li><p><code>R</code>            : (double vector) Random values from U(0,1). This is used with the Hastings ratio.</p></li>
+<li><p><code>thin</code>         : (int) Thinning (applied after the last step).</p></li>
+<li><p><code>burnin</code>       : (int) Burn-in (applied after the last step).</p></li>
+<li><p><code>conv_checker</code> : (function) Convergence checker function.</p></li>
+<li><p><code>kernel</code>       : (fmcmc_kernel) Kernel object.</p></li>
+<li><p><code>fun</code>          : (function) Passed function to MCMC.</p></li>
+<li><p><code>f</code>            : (function) Wrapper of -fun-.</p></li>
+<li><p><code>initial</code>      : (double vector) Starting point of the chain.</p></li>
+</ul>
+
+<p>The following objects always have fixed values (see ?ith_step): nchains, cl, multicore</p>
+<p>Other available objects: cnames, funargs, MCMC_OUTPUT, passedargs, progress</p>
+<p>The function <code>set_userdata()</code> returns <code><a href='https://rdrr.io/r/base/invisible.html'>invisible()</a></code>. The only side
 effect is appending the information by row.</p>
     <h2 class="hasAnchor" id="advanced-usage"><a class="anchor" href="#advanced-usage"></a>Advanced usage</h2>
 
@@ -208,7 +229,10 @@ the objective function as follows:</p><pre><span class='va'>f</span> <span class
 <span class='op'>}</span>
 </pre>
 
-<p>More examples below.</p>
+<p>In the case of the objects <code>nchains</code>, <code>cl</code>, and <code>multicore</code>, the function will
+always return the default values 1, NULL, and FALSE, respectively. Thus, the
+user shouldn't rely on these objects to provide information regarding runs
+using multiple chains. More examples below.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'>#' # Getting the logpost -------------------------------------------------------</span>
