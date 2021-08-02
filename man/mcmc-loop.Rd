@@ -77,7 +77,7 @@ the objective function as follows:\preformatted{f <- function(p) \{
 }
 
 In the case of the objects \code{nchains}, \code{cl}, and \code{multicore}, the function will
-always return the default values 1, NULL, and FALSE, respectively. Thus, the
+always return the default values \code{1}, \code{NULL}, and \code{FALSE}, respectively. Thus, the
 user shouldn't rely on these objects to provide information regarding runs
 using multiple chains. More examples below.
 }
@@ -119,7 +119,7 @@ f <- function(p) {
   sum(dnorm(y - x*p, log = TRUE))
 }
 
-MCMC(fun = f, initial = c(0), nsteps=2000, progress = FALSE, seed = 22)
+ans0 <- MCMC(fun = f, initial = c(0), nsteps=2000, progress = FALSE, seed = 22)
 # ////////////////////////////////////////////////////
 # Step 500 of 2000. Values in the loop:
 # theta0: 2.025379
@@ -152,7 +152,7 @@ f <- function(p) {
   return(logpost_curr)
 
 }
-MCMC(fun = f, initial = c(0), nsteps=1000, progress = FALSE, seed = 22)
+ans1 <- MCMC(fun = f, initial = c(0), nsteps=1000, progress = FALSE, seed = 22)
 # At a higher point!: -357.3584 , step: 2 
 # At a higher point!: -272.6816 , step: 6 
 # At a higher point!: -270.9969 , step: 7 
