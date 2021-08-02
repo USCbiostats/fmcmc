@@ -55,7 +55,7 @@ logpost <- function(p, D) {
 
 # Operating within the loop
 
-In some cases, the user would like to go beyond what `MCMC()`. In those cases,
+In some cases, the user would like to go beyond what `MCMC()` does. In those cases,
 we can directly access the environment in which the main loop of the `MCMC`-call
 is being executed, using the function `ith_step()`.
 
