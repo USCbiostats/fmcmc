@@ -78,21 +78,43 @@ kernel function.
 # Getting the logpost -------------------------------------------------------
 set.seed(23133)
 x <- rnorm(200)
-y <- x*2 + rnorm(200)
+y <- -4 + x*2 + rnorm(200)
 f <- function(p) {
-  sum(dnorm(y - x*p, log = TRUE))
+  sum(dnorm(y - p[1] - x*p[2], log = TRUE))
 }
 
-ans <- MCMC(fun = f, initial = c(0), nsteps=2000)
+# Setting a RAM kernel
+kern <- kernel_am(eps = 1e-2)
+
+ans <- MCMC(fun = f, initial = c(0, 1), nsteps = 2000, kernel = kern)
 plot(
   # Plotting the logpost from the last run
-  get_logpost(), 
-  
+  -get_logpost(), 
   # Getting the number of chains
   main = paste0("nchains: ", get_nchains()),
   
   # And the elapsed time
   sub  = sprintf("Run time: \%.4f(s)", get_elapsed()[3]),
-  type = "l"
+  type = "l",
+  log = "y"
 ) 
+
+# This also works using multiple chains
+ans <- MCMC(fun = f, initial = c(0, 0), nsteps=2000, nchains = 2, kernel = kern)
+
+# In this case, just like -ans-, 
+draws <- get_draws()
+
+# Plotting proposed points vs accepted
+plot(
+  draws[[1]], pch = 20,
+  col = adjustcolor("gray", alpha = .5),
+  main = "Accepted vs proposed states\n(chain 1)"
+  )
+lines(ans[[1]], pch = 20, col = "tomato", lwd = 2)
+legend(
+  "topleft", legend = c("Accepted", "Proposed"), pch = c(NA, 20),
+  col = c("tomato", "black"), lty = c(1, NA), lwd = c(2, NA)
+)
+
 }

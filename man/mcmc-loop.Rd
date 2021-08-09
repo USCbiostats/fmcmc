@@ -166,6 +166,8 @@ data("lifeexpect")
 # Defining the logposterior
 logpost <- function(p) {
 
+  # Reconding the sum of the parameters (just because) 
+  # and the number of step.
   set_userdata(i = ith_step("i"), sum_of_p = sum(p))
 
   with(lifeexpect, {
@@ -180,5 +182,16 @@ kern <- kernel_ram(lb = c(10, -20, -20, .0001), eps = .01)
 ans <- MCMC(
   initial = c(70, -2, 2, 1), fun = logpost, kernel = kern, nsteps = 1000, seed = 1
   )
+
+# Retrieving the data
+head(get_userdata())
+
+# It also works using multiple chains
+ans_two <- MCMC(
+  initial = c(70, -2, 2, 1), fun = logpost, kernel = kern, nsteps = 1000, seed = 1, nchains = 2
+  )
+  
+user_dat <- get_userdata()
+lapply(user_dat, head)
 
 }

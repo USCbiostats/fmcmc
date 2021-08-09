@@ -4,7 +4,7 @@
 #' @importFrom methods formalArgs
 #' @importFrom stats runif plogis
 #' @importFrom MASS mvrnorm
-#' @importFrom utils head
+#' @importFrom utils head ls.str
 NULL
 
 #' A friendly MCMC framework

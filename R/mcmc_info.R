@@ -141,11 +141,11 @@ MCMC_OUTPUT$append_ <- function(x, val, what, call., names.) {
   
   if (get_nchains() > 1L) {
     
-    env <- MCMC_OUTPUT[[what]][[i]]
-    
     for (i in 1L:get_nchains()) {
       
-      assign(x = x[[i]], value = do.call(call., list(val, env[[x]])), envir = env)
+      env <- MCMC_OUTPUT[[what]][[i]]
+      
+      assign(x = x, value = do.call(call., list(val[[i]], env[[x]])), envir = env)
       
       if (call. == "c")
         names(env[[x]]) <- names.
@@ -153,6 +153,7 @@ MCMC_OUTPUT$append_ <- function(x, val, what, call., names.) {
         rownames(env[[x]]) <- names.
       
     }
+    
   } else {
     
     assign(
@@ -307,23 +308,45 @@ get_ <- function(x) {
 #' # Getting the logpost -------------------------------------------------------
 #' set.seed(23133)
 #' x <- rnorm(200)
-#' y <- x*2 + rnorm(200)
+#' y <- -4 + x*2 + rnorm(200)
 #' f <- function(p) {
-#'   sum(dnorm(y - x*p, log = TRUE))
+#'   sum(dnorm(y - p[1] - x*p[2], log = TRUE))
 #' }
 #' 
-#' ans <- MCMC(fun = f, initial = c(0), nsteps=2000)
+#' # Setting a RAM kernel
+#' kern <- kernel_am(eps = 1e-2)
+#' 
+#' ans <- MCMC(fun = f, initial = c(0, 1), nsteps = 2000, kernel = kern)
 #' plot(
 #'   # Plotting the logpost from the last run
-#'   get_logpost(), 
-#'   
+#'   -get_logpost(), 
 #'   # Getting the number of chains
 #'   main = paste0("nchains: ", get_nchains()),
 #'   
 #'   # And the elapsed time
 #'   sub  = sprintf("Run time: %.4f(s)", get_elapsed()[3]),
-#'   type = "l"
+#'   type = "l",
+#'   log = "y"
 #' ) 
+#' 
+#' # This also works using multiple chains
+#' ans <- MCMC(fun = f, initial = c(0, 0), nsteps=2000, nchains = 2, kernel = kern)
+#' 
+#' # In this case, just like -ans-, 
+#' draws <- get_draws()
+#' 
+#' # Plotting proposed points vs accepted
+#' plot(
+#'   draws[[1]], pch = 20,
+#'   col = adjustcolor("gray", alpha = .5),
+#'   main = "Accepted vs proposed states\n(chain 1)"
+#'   )
+#' lines(ans[[1]], pch = 20, col = "tomato", lwd = 2)
+#' legend(
+#'   "topleft", legend = c("Accepted", "Proposed"), pch = c(NA, 20),
+#'   col = c("tomato", "black"), lty = c(1, NA), lwd = c(2, NA)
+#' )
+#' 
 get_logpost <- function() {
   
   get_("logpost")
@@ -562,7 +585,7 @@ print.fmcmc_ith_step <- function(x, ...) {
   tmpf <- tempfile()
   sink(tmpf, type = "output")
   f <- function(p) {
-    print(ls.str(ith_step()))
+    print(utils::ls.str(ith_step()))
     stop()
   }
   suppressWarnings({
@@ -638,6 +661,8 @@ print.fmcmc_ith_step <- function(x, ...) {
 #' # Defining the logposterior
 #' logpost <- function(p) {
 #' 
+#'   # Reconding the sum of the parameters (just because) 
+#'   # and the number of step.
 #'   set_userdata(i = ith_step("i"), sum_of_p = sum(p))
 #' 
 #'   with(lifeexpect, {
@@ -652,6 +677,17 @@ print.fmcmc_ith_step <- function(x, ...) {
 #' ans <- MCMC(
 #'   initial = c(70, -2, 2, 1), fun = logpost, kernel = kern, nsteps = 1000, seed = 1
 #'   )
+#' 
+#' # Retrieving the data
+#' head(get_userdata())
+#' 
+#' # It also works using multiple chains
+#' ans_two <- MCMC(
+#'   initial = c(70, -2, 2, 1), fun = logpost, kernel = kern, nsteps = 1000, seed = 1, nchains = 2
+#'   )
+#'   
+#' user_dat <- get_userdata()
+#' lapply(user_dat, head)
 #' 
 set_userdata <- function(...) {
   
