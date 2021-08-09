@@ -219,24 +219,46 @@ kernel function.</p>
     <pre class="examples"><div class='input'><span class='co'># Getting the logpost -------------------------------------------------------</span>
 <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>23133</span><span class='op'>)</span>
 <span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>200</span><span class='op'>)</span>
-<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='va'>x</span><span class='op'>*</span><span class='fl'>2</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>200</span><span class='op'>)</span>
+<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='op'>-</span><span class='fl'>4</span> <span class='op'>+</span> <span class='va'>x</span><span class='op'>*</span><span class='fl'>2</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>200</span><span class='op'>)</span>
 <span class='va'>f</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>p</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>dnorm</a></span><span class='op'>(</span><span class='va'>y</span> <span class='op'>-</span> <span class='va'>x</span><span class='op'>*</span><span class='va'>p</span>, log <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>dnorm</a></span><span class='op'>(</span><span class='va'>y</span> <span class='op'>-</span> <span class='va'>p</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>-</span> <span class='va'>x</span><span class='op'>*</span><span class='va'>p</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span>, log <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>
 <span class='op'>}</span>
 
-<span class='va'>ans</span> <span class='op'>&lt;-</span> <span class='fu'><a href='MCMC.html'>MCMC</a></span><span class='op'>(</span>fun <span class='op'>=</span> <span class='va'>f</span>, initial <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span><span class='op'>)</span>, nsteps<span class='op'>=</span><span class='fl'>2000</span><span class='op'>)</span>
+<span class='co'># Setting a RAM kernel</span>
+<span class='va'>kern</span> <span class='op'>&lt;-</span> <span class='fu'><a href='kernel_adapt.html'>kernel_am</a></span><span class='op'>(</span>eps <span class='op'>=</span> <span class='fl'>1e-2</span><span class='op'>)</span>
+
+<span class='va'>ans</span> <span class='op'>&lt;-</span> <span class='fu'><a href='MCMC.html'>MCMC</a></span><span class='op'>(</span>fun <span class='op'>=</span> <span class='va'>f</span>, initial <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span><span class='op'>)</span>, nsteps <span class='op'>=</span> <span class='fl'>2000</span>, kernel <span class='op'>=</span> <span class='va'>kern</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span>
   <span class='co'># Plotting the logpost from the last run</span>
-  <span class='fu'>get_logpost</span><span class='op'>(</span><span class='op'>)</span>, 
-  
+  <span class='op'>-</span><span class='fu'>get_logpost</span><span class='op'>(</span><span class='op'>)</span>, 
   <span class='co'># Getting the number of chains</span>
   main <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"nchains: "</span>, <span class='fu'>get_nchains</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>,
   
   <span class='co'># And the elapsed time</span>
   sub  <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sprintf.html'>sprintf</a></span><span class='op'>(</span><span class='st'>"Run time: %.4f(s)"</span>, <span class='fu'>get_elapsed</span><span class='op'>(</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>3</span><span class='op'>]</span><span class='op'>)</span>,
-  type <span class='op'>=</span> <span class='st'>"l"</span>
+  type <span class='op'>=</span> <span class='st'>"l"</span>,
+  log <span class='op'>=</span> <span class='st'>"y"</span>
 <span class='op'>)</span> 
-</div><div class='img'><img src='mcmc-output-1.png' alt='' width='700' height='433' /></div></pre>
+</div><div class='img'><img src='mcmc-output-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'># This also works using multiple chains</span>
+<span class='va'>ans</span> <span class='op'>&lt;-</span> <span class='fu'><a href='MCMC.html'>MCMC</a></span><span class='op'>(</span>fun <span class='op'>=</span> <span class='va'>f</span>, initial <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0</span><span class='op'>)</span>, nsteps<span class='op'>=</span><span class='fl'>2000</span>, nchains <span class='op'>=</span> <span class='fl'>2</span>, kernel <span class='op'>=</span> <span class='va'>kern</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: While using multiple chains, a single initial point has been passed via `initial`: c(0, 0). The values will be recycled. Ideally you would want to start each chain from different locations.</span></div><div class='input'>
+<span class='co'># In this case, just like -ans-, </span>
+<span class='va'>draws</span> <span class='op'>&lt;-</span> <span class='fu'>get_draws</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='co'># Plotting proposed points vs accepted</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span>
+  <span class='va'>draws</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>, pch <span class='op'>=</span> <span class='fl'>20</span>,
+  col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/grDevices/adjustcolor.html'>adjustcolor</a></span><span class='op'>(</span><span class='st'>"gray"</span>, alpha <span class='op'>=</span> <span class='fl'>.5</span><span class='op'>)</span>,
+  main <span class='op'>=</span> <span class='st'>"Accepted vs proposed states\n(chain 1)"</span>
+  <span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>ans</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>, pch <span class='op'>=</span> <span class='fl'>20</span>, col <span class='op'>=</span> <span class='st'>"tomato"</span>, lwd <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span><span class='op'>(</span>
+  <span class='st'>"topleft"</span>, legend <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Accepted"</span>, <span class='st'>"Proposed"</span><span class='op'>)</span>, pch <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>20</span><span class='op'>)</span>,
+  col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"tomato"</span>, <span class='st'>"black"</span><span class='op'>)</span>, lty <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='cn'>NA</span><span class='op'>)</span>, lwd <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='cn'>NA</span><span class='op'>)</span>
+<span class='op'>)</span>
+</div><div class='img'><img src='mcmc-output-2.png' alt='' width='700' height='433' /></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
