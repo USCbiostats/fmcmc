@@ -467,8 +467,6 @@ MCMC_without_conv_checker <- function(
     ncores <- ifelse(nchains < ncores, nchains, ncores)
     cl     <- parallel::makePSOCKcluster(ncores)
     
-    # Loading the package and setting the seed using clusterRNGStream
-    invisible(parallel::clusterEvalQ(cl, library(fmcmc)))
     parallel::clusterSetRNGStream(cl, .Random.seed)
     
     on.exit(parallel::stopCluster(cl))
@@ -477,6 +475,13 @@ MCMC_without_conv_checker <- function(
   
   # We need to actively export these so we can capture it later
   if (multicore) {
+    
+    # Loading the package and setting the seed using clusterRNGStream
+    invisible(parallel::clusterEvalQ(cl, {
+      if (!"fmcmc" %in% .packages())
+      library(fmcmc)
+      }))
+    
     parallel::clusterExport(cl, "kernel", envir = environment())
     parallel::clusterEvalQ(cl, {
       .FMCMC_PLL_KERNEL  <- new.env()
