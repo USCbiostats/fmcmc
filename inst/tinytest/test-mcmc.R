@@ -220,8 +220,32 @@ ans1 <- suppressWarnings(
   )
 )
 
+# Creating multicore
+cl <- parallel::makeCluster(2L)
+ans2 <- suppressWarnings(
+  MCMC(fun,
+       initial = c(1, 2),
+       nsteps  = 5e3,
+       burnin  = 500,
+       kernel  = kernel_normal_reflective(ub = 3, lb = c(-3, 0), scale = .25),
+       D.      = D,
+       nchains = 2L,
+       multicore = TRUE
+  )
+)
+
+parallel::stopCluster(cl)
+
 expect_equivalent(
   colMeans(do.call(rbind, ans0)),
+  c(0, 2), tolerance = 0.1)
+
+expect_equivalent(
+  colMeans(do.call(rbind, ans1)),
+  c(0, 2), tolerance = 0.1)
+
+expect_equivalent(
+  colMeans(do.call(rbind, ans2)),
   c(0, 2), tolerance = 0.1)
   
 # Rerunning a list
