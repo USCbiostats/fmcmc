@@ -48,7 +48,7 @@ jobs:
         env:
           MATNAME: ${{ matrix.name }}
         run: |
-          docker run --rm -i -v ${PWD}:/mnt -w /mnt -e CI=true ${cntr} \
+          docker run --rm -i -e MATNAME=$MATNAME -v ${PWD}:/mnt -w /mnt -e CI=true ${cntr} \
             ${{ matrix.cmd }} -e \
             '(v <- Sys.getenv("MATNAME"));if (v == "release") covr::codecov(quiet = FALSE)'
 
