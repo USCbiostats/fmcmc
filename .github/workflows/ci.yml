@@ -47,8 +47,17 @@ jobs:
       - name: Coverage
         env:
           MATNAME: ${{ matrix.name }}
+          GITHUB_ACTION: true
+          GITHUB_REPOSITORY: USCbiostats/fmcmc
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_SHA: ${{ github.sha }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }} 
         run: |
-          docker run --rm -i -e MATNAME=$MATNAME -v ${PWD}:/mnt -w /mnt -e CI=true ${cntr} \
+          docker run --rm -i \
+            --env-file .github/workflows/envir.env \
+            -v ${PWD}:/mnt -w /mnt -e CI=true ${cntr} \
             ${{ matrix.cmd }} -e \
             '(v <- Sys.getenv("MATNAME"));if (v == "release") covr::codecov(quiet = FALSE)'
 
