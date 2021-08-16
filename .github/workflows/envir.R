@@ -5,4 +5,5 @@ cat("GITHUB_REF=", Sys.getenv("GITHUB_REF"), "\n", file = "envir.env", append = 
 cat("GITHUB_HEAD_REF=", Sys.getenv("GITHUB_HEAD_REF"), "\n", file = "envir.env", append = TRUE)
 cat("GITHUB_RUN_ID=", Sys.getenv("GITHUB_RUN_ID"), "\n", file = "envir.env", append = TRUE)
 cat("GITHUB_SHA=", Sys.getenv("GITHUB_SHA"), "\n", file = "envir.env", append = TRUE)
+cat(readLines("envir.env"), sep = "\n")
 cat("CODECOV_TOKEN=", Sys.getenv("CODECOV_TOKEN"), "\n", file = "envir.env", append = TRUE)
