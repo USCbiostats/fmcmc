@@ -55,8 +55,9 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }} 
         run: |
+          docker run --rm -i -v ${PWD}:/mnt -w /mnt ${cntr} ${{ matrix.cmd }} -q -e 'source(".github/workflows/envir.R")'
           docker run --rm -i \
-            --env-file .github/workflows/envir.env \
+            --env-file envir.env \
             -v ${PWD}:/mnt -w /mnt -e CI=true ${cntr} \
             ${{ matrix.cmd }} -e \
             '(v <- Sys.getenv("MATNAME"));if (v == "release") covr::codecov(quiet = FALSE)'
