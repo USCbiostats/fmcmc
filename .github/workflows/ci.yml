@@ -57,7 +57,7 @@ jobs:
             -e GITHUB_HEAD_REF=$GITHUB_HEAD_REF \
             -e GITHUB_RUN_ID=$GITHUB_RUN_ID \
             -e GITHUB_SHA=$GITHUB_SHA \
-            -e CODECOV_TOKEN=CODECOV_TOKEN \
+            -e CODECOV_TOKEN=$CODECOV_TOKEN \
             -v ${PWD}:/mnt -w /mnt -e CI=true ${cntr} \
             ${{ matrix.cmd }} -e \
             '(v <- Sys.getenv("MATNAME"));if (v == "release") covr::codecov(quiet = FALSE)'
