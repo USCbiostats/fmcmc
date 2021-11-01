@@ -226,9 +226,10 @@ MCMC_init <- function(...) {
       assign(n, get(n, envir = env), envir = MCMC_OUTPUT$info)
     
   # Assigning dots
-  for (i in seq_len(...length())) {
-    assign(...names()[i], ...elt(i), envir = MCMC_OUTPUT$info)
-  }
+  dotnames <- names(list(...))
+    
+  for (i in seq_len(...length())) 
+    assign(dotnames[i], ...elt(i), envir = MCMC_OUTPUT$info)
     
   invisible(NULL)
   

@@ -265,9 +265,9 @@ ans <- MCMC(
     ub    = 5,
     scale = 0.01
   ),
-  nsteps  = 1e4,
-  thin    = 20,
-  burnin  = 5e3
+  nsteps  = 1e3,
+  thin    = 10,
+  burnin  = 5e2
 )
 
 # Checking out the outcomes
@@ -300,9 +300,9 @@ ans <- MCMC(
     ub    = 5,
     scale = 0.01
   ),
-  nsteps  = 1e4,
-  thin    = 20,
-  burnin  = 5e3,
+  nsteps  = 1e3,
+  thin    = 10,
+  burnin  = 5e2,
   D       = D
 )
 

@@ -184,7 +184,7 @@ Another thing the user may need to do is storing data as the MCMC algorithm runs
 In such cases, you can use the `set_userdata()` function, which, as the name suggests,
 will store the required data.
 
-For a simple example, suppose we wanted to store the state, we could do it in the
+For a simple example, suppose we wanted to store the proposed state, we could do it in the
 following way:
 
 ```{r lupost4}
