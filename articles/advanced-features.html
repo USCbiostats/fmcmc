@@ -32,6 +32,8 @@
 </script>
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -44,18 +46,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">fmcmc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -83,7 +79,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/USCbiostats/fmcmc/">
+  <a href="https://github.com/USCbiostats/fmcmc/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -98,36 +94,36 @@
 
       
 
-      </header><script src="advanced-features_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Advanced features</h1>
-                        <h4 class="author">George G. Vega Yon</h4>
+                        <h4 data-toc-skip class="author">George G. Vega Yon</h4>
             
-            <h4 class="date">July 19th, 2021</h4>
+            <h4 data-toc-skip class="date">July 19th, 2021</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/USCbiostats/fmcmc/blob/master/vignettes/advanced-features.Rmd"><code>vignettes/advanced-features.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/USCbiostats/fmcmc/blob/HEAD/vignettes/advanced-features.Rmd" class="external-link"><code>vignettes/advanced-features.Rmd</code></a></small>
       <div class="hidden name"><code>advanced-features.Rmd</code></div>
 
     </div>
 
     
     
-<div id="life-expectancy-in-the-us" class="section level1">
-<h1 class="hasAnchor">
-<a href="#life-expectancy-in-the-us" class="anchor"></a>Life expectancy in the US</h1>
+<div class="section level1">
+<h1 id="life-expectancy-in-the-us">Life expectancy in the US<a class="anchor" aria-label="anchor" href="#life-expectancy-in-the-us"></a>
+</h1>
 <p>Before we jump into coding, let’s start by loading the package and the data that we will be using; the <code>lifeexpect</code> database. This data set was simulated using official statistics and research on life expectancy in the US (see <code><a href="../reference/lifeexpect.html">?lifeexpect</a></code> for more details). Each row corresponds to the observed age of an individual at the time of disease.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/fmcmc">fmcmc</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">lifeexpect</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">lifeexpect</span><span class="op">)</span> <span class="co"># Taking a look at the data</span></code></pre></div>
-<pre><code>##   smoke female      age
-## 1     0      0 78.10840
-## 2     0      1 83.42009
-## 3     0      1 85.46404
-## 4     1      0 69.83565
-## 5     0      1 80.40131
-## 6     1      0 72.18115</code></pre>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/fmcmc" class="external-link">fmcmc</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">lifeexpect</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">lifeexpect</span><span class="op">)</span> <span class="co"># Taking a look at the data</span></code></pre></div>
+<pre><code><span class="co">##   smoke female      age</span>
+<span class="co">## 1     0      0 78.10840</span>
+<span class="co">## 2     0      1 83.42009</span>
+<span class="co">## 3     0      1 85.46404</span>
+<span class="co">## 4     1      0 69.83565</span>
+<span class="co">## 5     0      1 80.40131</span>
+<span class="co">## 6     1      0 72.18115</span></code></pre>
 <p>The data is characterized by the following model:</p>
 <p><span class="math display">\[\begin{equation*}
 y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \sigma^2\right)
@@ -139,41 +135,41 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
 <p>Where <span class="math inline">\(y_i\)</span> is the age of the i-th individual. Using R, we could write the logposterior as follows:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">logpost</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span>, <span class="va">D</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span>
     <span class="va">D</span><span class="op">$</span><span class="va">age</span> <span class="op">-</span> <span class="op">(</span><span class="va">p</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">p</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">*</span> <span class="va">D</span><span class="op">$</span><span class="va">smoke</span> <span class="op">+</span> <span class="va">p</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">*</span> <span class="va">D</span><span class="op">$</span><span class="va">female</span><span class="op">)</span>,
     sd <span class="op">=</span> <span class="va">p</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span>,
     log <span class="op">=</span> <span class="cn">TRUE</span>
   <span class="op">)</span><span class="op">)</span>
 <span class="op">}</span></code></pre></div>
 </div>
-<div id="operating-within-the-loop" class="section level1">
-<h1 class="hasAnchor">
-<a href="#operating-within-the-loop" class="anchor"></a>Operating within the loop</h1>
+<div class="section level1">
+<h1 id="operating-within-the-loop">Operating within the loop<a class="anchor" aria-label="anchor" href="#operating-within-the-loop"></a>
+</h1>
 <p>In some cases, the user would like to go beyond what <code><a href="../reference/MCMC.html">MCMC()</a></code> does. In those cases, we can directly access the environment in which the main loop of the <code>MCMC</code>-call is being executed, using the function <code><a href="../reference/mcmc-loop.html">ith_step()</a></code>.</p>
 <p>With <code><a href="../reference/mcmc-loop.html">ith_step()</a></code>, we can access the environment containing the existing elements while the MCMC loop occurs. Among these, we have: <code>i</code> (the step number), <code>logpost</code> (a vector storing the trace of the unnormalized logposterior), <code>draws</code>, (a matrix storing the kernel’s proposed states), etc. The complete list of available objects is available either in the manual or when printing the function:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># This will show the available objects</span>
 <span class="va">ith_step</span></code></pre></div>
-<pre><code>## Available objects via the ith_step() function:
-##   - i            : (int) Step (iteration) number.
-##   - nsteps       : (int) Number of steps.
-##   - chain_id     : (int) Id of the chain (goes from 1 to -nchains-)
-##   - theta0       : (double vector) Current state of the chain.
-##   - theta1       : (double vector) Proposed state of the chain.
-##   - ans          : (double matrix) Set of accepted states (it will be NA for rows &gt;= i).
-##   - draws        : (double matrix) Set of proposed states (it will be NA for rows &gt;= i).
-##   - logpost      : (double vector) Value of -fun- (it will be NA for elements &gt;= i).
-##   - R            : (double vector) Random values from U(0,1). This is used with the Hastings ratio.
-##   - thin         : (int) Thinning (applied after the last step).
-##   - burnin       : (int) Burn-in (applied after the last step).
-##   - conv_checker : (function) Convergence checker function.
-##   - kernel       : (fmcmc_kernel) Kernel object.
-##   - fun          : (function) Passed function to MCMC.
-##   - f            : (function) Wrapper of -fun-.
-##   - initial      : (double vector) Starting point of the chain.
-## 
-## The following objects always have fixed values (see ?ith_step): nchains, cl, multicore
-## Other available objects: cnames, funargs, MCMC_OUTPUT, passedargs, progress</code></pre>
+<pre><code><span class="co">## Available objects via the ith_step() function:</span>
+<span class="co">##   - i            : (int) Step (iteration) number.</span>
+<span class="co">##   - nsteps       : (int) Number of steps.</span>
+<span class="co">##   - chain_id     : (int) Id of the chain (goes from 1 to -nchains-)</span>
+<span class="co">##   - theta0       : (double vector) Current state of the chain.</span>
+<span class="co">##   - theta1       : (double vector) Proposed state of the chain.</span>
+<span class="co">##   - ans          : (double matrix) Set of accepted states (it will be NA for rows &gt;= i).</span>
+<span class="co">##   - draws        : (double matrix) Set of proposed states (it will be NA for rows &gt;= i).</span>
+<span class="co">##   - logpost      : (double vector) Value of -fun- (it will be NA for elements &gt;= i).</span>
+<span class="co">##   - R            : (double vector) Random values from U(0,1). This is used with the Hastings ratio.</span>
+<span class="co">##   - thin         : (int) Thinning (applied after the last step).</span>
+<span class="co">##   - burnin       : (int) Burn-in (applied after the last step).</span>
+<span class="co">##   - conv_checker : (function) Convergence checker function.</span>
+<span class="co">##   - kernel       : (fmcmc_kernel) Kernel object.</span>
+<span class="co">##   - fun          : (function) Passed function to MCMC.</span>
+<span class="co">##   - f            : (function) Wrapper of -fun-.</span>
+<span class="co">##   - initial      : (double vector) Starting point of the chain.</span>
+<span class="co">## </span>
+<span class="co">## The following objects always have fixed values (see ?ith_step): nchains, cl, multicore</span>
+<span class="co">## Other available objects: cnames, funargs, MCMC_OUTPUT, passedargs, progress</span></code></pre>
 <p>For example, sometimes accidents happen, and your computing environment could crash (R, your PC, your server, etc.). It could be a good idea to keep track of the current state of the chain. A way to do this is printing out the state of the process every n-th step.</p>
 <p>Using the <code>lifeexpect</code> data, let’s rewrite the <code>logpost()</code> function using <code><a href="../reference/mcmc-loop.html">ith_step()</a></code>. We will print the latest accepted state every 1,000 steps:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -183,13 +179,13 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
   <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mcmc-loop.html">ith_step</a></span><span class="op">(</span><span class="st">"i"</span><span class="op">)</span>
 
   <span class="co"># After the first iteration, every 1000 steps:</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="va">i</span> <span class="op">&gt;</span> <span class="fl">1L</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="op">(</span><span class="va">i</span> <span class="op">%%</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="va">i</span> <span class="op">&gt;</span> <span class="fl">1L</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="op">(</span><span class="va">i</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
 
     <span class="co"># The last accepted state. Accepted states are</span>
     <span class="co"># stored in -ans-.</span>
     <span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mcmc-loop.html">ith_step</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">ans</span><span class="op">[</span><span class="va">i</span> <span class="op">-</span> <span class="fl">1L</span>,<span class="op">]</span>
 
-    <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Step: "</span>, <span class="va">i</span>, <span class="st">" state: c(\n  "</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">s</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span>, <span class="st">"\n)\n"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Step: "</span>, <span class="va">i</span>, <span class="st">" state: c(\n  "</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">s</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span>, <span class="st">"\n)\n"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span>
 
   <span class="op">}</span>
 
@@ -200,11 +196,11 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
 <p>Note that the posterior distribution, i.e., accepted states, is stored in the matrix <code>ans</code> within the MCMC loop. Let’s use the Robust Adaptive Metropolis Kernel to fit this model. Since we need to estimate the standard error, we can set a lower-bound for the variables. For the starting point, let’s use the vector <code>[70, 0, 0, sd(age)]</code> (more than a good guess!):</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Generating kernel</span>
-<span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/kernel_ram.html">kernel_ram</a></span><span class="op">(</span>warmup <span class="op">=</span> <span class="fl">1000</span>, lb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">100</span>,<span class="op">-</span><span class="fl">100</span>,<span class="op">-</span><span class="fl">100</span>,<span class="fl">.001</span><span class="op">)</span><span class="op">)</span>
+<span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/kernel_ram.html">kernel_ram</a></span><span class="op">(</span>warmup <span class="op">=</span> <span class="fl">1000</span>, lb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">100</span>,<span class="op">-</span><span class="fl">100</span>,<span class="op">-</span><span class="fl">100</span>,<span class="fl">.001</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># Running MCMC</span>
 <span class="va">ans0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MCMC.html">MCMC</a></span><span class="op">(</span>
-  initial  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">70</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span><span class="op">(</span><span class="va">lifeexpect</span><span class="op">$</span><span class="va">age</span><span class="op">)</span><span class="op">)</span>,
+  initial  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">70</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">lifeexpect</span><span class="op">$</span><span class="va">age</span><span class="op">)</span><span class="op">)</span>,
   fun      <span class="op">=</span> <span class="va">logpost2</span>, 
   nsteps   <span class="op">=</span> <span class="fl">10000</span>,    
   kernel   <span class="op">=</span> <span class="va">kern</span>, 
@@ -212,68 +208,68 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
   D        <span class="op">=</span> <span class="va">lifeexpect</span>,
   progress <span class="op">=</span> <span class="cn">FALSE</span>
   <span class="op">)</span></code></pre></div>
-<pre><code>## Step: 1000 state: c(
-##   69.9961016297189, -0.00345239203214055, 0.0070167653826948, 5.90378993611787
-## )
-## Step: 2000 state: c(
-##   70.0504366122137, -0.0292853676293391, 0.0762607223550027, 5.97687773201868
-## )
-## Step: 2000 state: c(
-##   70.0504366122137, -0.0292853676293391, 0.0762607223550027, 5.97687773201868
-## )
-## Step: 3000 state: c(
-##   70.8055075956863, 0.279930458592658, 0.309906484934833, 6.51371636035567
-## )
-## Step: 3000 state: c(
-##   70.8055075956863, 0.279930458592658, 0.309906484934833, 6.51371636035567
-## )
-## Step: 4000 state: c(
-##   74.4132756921826, -1.22342712322444, 2.14666613219256, 5.70679470552717
-## )
-## Step: 4000 state: c(
-##   74.4132756921826, -1.22342712322444, 2.14666613219256, 5.70679470552717
-## )
-## Step: 5000 state: c(
-##   80.0205621762777, -9.8317975387271, 5.37801732288771, 1.99929550970001
-## )
-## Step: 5000 state: c(
-##   80.0205621762777, -9.8317975387271, 5.37801732288771, 1.99929550970001
-## )
-## Step: 6000 state: c(
-##   79.7724276801445, -9.5681468887873, 5.64865694366047, 2.04970696423526
-## )
-## Step: 6000 state: c(
-##   79.7724276801445, -9.5681468887873, 5.64865694366047, 2.04970696423526
-## )
-## Step: 7000 state: c(
-##   79.8413102462838, -9.80272237981329, 5.63324297617658, 1.9748951003534
-## )
-## Step: 7000 state: c(
-##   79.8413102462838, -9.80272237981329, 5.63324297617658, 1.9748951003534
-## )
-## Step: 8000 state: c(
-##   80.1744325184177, -9.79630960138592, 5.38165644274342, 1.99091898767162
-## )
-## Step: 8000 state: c(
-##   80.1744325184177, -9.79630960138592, 5.38165644274342, 1.99091898767162
-## )
-## Step: 9000 state: c(
-##   79.9347937306303, -9.63123904834592, 5.49489884044905, 2.07352104788079
-## )
-## Step: 9000 state: c(
-##   79.9347937306303, -9.63123904834592, 5.49489884044905, 2.07352104788079
-## )
-## Step: 10000 state: c(
-##   80.1499993519635, -9.74186365776493, 5.25019766088187, 1.99986537561164
-## )
-## Step: 10000 state: c(
-##   80.1499993519635, -9.74186365776493, 5.25019766088187, 1.99986537561164
-## )</code></pre>
+<pre><code><span class="co">## Step: 1000 state: c(</span>
+<span class="co">##   69.9961016297189, -0.00345239203214055, 0.0070167653826948, 5.90378993611787</span>
+<span class="co">## )</span>
+<span class="co">## Step: 2000 state: c(</span>
+<span class="co">##   70.0504366122137, -0.0292853676293391, 0.0762607223550027, 5.97687773201868</span>
+<span class="co">## )</span>
+<span class="co">## Step: 2000 state: c(</span>
+<span class="co">##   70.0504366122137, -0.0292853676293391, 0.0762607223550027, 5.97687773201868</span>
+<span class="co">## )</span>
+<span class="co">## Step: 3000 state: c(</span>
+<span class="co">##   70.8055075956863, 0.279930458592658, 0.309906484934833, 6.51371636035567</span>
+<span class="co">## )</span>
+<span class="co">## Step: 3000 state: c(</span>
+<span class="co">##   70.8055075956863, 0.279930458592658, 0.309906484934833, 6.51371636035567</span>
+<span class="co">## )</span>
+<span class="co">## Step: 4000 state: c(</span>
+<span class="co">##   74.4132756921826, -1.22342712322444, 2.14666613219256, 5.70679470552717</span>
+<span class="co">## )</span>
+<span class="co">## Step: 4000 state: c(</span>
+<span class="co">##   74.4132756921826, -1.22342712322444, 2.14666613219256, 5.70679470552717</span>
+<span class="co">## )</span>
+<span class="co">## Step: 5000 state: c(</span>
+<span class="co">##   80.0205621762777, -9.8317975387271, 5.37801732288771, 1.99929550970001</span>
+<span class="co">## )</span>
+<span class="co">## Step: 5000 state: c(</span>
+<span class="co">##   80.0205621762777, -9.8317975387271, 5.37801732288771, 1.99929550970001</span>
+<span class="co">## )</span>
+<span class="co">## Step: 6000 state: c(</span>
+<span class="co">##   79.7724276801445, -9.5681468887873, 5.64865694366047, 2.04970696423526</span>
+<span class="co">## )</span>
+<span class="co">## Step: 6000 state: c(</span>
+<span class="co">##   79.7724276801445, -9.5681468887873, 5.64865694366047, 2.04970696423526</span>
+<span class="co">## )</span>
+<span class="co">## Step: 7000 state: c(</span>
+<span class="co">##   79.8413102462838, -9.80272237981329, 5.63324297617658, 1.9748951003534</span>
+<span class="co">## )</span>
+<span class="co">## Step: 7000 state: c(</span>
+<span class="co">##   79.8413102462838, -9.80272237981329, 5.63324297617658, 1.9748951003534</span>
+<span class="co">## )</span>
+<span class="co">## Step: 8000 state: c(</span>
+<span class="co">##   80.1744325184177, -9.79630960138592, 5.38165644274342, 1.99091898767162</span>
+<span class="co">## )</span>
+<span class="co">## Step: 8000 state: c(</span>
+<span class="co">##   80.1744325184177, -9.79630960138592, 5.38165644274342, 1.99091898767162</span>
+<span class="co">## )</span>
+<span class="co">## Step: 9000 state: c(</span>
+<span class="co">##   79.9347937306303, -9.63123904834592, 5.49489884044905, 2.07352104788079</span>
+<span class="co">## )</span>
+<span class="co">## Step: 9000 state: c(</span>
+<span class="co">##   79.9347937306303, -9.63123904834592, 5.49489884044905, 2.07352104788079</span>
+<span class="co">## )</span>
+<span class="co">## Step: 10000 state: c(</span>
+<span class="co">##   80.1499993519635, -9.74186365776493, 5.25019766088187, 1.99986537561164</span>
+<span class="co">## )</span>
+<span class="co">## Step: 10000 state: c(</span>
+<span class="co">##   80.1499993519635, -9.74186365776493, 5.25019766088187, 1.99986537561164</span>
+<span class="co">## )</span></code></pre>
 <p>The <code><a href="../reference/mcmc-loop.html">ith_step()</a></code> makes <code>MCMC</code> very easy to tailor. Now what happens when we deal with multiple chains?</p>
 </div>
-<div id="using-ith_step-with-multiple-chains" class="section level1">
-<h1 class="hasAnchor">
-<a href="#using-ith_step-with-multiple-chains" class="anchor"></a>Using ith_step() with multiple chains</h1>
+<div class="section level1">
+<h1 id="using-ith_step-with-multiple-chains">Using ith_step() with multiple chains<a class="anchor" aria-label="anchor" href="#using-ith_step-with-multiple-chains"></a>
+</h1>
 <p>Using the function <code><a href="../reference/mcmc-loop.html">ith_step()</a></code> could be of real help when dealing with multiple chains in a single run. In such a case, we can use the variable <code>chain_id</code> that can be found with <code><a href="../reference/mcmc-loop.html">ith_step()</a></code>. From the previous example:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">logpost3</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span>, <span class="va">D</span><span class="op">)</span> <span class="op">{</span>
@@ -282,7 +278,7 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
   <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mcmc-loop.html">ith_step</a></span><span class="op">(</span><span class="st">"i"</span><span class="op">)</span>
 
   <span class="co"># After the first iteration, every 1000 steps:</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="va">i</span> <span class="op">&gt;</span> <span class="fl">1L</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="op">(</span><span class="va">i</span> <span class="op">%%</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="va">i</span> <span class="op">&gt;</span> <span class="fl">1L</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="op">(</span><span class="va">i</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
 
     <span class="co"># The last accepted state. Accepted states are</span>
     <span class="co"># stored in -ans-.</span>
@@ -290,8 +286,8 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
     
     <span class="va">chain</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mcmc-loop.html">ith_step</a></span><span class="op">(</span><span class="st">"chain_id"</span><span class="op">)</span>
 
-    <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Step: "</span>, <span class="va">i</span>, <span class="st">" chain: "</span>, <span class="va">chain</span>, <span class="st">" state: c(\n  "</span>,
-        <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">s</span>, collapse <span class="op">=</span> <span class="st">",\n  "</span><span class="op">)</span>, <span class="st">"\n)\n"</span>, sep <span class="op">=</span> <span class="st">""</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Step: "</span>, <span class="va">i</span>, <span class="st">" chain: "</span>, <span class="va">chain</span>, <span class="st">" state: c(\n  "</span>,
+        <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">s</span>, collapse <span class="op">=</span> <span class="st">",\n  "</span><span class="op">)</span>, <span class="st">"\n)\n"</span>, sep <span class="op">=</span> <span class="st">""</span>
         <span class="op">)</span>
 
   <span class="op">}</span>
@@ -314,35 +310,35 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
   progress  <span class="op">=</span> <span class="cn">FALSE</span>,
   D         <span class="op">=</span> <span class="va">lifeexpect</span>
   <span class="op">)</span></code></pre></div>
-<pre><code>## Step: 1000 chain: 1 state: c(
-##   80.391544378164,
-##   -10.0470301689358,
-##   5.21253077833022,
-##   2.03135644052351
-## )
-## Step: 1000 chain: 1 state: c(
-##   80.391544378164,
-##   -10.0470301689358,
-##   5.21253077833022,
-##   2.03135644052351
-## )
-## Step: 1000 chain: 2 state: c(
-##   80.1338926312389,
-##   -9.83033416602635,
-##   5.34896148594191,
-##   1.9961282990011
-## )
-## Step: 1000 chain: 2 state: c(
-##   80.1338926312389,
-##   -9.83033416602635,
-##   5.34896148594191,
-##   1.9961282990011
-## )</code></pre>
+<pre><code><span class="co">## Step: 1000 chain: 1 state: c(</span>
+<span class="co">##   80.391544378164,</span>
+<span class="co">##   -10.0470301689358,</span>
+<span class="co">##   5.21253077833022,</span>
+<span class="co">##   2.03135644052351</span>
+<span class="co">## )</span>
+<span class="co">## Step: 1000 chain: 1 state: c(</span>
+<span class="co">##   80.391544378164,</span>
+<span class="co">##   -10.0470301689358,</span>
+<span class="co">##   5.21253077833022,</span>
+<span class="co">##   2.03135644052351</span>
+<span class="co">## )</span>
+<span class="co">## Step: 1000 chain: 2 state: c(</span>
+<span class="co">##   80.1338926312389,</span>
+<span class="co">##   -9.83033416602635,</span>
+<span class="co">##   5.34896148594191,</span>
+<span class="co">##   1.9961282990011</span>
+<span class="co">## )</span>
+<span class="co">## Step: 1000 chain: 2 state: c(</span>
+<span class="co">##   80.1338926312389,</span>
+<span class="co">##   -9.83033416602635,</span>
+<span class="co">##   5.34896148594191,</span>
+<span class="co">##   1.9961282990011</span>
+<span class="co">## )</span></code></pre>
 <p>Using <code>ith_state()</code> increases the computational burden of the process. Yet, since most of the load lies on the objective function itself, the additional time can be neglected.</p>
 </div>
-<div id="saving-information-as-it-happens" class="section level1">
-<h1 class="hasAnchor">
-<a href="#saving-information-as-it-happens" class="anchor"></a>Saving information as it happens</h1>
+<div class="section level1">
+<h1 id="saving-information-as-it-happens">Saving information as it happens<a class="anchor" aria-label="anchor" href="#saving-information-as-it-happens"></a>
+</h1>
 <p>Another thing the user may need to do is storing data as the MCMC algorithm runs. In such cases, you can use the <code><a href="../reference/mcmc-loop.html">set_userdata()</a></code> function, which, as the name suggests, will store the required data.</p>
 <p>For a simple example, suppose we wanted to store the proposed state, we could do it in the following way:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -375,45 +371,45 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
   <span class="op">)</span></code></pre></div>
 <p>In this case, since <code>nchains == 2</code>, <code>MCMC</code> will store a list of length two with the user data. To retrieve the generated data frame, we can call the function <code><a href="../reference/mcmc-loop.html">get_userdata()</a></code>. We can also inspect the <code>MCMC_OUTPUT</code> as follows:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">MCMC_OUTPUT</span><span class="op">)</span></code></pre></div>
-<pre><code>## Last call to MCMC holds the following elements:
-## Chain N: 1
-## draws :  num [1:100, 1:4] 80.5 80 80.3 80.4 80 ...
-## logpost :  Named num [1:100] -2151 -2150 -2142 -2142 -2122 ...
-## Chain N: 2
-## draws :  num [1:100, 1:4] 80.1 80.2 80.3 79.9 79.9 ...
-## logpost :  Named num [1:100] -2127 -2125 -2124 -2122 -2125 ...
-## 
-## Including the following userdata (use -get_userdata()- to access it):
-## Chain N 1
-##          p1         p2       p3
-## 10 80.49477  -9.387659 4.783305
-## 20 79.97738  -9.806571 4.881653
-## 30 80.33199 -10.182043 5.669943
-## 40 80.39235  -9.788603 5.192905
-## 50 79.98730  -9.608717 5.231799
-## 60 80.60093  -9.843509 5.278163
-## ... 94  more...
-## Chain N 2
-##          p1         p2       p3
-## 10 80.13857  -9.772963 5.038519
-## 20 80.18688 -10.174983 5.463652
-## 30 80.32215  -9.929603 5.138446
-## 40 79.93485  -9.581106 5.514230
-## 50 79.90929  -9.502281 5.229895
-## 60 80.04301  -9.991739 5.558207
-## ... 94  more...</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">MCMC_OUTPUT</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## Last call to MCMC holds the following elements:</span>
+<span class="co">## Chain N: 1</span>
+<span class="co">## draws :  num [1:100, 1:4] 80.5 80 80.3 80.4 80 ...</span>
+<span class="co">## logpost :  Named num [1:100] -2151 -2150 -2142 -2142 -2122 ...</span>
+<span class="co">## Chain N: 2</span>
+<span class="co">## draws :  num [1:100, 1:4] 80.1 80.2 80.3 79.9 79.9 ...</span>
+<span class="co">## logpost :  Named num [1:100] -2127 -2125 -2124 -2122 -2125 ...</span>
+<span class="co">## </span>
+<span class="co">## Including the following userdata (use -get_userdata()- to access it):</span>
+<span class="co">## Chain N 1</span>
+<span class="co">##          p1         p2       p3</span>
+<span class="co">## 10 80.49477  -9.387659 4.783305</span>
+<span class="co">## 20 79.97738  -9.806571 4.881653</span>
+<span class="co">## 30 80.33199 -10.182043 5.669943</span>
+<span class="co">## 40 80.39235  -9.788603 5.192905</span>
+<span class="co">## 50 79.98730  -9.608717 5.231799</span>
+<span class="co">## 60 80.60093  -9.843509 5.278163</span>
+<span class="co">## ... 94  more...</span>
+<span class="co">## Chain N 2</span>
+<span class="co">##          p1         p2       p3</span>
+<span class="co">## 10 80.13857  -9.772963 5.038519</span>
+<span class="co">## 20 80.18688 -10.174983 5.463652</span>
+<span class="co">## 30 80.32215  -9.929603 5.138446</span>
+<span class="co">## 40 79.93485  -9.581106 5.514230</span>
+<span class="co">## 50 79.90929  -9.502281 5.229895</span>
+<span class="co">## 60 80.04301  -9.991739 5.558207</span>
+<span class="co">## ... 94  more...</span></code></pre>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="fu"><a href="../reference/mcmc-loop.html">get_userdata</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## List of 2
-##  $ :'data.frame':    100 obs. of  3 variables:
-##   ..$ p1: num [1:100] 80.5 80 80.3 80.4 80 ...
-##   ..$ p2: num [1:100] -9.39 -9.81 -10.18 -9.79 -9.61 ...
-##   ..$ p3: num [1:100] 4.78 4.88 5.67 5.19 5.23 ...
-##  $ :'data.frame':    100 obs. of  3 variables:
-##   ..$ p1: num [1:100] 80.1 80.2 80.3 79.9 79.9 ...
-##   ..$ p2: num [1:100] -9.77 -10.17 -9.93 -9.58 -9.5 ...
-##   ..$ p3: num [1:100] 5.04 5.46 5.14 5.51 5.23 ...</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="../reference/mcmc-loop.html">get_userdata</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## List of 2</span>
+<span class="co">##  $ :'data.frame':    100 obs. of  3 variables:</span>
+<span class="co">##   ..$ p1: num [1:100] 80.5 80 80.3 80.4 80 ...</span>
+<span class="co">##   ..$ p2: num [1:100] -9.39 -9.81 -10.18 -9.79 -9.61 ...</span>
+<span class="co">##   ..$ p3: num [1:100] 4.78 4.88 5.67 5.19 5.23 ...</span>
+<span class="co">##  $ :'data.frame':    100 obs. of  3 variables:</span>
+<span class="co">##   ..$ p1: num [1:100] 80.1 80.2 80.3 79.9 79.9 ...</span>
+<span class="co">##   ..$ p2: num [1:100] -9.77 -10.17 -9.93 -9.58 -9.5 ...</span>
+<span class="co">##   ..$ p3: num [1:100] 5.04 5.46 5.14 5.51 5.23 ...</span></code></pre>
 </div>
   </div>
 
@@ -428,12 +424,13 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
 
 
       <footer><div class="copyright">
-  <p>Developed by George Vega Yon, National
-         Cancer Institute (NCI).</p>
+  <p></p>
+<p>Developed by George Vega Yon, National Cancer Institute (NCI).</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -441,6 +438,8 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
 
   
 
+
+  
 
   </body>
 </html>

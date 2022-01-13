@@ -32,6 +32,8 @@
 </script>
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -44,18 +46,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">fmcmc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -83,7 +79,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/USCbiostats/fmcmc/">
+  <a href="https://github.com/USCbiostats/fmcmc/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -98,45 +94,45 @@
 
       
 
-      </header><script src="workflow-with-fmcmc_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Workflow with fmcmc</h1>
-                        <h4 class="author">George G. Vega Yon</h4>
+                        <h4 data-toc-skip class="author">George G. Vega Yon</h4>
             
-            <h4 class="date">April 19th, 2019</h4>
+            <h4 data-toc-skip class="date">April 19th, 2019</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/USCbiostats/fmcmc/blob/master/vignettes/workflow-with-fmcmc.Rmd"><code>vignettes/workflow-with-fmcmc.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/USCbiostats/fmcmc/blob/HEAD/vignettes/workflow-with-fmcmc.Rmd" class="external-link"><code>vignettes/workflow-with-fmcmc.Rmd</code></a></small>
       <div class="hidden name"><code>workflow-with-fmcmc.Rmd</code></div>
 
     </div>
 
     
     
-<div id="motivating-example" class="section level1">
-<h1 class="hasAnchor">
-<a href="#motivating-example" class="anchor"></a>Motivating example</h1>
+<div class="section level1">
+<h1 id="motivating-example">Motivating example<a class="anchor" aria-label="anchor" href="#motivating-example"></a>
+</h1>
 <p>We start by loading the dataset that the <code>mcmc</code> package includes. We will use the <code>logit</code> data set to obtain a posterior distribution of the model parameters using the <code>MCMC</code> function.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/fmcmc">fmcmc</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">logit</span>, package <span class="op">=</span> <span class="st">"mcmc"</span><span class="op">)</span>
-<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x1</span> <span class="op">+</span> <span class="va">x2</span> <span class="op">+</span> <span class="va">x3</span> <span class="op">+</span> <span class="va">x4</span>, data <span class="op">=</span> <span class="va">logit</span>, family <span class="op">=</span> <span class="va">binomial</span>, x <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">beta.init</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coefficients</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/fmcmc" class="external-link">fmcmc</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">logit</span>, package <span class="op">=</span> <span class="st">"mcmc"</span><span class="op">)</span>
+<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x1</span> <span class="op">+</span> <span class="va">x2</span> <span class="op">+</span> <span class="va">x3</span> <span class="op">+</span> <span class="va">x4</span>, data <span class="op">=</span> <span class="va">logit</span>, family <span class="op">=</span> <span class="va">binomial</span>, x <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">beta.init</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coefficients</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>To use the Metropolis-Hastings MCMC algorithm, the function should be (in principle) the log unnormalized posterior. The following block of code, extracted from the <code>mcmc</code> package vignette “MCMC Package Example,” creates the function that we will be using:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">lupost_factory</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="kw">function</span><span class="op">(</span><span class="va">beta</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">eta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">x</span> <span class="op">%*%</span> <span class="va">beta</span><span class="op">)</span>
-    <span class="va">logp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">eta</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="va">eta</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log1p</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">eta</span><span class="op">)</span><span class="op">)</span>, <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log1p</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="op">-</span> <span class="va">eta</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-    <span class="va">logq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">eta</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log1p</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">eta</span><span class="op">)</span><span class="op">)</span>, <span class="op">-</span> <span class="va">eta</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log1p</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="op">-</span> <span class="va">eta</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-    <span class="va">logl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">logp</span><span class="op">[</span><span class="va">y</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">logq</span><span class="op">[</span><span class="va">y</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span>
-    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">logl</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">beta</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">/</span> <span class="fl">8</span><span class="op">)</span>
+    <span class="va">eta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">x</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">beta</span><span class="op">)</span>
+    <span class="va">logp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">eta</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="va">eta</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log1p</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">eta</span><span class="op">)</span><span class="op">)</span>, <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log1p</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span> <span class="va">eta</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+    <span class="va">logq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">eta</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log1p</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">eta</span><span class="op">)</span><span class="op">)</span>, <span class="op">-</span> <span class="va">eta</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log1p</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span> <span class="va">eta</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+    <span class="va">logl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">logp</span><span class="op">[</span><span class="va">y</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">logq</span><span class="op">[</span><span class="va">y</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">logl</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">beta</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">/</span> <span class="fl">8</span><span class="op">)</span>
 <span class="op">}</span>
 
 <span class="va">lupost</span> <span class="op">&lt;-</span> <span class="fu">lupost_factory</span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">x</span>, <span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">)</span></code></pre></div>
 <p>Let’s give it the first try. In this case, we will use the beta estimates from the estimated GLM model as a starting point for the algorithm, and we will ask it to sample 1e4 points from the posterior distribution (<code>nsteps</code>).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># to get reproducible results</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>
 <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MCMC.html">MCMC</a></span><span class="op">(</span>
   initial <span class="op">=</span> <span class="va">beta.init</span>,
   fun     <span class="op">=</span> <span class="va">lupost</span>,
@@ -144,13 +140,13 @@
 <span class="op">)</span></code></pre></div>
 <p>Since the resulting object is of class <code>mcmc</code> (from the <code>coda</code> R package), we can use all the functions included in <code>coda</code> for model diagnostics:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">coda</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">out</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">coda</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">out</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 <p><img src="workflow-with-fmcmc_files/figure-html/post-estimation-1.png" width="600" height="600"></p>
 <p>So this chain has very poor mixing, so let’s try again by using a smaller scale for the normal kernel proposal moving it from 1 (the default value) to .2:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># to get reproducible results</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>
 <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MCMC.html">MCMC</a></span><span class="op">(</span>
   initial <span class="op">=</span> <span class="va">beta.init</span>,
   fun     <span class="op">=</span> <span class="va">lupost</span>,
@@ -159,12 +155,12 @@
 <span class="op">)</span></code></pre></div>
 <p>The <code>kernel_normal</code>–the default kernel in the <code>MCMC</code> function–returns an object of class <code>fmcmc_kernel</code>. In principle, it consists of a list of two functions that are used by the <code>MCMC</code> routine: <code>proposal</code>, the proposal kernel function, and <code>logratio</code>, the function that returns the log of the Metropolis-Hastings ratio. We will talk more about <code>fmcmc_kernel</code> objects later. Now, let’s look at the first three variables of our model:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">out</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">out</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 <p><img src="workflow-with-fmcmc_files/figure-html/unnamed-chunk-1-1.png" width="600" height="600"></p>
 <p>Better. Now, ideally we should only be using observations from the stationary distribution. Let’s give it another try checking for convergence every 1,000 steps using the <code>convergence_geweke</code>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># to get reproducible results</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>
 <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MCMC.html">MCMC</a></span><span class="op">(</span>
   initial <span class="op">=</span> <span class="va">beta.init</span>,
   fun     <span class="op">=</span> <span class="va">lupost</span>,
@@ -172,13 +168,13 @@
   kernel  <span class="op">=</span> <span class="fu"><a href="../reference/kernel_normal.html">kernel_normal</a></span><span class="op">(</span>scale <span class="op">=</span> <span class="fl">.2</span><span class="op">)</span>,
   conv_checker <span class="op">=</span> <span class="fu"><a href="../reference/convergence-checker.html">convergence_geweke</a></span><span class="op">(</span><span class="fl">200</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<pre><code>## Convergence has been reached with 200 steps. avg Geweke's Z: 1.1854. (200 final count of samples).</code></pre>
+<pre><code><span class="co">## Convergence has been reached with 200 steps. avg Geweke's Z: 1.1854. (200 final count of samples).</span></code></pre>
 <p>A bit better. As announced by <code>MCMC</code>, the <code>convergence_geweke</code> checker suggests that the chain reached a stationary state. With this in hand, we can now rerun the algorithm such that we start from the last couple of steps of the chain, this time, without convergence monitoring as it is no longer necessary.</p>
 <p>We will increase the number of steps (sample size), use two chains using parallel computing, and add some thinning to reduce autocorrelation:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Now, we change the seed, so we get a different stream of</span>
 <span class="co"># pseudo random numbers</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">112</span><span class="op">)</span> 
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">112</span><span class="op">)</span> 
 
 <span class="va">out_final</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MCMC.html">MCMC</a></span><span class="op">(</span>
   initial   <span class="op">=</span> <span class="va">out</span>,                       <span class="co"># Automagically takes the last 2 points</span>
@@ -191,34 +187,34 @@
   <span class="op">)</span></code></pre></div>
 <p>Notice that, instead of specifying the starting points for each chain, we passed the <code>out</code> object to <code>initial</code>. By default, if <code>initial</code> is of class <code>mcmc</code>, <code>MCMC</code> will take the last <code>nchains</code> points from the chain as starting point for the new sequence. If <code>initial</code> is of class <code>mcmc.list</code>, the number of chains in <code>initial</code> must match the <code>nchains</code> parameter. We now see that the output posterior distribution appears to be stationary</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">out_final</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">out_final</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 <p><img src="workflow-with-fmcmc_files/figure-html/final-results-1.png" width="600" height="600"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">out_final</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## Iterations = 10:50000
-## Thinning interval = 10 
-## Number of chains = 2 
-## Sample size per chain = 5000 
-## 
-## 1. Empirical mean and standard deviation for each variable,
-##    plus standard error of the mean:
-## 
-##        Mean     SD Naive SE Time-series SE
-## par1 0.6575 0.3005 0.003005       0.004844
-## par2 0.7998 0.3696 0.003696       0.006680
-## par3 1.1719 0.3629 0.003629       0.006884
-## 
-## 2. Quantiles for each variable:
-## 
-##        2.5%    25%    50%    75% 97.5%
-## par1 0.0924 0.4509 0.6445 0.8535 1.275
-## par2 0.1084 0.5457 0.7846 1.0470 1.560
-## par3 0.5181 0.9193 1.1533 1.4079 1.939</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">out_final</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## </span>
+<span class="co">## Iterations = 10:50000</span>
+<span class="co">## Thinning interval = 10 </span>
+<span class="co">## Number of chains = 2 </span>
+<span class="co">## Sample size per chain = 5000 </span>
+<span class="co">## </span>
+<span class="co">## 1. Empirical mean and standard deviation for each variable,</span>
+<span class="co">##    plus standard error of the mean:</span>
+<span class="co">## </span>
+<span class="co">##        Mean     SD Naive SE Time-series SE</span>
+<span class="co">## par1 0.6575 0.3005 0.003005       0.004844</span>
+<span class="co">## par2 0.7998 0.3696 0.003696       0.006680</span>
+<span class="co">## par3 1.1719 0.3629 0.003629       0.006884</span>
+<span class="co">## </span>
+<span class="co">## 2. Quantiles for each variable:</span>
+<span class="co">## </span>
+<span class="co">##        2.5%    25%    50%    75% 97.5%</span>
+<span class="co">## par1 0.0924 0.4509 0.6445 0.8535 1.275</span>
+<span class="co">## par2 0.1084 0.5457 0.7846 1.0470 1.560</span>
+<span class="co">## par3 0.5181 0.9193 1.1533 1.4079 1.939</span></code></pre>
 </div>
-<div id="reusing-fmcmc_kernel-objects" class="section level1">
-<h1 class="hasAnchor">
-<a href="#reusing-fmcmc_kernel-objects" class="anchor"></a>Reusing fmcmc_kernel objects</h1>
+<div class="section level1">
+<h1 id="reusing-fmcmc_kernel-objects">Reusing fmcmc_kernel objects<a class="anchor" aria-label="anchor" href="#reusing-fmcmc_kernel-objects"></a>
+</h1>
 <p><code>fmcmc_kernel</code> objects are environments that are passed to the <code>MCMC</code> function. While the <code>MCMC</code> function only returns the <code>mcmc</code> class object (as defined in the <code>coda</code> package), users can exploit the fact that the kernel objects are environments to reuse them or inspect them once the <code>MCMC</code> function returns. For example, <code>fmcmc_kernel</code> objects can be useful with adaptive kernels as users can review the covariance structure or other components.</p>
 <p>To illustrate this, let’s re-do the MCMC chain of the previous example but using an adaptive kernel instead, in particular, Haario’s 2010 adaptive metropolis.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
@@ -227,14 +223,14 @@
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Number of iterations (absolute count, starts in 0)</span>
 <span class="va">khaario</span><span class="op">$</span><span class="va">abs_iter</span></code></pre></div>
-<pre><code>## [1] 0</code></pre>
+<pre><code><span class="co">## [1] 0</span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Variance covariance matrix (is empty... for now)</span>
 <span class="va">khaario</span><span class="op">$</span><span class="va">Sigma</span></code></pre></div>
-<pre><code>## NULL</code></pre>
+<pre><code><span class="co">## NULL</span></code></pre>
 <p>Let’s see how it works:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span> 
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span> 
 
 <span class="va">out_haario_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MCMC.html">MCMC</a></span><span class="op">(</span>
   initial   <span class="op">=</span> <span class="va">out</span>,                       
@@ -247,23 +243,23 @@
   <span class="op">)</span></code></pre></div>
 <p>Let’s inspect the output and mark when the adaptation starts:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/coda/man/traceplot.html">traceplot</a></span><span class="op">(</span><span class="va">out_haario_1</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, main <span class="op">=</span> <span class="st">"Traceplot of the first parameter"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">500</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/coda/man/traceplot.html" class="external-link">traceplot</a></span><span class="op">(</span><span class="va">out_haario_1</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, main <span class="op">=</span> <span class="st">"Traceplot of the first parameter"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">500</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <p><img src="workflow-with-fmcmc_files/figure-html/haario-first-run-plots-1.png" width="600" height="600"></p>
 <p>If we look at the <code>khaario</code> kernel, the <code>fmcmc_kernel</code> object, we can see that things changed from the first time we ran it</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Number of iterations (absolute count, the counts equal the number of steps)</span>
 <span class="va">khaario</span><span class="op">$</span><span class="va">abs_iter</span></code></pre></div>
-<pre><code>## [1] 999</code></pre>
+<pre><code><span class="co">## [1] 999</span></code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Variance covariance matrix (now is not empty)</span>
 <span class="op">(</span><span class="va">Sigma1</span> <span class="op">&lt;-</span> <span class="va">khaario</span><span class="op">$</span><span class="va">Sigma</span><span class="op">)</span></code></pre></div>
-<pre><code>##              [,1]         [,2]         [,3]         [,4]         [,5]
-## [1,]  0.017271652 -0.004935795 -0.005381160 -0.041395045  0.014022889
-## [2,] -0.004935795  0.007362067  0.004540219  0.012921200 -0.006319906
-## [3,] -0.005381160  0.004540219  0.009701356  0.005964857 -0.003818160
-## [4,] -0.041395045  0.012921200  0.005964857  0.147997374 -0.046271398
-## [5,]  0.014022889 -0.006319906 -0.003818160 -0.046271398  0.029099155</code></pre>
+<pre><code><span class="co">##              [,1]         [,2]         [,3]         [,4]         [,5]</span>
+<span class="co">## [1,]  0.017271652 -0.004935795 -0.005381160 -0.041395045  0.014022889</span>
+<span class="co">## [2,] -0.004935795  0.007362067  0.004540219  0.012921200 -0.006319906</span>
+<span class="co">## [3,] -0.005381160  0.004540219  0.009701356  0.005964857 -0.003818160</span>
+<span class="co">## [4,] -0.041395045  0.012921200  0.005964857  0.147997374 -0.046271398</span>
+<span class="co">## [5,]  0.014022889 -0.006319906 -0.003818160 -0.046271398  0.029099155</span></code></pre>
 <p>If we re-run the chain, using as starting point the last step of the first run, we can also continue using the kernel object:</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">out_haario_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MCMC.html">MCMC</a></span><span class="op">(</span>
@@ -278,54 +274,54 @@
   <span class="op">)</span></code></pre></div>
 <p>Let’s see again how does everything looks like:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/coda/man/traceplot.html">traceplot</a></span><span class="op">(</span><span class="va">out_haario_2</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, main <span class="op">=</span> <span class="st">"Traceplot of the first parameter"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">500</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/coda/man/traceplot.html" class="external-link">traceplot</a></span><span class="op">(</span><span class="va">out_haario_2</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, main <span class="op">=</span> <span class="st">"Traceplot of the first parameter"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">500</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <p><img src="workflow-with-fmcmc_files/figure-html/haario-second-run-plots-1.png" width="600" height="600"></p>
 <p>As shown in the plot, since the warmup period already passed for the kernel object, the adaptation process is happening at every step, so we don’t see a big break at step 500 as before. Let’s see the counts and the covariance matrix and compare it with the previous one:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Number of iterations (absolute count, the counts equal the number of steps)</span>
 <span class="co"># This will have 1000 (first run) + 2000 (second run) steps</span>
 <span class="va">khaario</span><span class="op">$</span><span class="va">abs_iter</span></code></pre></div>
-<pre><code>## [1] 2998</code></pre>
+<pre><code><span class="co">## [1] 2998</span></code></pre>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Variance covariance matrix (now is not empty)</span>
 <span class="op">(</span><span class="va">Sigma2</span> <span class="op">&lt;-</span> <span class="va">khaario</span><span class="op">$</span><span class="va">Sigma</span><span class="op">)</span></code></pre></div>
-<pre><code>##             [,1]        [,2]         [,3]        [,4]         [,5]
-## [1,]  0.06301272  0.01260646  0.013684829 -0.02439227  0.012002205
-## [2,]  0.01260646  0.08594208 -0.025300678 -0.02030928 -0.027581369
-## [3,]  0.01368483 -0.02530068  0.096117378  0.03635492 -0.003109739
-## [4,] -0.02439227 -0.02030928  0.036354918  0.18163588 -0.020042700
-## [5,]  0.01200220 -0.02758137 -0.003109739 -0.02004270  0.122174706</code></pre>
+<pre><code><span class="co">##             [,1]        [,2]         [,3]        [,4]         [,5]</span>
+<span class="co">## [1,]  0.06301272  0.01260646  0.013684829 -0.02439227  0.012002205</span>
+<span class="co">## [2,]  0.01260646  0.08594208 -0.025300678 -0.02030928 -0.027581369</span>
+<span class="co">## [3,]  0.01368483 -0.02530068  0.096117378  0.03635492 -0.003109739</span>
+<span class="co">## [4,] -0.02439227 -0.02030928  0.036354918  0.18163588 -0.020042700</span>
+<span class="co">## [5,]  0.01200220 -0.02758137 -0.003109739 -0.02004270  0.122174706</span></code></pre>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># How different are these?</span>
 <span class="va">Sigma1</span> <span class="op">-</span> <span class="va">Sigma2</span></code></pre></div>
-<pre><code>##              [,1]        [,2]          [,3]        [,4]          [,5]
-## [1,] -0.045741072 -0.01754225 -0.0190659887 -0.01700278  0.0020206838
-## [2,] -0.017542251 -0.07858002  0.0298408979  0.03323048  0.0212614627
-## [3,] -0.019065989  0.02984090 -0.0864160214 -0.03039006 -0.0007084216
-## [4,] -0.017002780  0.03323048 -0.0303900603 -0.03363851 -0.0262286982
-## [5,]  0.002020684  0.02126146 -0.0007084216 -0.02622870 -0.0930755506</code></pre>
+<pre><code><span class="co">##              [,1]        [,2]          [,3]        [,4]          [,5]</span>
+<span class="co">## [1,] -0.045741072 -0.01754225 -0.0190659887 -0.01700278  0.0020206838</span>
+<span class="co">## [2,] -0.017542251 -0.07858002  0.0298408979  0.03323048  0.0212614627</span>
+<span class="co">## [3,] -0.019065989  0.02984090 -0.0864160214 -0.03039006 -0.0007084216</span>
+<span class="co">## [4,] -0.017002780  0.03323048 -0.0303900603 -0.03363851 -0.0262286982</span>
+<span class="co">## [5,]  0.002020684  0.02126146 -0.0007084216 -0.02622870 -0.0930755506</span></code></pre>
 <p>Things have changed since the last time we used the kernel, as expected. Kernel objects in the <code>fmcmc</code> package can also be used with multiple chains and in parallel. The <code>MCMC</code> function is smart enough to create independent copies of <code>fmcmc_kernel</code> objects when running multiple chains, and keep the original kernel objects up-to-date even when using multiple cores to run <code>MCMC</code>. For more technical details on how <code>fmcmc_kernel</code> objects work see the manual <code><a href="../reference/kernel_new.html">?fmcmc_kernel</a></code> or the vignette “User-defined kernels” included in the package <code><a href="../articles/user-defined-kernels.html">vignette("user-defined-kernels", package = "fmcmc")</a></code>.</p>
 </div>
-<div id="accessing-other-elements-of-the-chain" class="section level1">
-<h1 class="hasAnchor">
-<a href="#accessing-other-elements-of-the-chain" class="anchor"></a>Accessing other elements of the chain</h1>
+<div class="section level1">
+<h1 id="accessing-other-elements-of-the-chain">Accessing other elements of the chain<a class="anchor" aria-label="anchor" href="#accessing-other-elements-of-the-chain"></a>
+</h1>
 <p>In some situations, you may want to access the computed unnormalized log-posterior probabilities, the states proposed by the kernel, or other process components. In those cases, the functions with the prefix <code>get_*</code> can help you.</p>
 <p>Starting version 0.5-0, we replaced the family of functions <code>last_*</code> with <code>get_*</code>; a re-design of this “memory” component that gives users access to data generated during the Markov process. After each run of the <code>MCMC</code> function, information regarding the last execution is stored in the environment <code>MCMC_OUTPUT</code>.</p>
 <p>If you wanted to look at the logposterior of the last call and proposed states, you can do the following:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="../reference/mcmc-output.html">get_logpost</a></span><span class="op">(</span><span class="op">)</span>, type<span class="op">=</span><span class="st">"l"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="../reference/mcmc-output.html">get_logpost</a></span><span class="op">(</span><span class="op">)</span>, type<span class="op">=</span><span class="st">"l"</span><span class="op">)</span></code></pre></div>
 <p><img src="workflow-with-fmcmc_files/figure-html/get-logpost-draws-1.png" width="600" height="600"></p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Pretty figure showing proposed and accepted</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>
   <span class="fu"><a href="../reference/mcmc-output.html">get_draws</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, pch <span class="op">=</span> <span class="fl">20</span>, col <span class="op">=</span> <span class="st">"gray"</span>,
   main <span class="op">=</span> <span class="st">"Haario's second run"</span>
   <span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/points.html">points</a></span><span class="op">(</span><span class="va">out_haario_2</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"red"</span>, pch <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span><span class="op">(</span>
-  <span class="st">"topleft"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"proposed"</span>, <span class="st">"accepted"</span><span class="op">)</span>,
-  col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gray"</span>, <span class="st">"red"</span><span class="op">)</span>,
+<span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">out_haario_2</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"red"</span>, pch <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span>
+  <span class="st">"topleft"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"proposed"</span>, <span class="st">"accepted"</span><span class="op">)</span>,
+  col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gray"</span>, <span class="st">"red"</span><span class="op">)</span>,
   pch <span class="op">=</span> <span class="fl">20</span>,
   bty <span class="op">=</span> <span class="st">"n"</span>
 <span class="op">)</span></code></pre></div>
@@ -333,46 +329,46 @@
 <p>The <code>MCMC_OUTPUT</code> environment also contains the arguments passed to <code><a href="../reference/MCMC.html">MCMC()</a></code>:</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mcmc-output.html">get_initial</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## Markov Chain Monte Carlo (MCMC) output:
-## Start = 1000 
-## End = 1000 
-## Thinning interval = 1 
-##           par1      par2     par3     par4      par5
-## 1000 0.4430418 0.8391033 1.191223 0.766331 0.7507183</code></pre>
+<pre><code><span class="co">## Markov Chain Monte Carlo (MCMC) output:</span>
+<span class="co">## Start = 1000 </span>
+<span class="co">## End = 1000 </span>
+<span class="co">## Thinning interval = 1 </span>
+<span class="co">##           par1      par2     par3     par4      par5</span>
+<span class="co">## 1000 0.4430418 0.8391033 1.191223 0.766331 0.7507183</span></code></pre>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mcmc-output.html">get_fun</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## function(beta) {
-##     eta &lt;- as.numeric(x %*% beta)
-##     logp &lt;- ifelse(eta &lt; 0, eta - log1p(exp(eta)), - log1p(exp(- eta)))
-##     logq &lt;- ifelse(eta &lt; 0, - log1p(exp(eta)), - eta - log1p(exp(- eta)))
-##     logl &lt;- sum(logp[y == 1]) + sum(logq[y == 0])
-##     return(logl - sum(beta^2) / 8)
-## }
-## &lt;bytecode: 0x555d28d9b780&gt;
-## &lt;environment: 0x555d27719208&gt;</code></pre>
+<pre><code><span class="co">## function(beta) {</span>
+<span class="co">##     eta &lt;- as.numeric(x %*% beta)</span>
+<span class="co">##     logp &lt;- ifelse(eta &lt; 0, eta - log1p(exp(eta)), - log1p(exp(- eta)))</span>
+<span class="co">##     logq &lt;- ifelse(eta &lt; 0, - log1p(exp(eta)), - eta - log1p(exp(- eta)))</span>
+<span class="co">##     logl &lt;- sum(logp[y == 1]) + sum(logq[y == 0])</span>
+<span class="co">##     return(logl - sum(beta^2) / 8)</span>
+<span class="co">## }</span>
+<span class="co">## &lt;bytecode: 0x5598a899f450&gt;</span>
+<span class="co">## &lt;environment: 0x5598aa36f720&gt;</span></code></pre>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mcmc-output.html">get_kernel</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## An environment of class fmcmc_kernel:
-## 
-## abs_iter :  int 2998
-## bw :  int 0
-## eps :  num 1e-04
-## fixed :  logi [1:5] FALSE FALSE FALSE FALSE FALSE
-## freq :  num 1
-## Ik :  num [1:5, 1:5] 1e-04 0e+00 0e+00 0e+00 0e+00 0e+00 1e-04 0e+00 0e+00 0e+00 ...
-## k :  int 5
-## lb :  num [1:5] -1.8e+308 -1.8e+308 -1.8e+308 -1.8e+308 -1.8e+308
-## logratio : function (env)  
-## Mean_t_prev :  num [1, 1:5] 0.633 0.805 1.103 0.318 0.747
-## mu :  num [1:5] 0 0 0 0 0
-## proposal : function (env)  
-## Sd :  num 1.15
-## Sigma :  num [1:5, 1:5] 0.063 0.0126 0.0137 -0.0244 0.012 ...
-## ub :  num [1:5] 1.8e+308 1.8e+308 1.8e+308 1.8e+308 1.8e+308
-## until :  num Inf
-## warmup :  num 500
-## which. :  int [1:5] 1 2 3 4 5</code></pre>
+<pre><code><span class="co">## </span>
+<span class="co">## An environment of class fmcmc_kernel:</span>
+<span class="co">## </span>
+<span class="co">## abs_iter :  int 2998</span>
+<span class="co">## bw :  int 0</span>
+<span class="co">## eps :  num 1e-04</span>
+<span class="co">## fixed :  logi [1:5] FALSE FALSE FALSE FALSE FALSE</span>
+<span class="co">## freq :  num 1</span>
+<span class="co">## Ik :  num [1:5, 1:5] 1e-04 0e+00 0e+00 0e+00 0e+00 0e+00 1e-04 0e+00 0e+00 0e+00 ...</span>
+<span class="co">## k :  int 5</span>
+<span class="co">## lb :  num [1:5] -1.8e+308 -1.8e+308 -1.8e+308 -1.8e+308 -1.8e+308</span>
+<span class="co">## logratio : function (env)  </span>
+<span class="co">## Mean_t_prev :  num [1, 1:5] 0.633 0.805 1.103 0.318 0.747</span>
+<span class="co">## mu :  num [1:5] 0 0 0 0 0</span>
+<span class="co">## proposal : function (env)  </span>
+<span class="co">## Sd :  num 1.15</span>
+<span class="co">## Sigma :  num [1:5, 1:5] 0.063 0.0126 0.0137 -0.0244 0.012 ...</span>
+<span class="co">## ub :  num [1:5] 1.8e+308 1.8e+308 1.8e+308 1.8e+308 1.8e+308</span>
+<span class="co">## until :  num Inf</span>
+<span class="co">## warmup :  num 500</span>
+<span class="co">## which. :  int [1:5] 1 2 3 4 5</span></code></pre>
 </div>
   </div>
 
@@ -387,12 +383,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by George Vega Yon, National
-         Cancer Institute (NCI).</p>
+  <p></p>
+<p>Developed by George Vega Yon, National Cancer Institute (NCI).</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -400,6 +397,8 @@
 
   
 
+
+  
 
   </body>
 </html>
