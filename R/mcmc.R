@@ -554,12 +554,12 @@ MCMC_without_conv_checker <- function(
     )
     
     # Updating the kernel
-    kernel_list <- parallel::clusterEvalQ(cl, get("kernel", envir = .FMCMC_PLL_KERNEL))
+    kernel_list <- parallel::clusterEvalQ(cl, get("kernel", envir = .FMCMC_PLL_KERNEL, inherits = FALSE))
     update_kernel(kernel, do.call(c, kernel_list))
     
     # Updating run
-    MCMC_OUTPUT$data.     <- parallel::clusterEvalQ(cl, get("ptr", envir = MCMC_OUTPUT))
-    MCMC_OUTPUT$data_usr. <- parallel::clusterEvalQ(cl, get("ptr_usr", envir = MCMC_OUTPUT))
+    MCMC_OUTPUT$data.     <- parallel::clusterEvalQ(cl, get("ptr", envir = MCMC_OUTPUT, inherits = FALSE))
+    MCMC_OUTPUT$data_usr. <- parallel::clusterEvalQ(cl, get("ptr_usr", envir = MCMC_OUTPUT, inherits = FALSE))
     
     # So things are pointing to the right place
     MCMC_OUTPUT$set_ptr(1L)

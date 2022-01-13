@@ -1,3 +1,8 @@
+# fmcmc 0.5-1
+
+* Fixed issue #21: Restricting search scope in MCMC temp environment data.
+
+
 # fmcmc 0.5-0
 
 * The function `fun` passed to `MCMC` is now called two times less. It shouldn't

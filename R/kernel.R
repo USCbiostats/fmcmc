@@ -359,7 +359,7 @@ copy_kernel <- function(x) {
   
   kernel_env <- new.env(hash = TRUE)
   lapply(names(x), function(obj_name) {
-    assign(obj_name, get(obj_name, envir = x), kernel_env)
+    assign(obj_name, get(obj_name, envir = x, inherits = FALSE), kernel_env)
   })
   
   environment(kernel_env$proposal) <- kernel_env
@@ -372,7 +372,7 @@ copy_kernel <- function(x) {
 #' @export
 `[[.fmcmc_kernel_list` <- function(x, i) {
   
-  get(names(x)[i], envir = x)
+  get(names(x)[i], envir = x, inherits = FALSE)
   
 }
 

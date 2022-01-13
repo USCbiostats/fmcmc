@@ -576,7 +576,7 @@ ith_step <- structure(function(x) {
   if (missing(x))
     return(MCMC_OUTPUT$loop_envir)
   else
-    return(get(x, envir = MCMC_OUTPUT$loop_envir))
+    return(get(x, envir = MCMC_OUTPUT$loop_envir, inherits = FALSE))
   
 }, class = c("fmcmc_ith_step", "function"))
 

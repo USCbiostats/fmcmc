@@ -86,7 +86,7 @@ convergence_data_flush <- function() {
 #'   arate <- 1 - coda::rejectionRate(x)
 #'   
 #'   # Saving a value
-#'   if (!exists("arates", envir = LAST_CONV_CHECK)) {
+#'   if (!exists("arates", envir = LAST_CONV_CHECK, inherits = FALSE)) {
 #'     convergence_data_set(list(arates = arate))
 #'   } else {
 #'     convergence_data_set(list(
@@ -137,9 +137,9 @@ convergence_data_set <- function(x) {
 #' @rdname convergence-checker
 convergence_data_get <- function(x) {
   if (length(x) > 1L) {
-    mget(x, envir = LAST_CONV_CHECK)
+    mget(x, envir = LAST_CONV_CHECK, inherits = FALSE)
   } else
-    get(x, envir = LAST_CONV_CHECK)
+    get(x, envir = LAST_CONV_CHECK, inherits = FALSE)
 }
 
 #' @export
@@ -161,7 +161,7 @@ convergence_msg_set <- function(msg = NA_character_) {
 #' @export
 #' @rdname convergence-checker
 convergence_msg_get <- function() {
-  get("msg", envir = LAST_CONV_CHECK)
+  get("msg", envir = LAST_CONV_CHECK, inherits = FALSE)
 }
 
 #' Removes invariant columns
@@ -217,7 +217,7 @@ convergence_gelman <- function(
       }
       
       # Updating the convergence checker
-      if (exists("dat", envir = LAST_CONV_CHECK)) {
+      if (exists("dat", envir = LAST_CONV_CHECK, inherits = FALSE)) {
         convergence_data_set(list(
           dat = c(convergence_data_get("dat"), stats::setNames(list(d), stats::end(x)))
           ))
@@ -282,7 +282,7 @@ convergence_geweke <- function(freq = 1000L, threshold=.025, check_invariant=TRU
     }
     
     # Updating the convergence checker
-    if (exists("dat", envir = LAST_CONV_CHECK)) {
+    if (exists("dat", envir = LAST_CONV_CHECK, inherits = FALSE)) {
       convergence_data_set(list(
         dat = c(convergence_data_get("dat"), stats::setNames(list(d), stats::end(x)))
       ))
@@ -338,7 +338,7 @@ convergence_heildel <- function(freq = 1000L, ..., check_invariant=TRUE) {
     tests <- d[, c("stest", "htest")]
 
     # Updating the convergence checker
-    if (exists("dat", envir = LAST_CONV_CHECK)) {
+    if (exists("dat", envir = LAST_CONV_CHECK, inherits = FALSE)) {
       convergence_data_set(list(
         dat = c(convergence_data_get("dat"), stats::setNames(list(d), stats::end(x)))
       ))

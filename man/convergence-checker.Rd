@@ -137,7 +137,7 @@ convergence_example_with_info <- structure(function(x) {
   arate <- 1 - coda::rejectionRate(x)
   
   # Saving a value
-  if (!exists("arates", envir = LAST_CONV_CHECK)) {
+  if (!exists("arates", envir = LAST_CONV_CHECK, inherits = FALSE)) {
     convergence_data_set(list(arates = arate))
   } else {
     convergence_data_set(list(
