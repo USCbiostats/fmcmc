@@ -2,6 +2,8 @@
 
 * Fixed issue #21: Restricting search scope in MCMC temp environment data.
 
+* Removed annoying warning when using convergence checker.
+
 
 # fmcmc 0.5-0
 

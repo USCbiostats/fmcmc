@@ -373,7 +373,7 @@ convergence_auto <- function(freq = 1000L) {
   structure(function(x) {
     
     who <- as.character(sys.call(-1L)[[1]])
-    if (!length(who) || (who != "with_autostop"))
+    if (!length(who) || (who != "MCMC_CALL"))
       warning("This function should not be used in a context other than ",
               "the argument `conv_checker` in `MCMC`.")
     
