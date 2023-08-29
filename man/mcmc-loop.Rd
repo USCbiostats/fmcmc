@@ -62,7 +62,9 @@ an error.
 
 For example, if you wanted to print information if the current value
 of logpost is greater than the previous value of logpost, you could define
-the objective function as follows:\preformatted{f <- function(p) \{
+the objective function as follows:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{f <- function(p) \{
 
   i            <- ith_step("i")
   logpost_prev <- ith_step("logpost")[i - 1L]
@@ -74,7 +76,7 @@ the objective function as follows:\preformatted{f <- function(p) \{
   return(logpost_curr)
 
 \}
-}
+}\if{html}{\out{</div>}}
 
 In the case of the objects \code{nchains}, \code{cl}, and \code{multicore}, the function will
 always return the default values \code{1}, \code{NULL}, and \code{FALSE}, respectively. Thus, the

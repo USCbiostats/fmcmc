@@ -1,7 +1,7 @@
 Package: fmcmc
 Title: A friendly MCMC framework
-Version: 0.5-1
-Date: 2022-01-13
+Version: 0.5-2
+Date: 2023-08-29
 Authors@R: c(person("George", "Vega Yon", email = "g.vegayon@gmail.com", role =
          c("aut", "cre"), comment = c(ORCID = "0000-0002-3171-0844")),
          person("Paul", "Marjoram", email = "pmarjora@usc.edu", role = c("ctb",
@@ -40,6 +40,6 @@ Imports:
     methods,
     MASS,
     Matrix
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr

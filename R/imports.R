@@ -32,7 +32,7 @@ NULL
 #' Vega Yon et al., (2019). fmcmc: A friendly MCMC framework. Journal of Open
 #' Source Software, 4(39), 1427, \doi{10.21105/joss.01427}
 #' 
-#' @docType package
+#' @aliases fmcmc-package 
 #' @name fmcmc
 #' 
 NULL

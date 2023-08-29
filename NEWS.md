@@ -1,3 +1,8 @@
+# fmcmc 0.5-2
+
+* Adressing [`roxygen2` issue #1491](https://github.com/r-lib/roxygen2/issues/1491)
+
+
 # fmcmc 0.5-1
 
 * Fixed issue #21: Restricting search scope in MCMC temp environment data.

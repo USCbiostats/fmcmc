@@ -70,7 +70,9 @@ to \link{MCMC}). \cr
 }
 
 These are the core component of the \code{MCMC} function. The following block
-of code is how this is actually implemented in the package:\preformatted{for (i in 1L:nsteps) \{
+of code is how this is actually implemented in the package:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{for (i in 1L:nsteps) \{
   # Step 1. Propose
   theta1[] <- kernel$proposal(environment())
   f1       <- f(theta1)
@@ -93,7 +95,7 @@ of code is how this is actually implemented in the package:\preformatted{for (i 
   ans[i,] <- theta0
   
 \}
-}
+}\if{html}{\out{</div>}}
 
 For an extensive example on how to create new kernel objects see the vignette
 \code{vignette("user-defined-kernels", "fmcmc")}.
