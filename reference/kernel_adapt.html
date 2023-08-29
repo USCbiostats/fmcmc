@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">fmcmc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-2</span>
       </span>
     </div>
 
@@ -32,7 +32,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -75,33 +75,33 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">kernel_adapt</span><span class="op">(</span>
-  mu <span class="op">=</span> <span class="fl">0</span>,
-  bw <span class="op">=</span> <span class="fl">0L</span>,
-  lb <span class="op">=</span> <span class="op">-</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,
-  ub <span class="op">=</span> <span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,
-  freq <span class="op">=</span> <span class="fl">1L</span>,
-  warmup <span class="op">=</span> <span class="fl">500L</span>,
-  Sigma <span class="op">=</span> <span class="cn">NULL</span>,
-  Sd <span class="op">=</span> <span class="cn">NULL</span>,
-  eps <span class="op">=</span> <span class="fl">1e-04</span>,
-  fixed <span class="op">=</span> <span class="cn">FALSE</span>,
-  until <span class="op">=</span> <span class="cn">Inf</span>
-<span class="op">)</span>
-
-<span class="fu">kernel_am</span><span class="op">(</span>
-  mu <span class="op">=</span> <span class="fl">0</span>,
-  bw <span class="op">=</span> <span class="fl">0L</span>,
-  lb <span class="op">=</span> <span class="op">-</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,
-  ub <span class="op">=</span> <span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,
-  freq <span class="op">=</span> <span class="fl">1L</span>,
-  warmup <span class="op">=</span> <span class="fl">500L</span>,
-  Sigma <span class="op">=</span> <span class="cn">NULL</span>,
-  Sd <span class="op">=</span> <span class="cn">NULL</span>,
-  eps <span class="op">=</span> <span class="fl">1e-04</span>,
-  fixed <span class="op">=</span> <span class="cn">FALSE</span>,
-  until <span class="op">=</span> <span class="cn">Inf</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">kernel_adapt</span><span class="op">(</span></span>
+<span>  mu <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  bw <span class="op">=</span> <span class="fl">0L</span>,</span>
+<span>  lb <span class="op">=</span> <span class="op">-</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,</span>
+<span>  ub <span class="op">=</span> <span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,</span>
+<span>  freq <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  warmup <span class="op">=</span> <span class="fl">500L</span>,</span>
+<span>  Sigma <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  Sd <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  eps <span class="op">=</span> <span class="fl">1e-04</span>,</span>
+<span>  fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  until <span class="op">=</span> <span class="cn">Inf</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">kernel_am</span><span class="op">(</span></span>
+<span>  mu <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  bw <span class="op">=</span> <span class="fl">0L</span>,</span>
+<span>  lb <span class="op">=</span> <span class="op">-</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,</span>
+<span>  ub <span class="op">=</span> <span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,</span>
+<span>  freq <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  warmup <span class="op">=</span> <span class="fl">500L</span>,</span>
+<span>  Sigma <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  Sd <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  eps <span class="op">=</span> <span class="fl">1e-04</span>,</span>
+<span>  fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  until <span class="op">=</span> <span class="cn">Inf</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -110,38 +110,59 @@
 <dd><p>Either a numeric vector or a scalar. Proposal mean.
 If scalar, values are recycled to match the number of parameters in the
 objective function.</p></dd>
+
+
 <dt>bw</dt>
 <dd><p>Integer scalar. The bandwidth, is the number of observations to
 include in the computation of the variance-covariance matrix.</p></dd>
+
+
 <dt>lb, ub</dt>
 <dd><p>Either a numeric vector or a scalar. Lower and upper bounds for
 bounded kernels. When of length 1, the values are recycled to match the number
 of parameters in the objective function.</p></dd>
+
+
 <dt>freq</dt>
 <dd><p>Integer scalar. Frequency of updates. How often the
 variance-covariance matrix is updated. The implementation is different from that
 described in the original paper (see details).</p></dd>
+
+
 <dt>warmup</dt>
 <dd><p>Integer scalar. The number of iterations that the algorithm has
 to wait before starting to do the updates.</p></dd>
+
+
 <dt>Sigma</dt>
 <dd><p>The variance-covariance matrix. By default this will be an
 identity matrix during the warmup period.</p></dd>
+
+
 <dt>Sd</dt>
 <dd><p>Overall scale for the algorithm. By default, the variance-covariance
 is scaled to \(2.4^2/d\), with \(d\) the number of dimensions.</p></dd>
+
+
 <dt>eps</dt>
 <dd><p>Double scalar. Default size of the initial step (see details).</p></dd>
+
+
 <dt>fixed</dt>
 <dd><p>Logical scalar or vector of length <code>k</code>. Indicates which parameters
 will be treated as fixed or not. Single values are recycled.</p></dd>
+
+
 <dt>until</dt>
 <dd><p>Integer scalar. Last step at which adaptation takes place (see
 details).</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An object of class <a href="kernel_new.html">fmcmc_kernel</a>. <code>fmcmc_kernel</code> objects are intended
+    
+
+<p>An object of class <a href="kernel_new.html">fmcmc_kernel</a>. <code>fmcmc_kernel</code> objects are intended
 to be used with the <code><a href="MCMC.html">MCMC()</a></code> function.</p>
     </div>
     <div id="details">
@@ -185,12 +206,12 @@ Bernoulli, 7(2), 223–242.
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Update every-step and wait 1,000 steps before starting to adapt</span></span>
-<span class="r-in"><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu">kernel_adapt</span><span class="op">(</span>freq <span class="op">=</span> <span class="fl">1</span>, warmup <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Two parameters model, the second parameter with a restricted range, i.e.</span></span>
-<span class="r-in"><span class="co"># a lower bound of 1</span></span>
-<span class="r-in"><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu">kernel_adapt</span><span class="op">(</span>lb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Update every-step and wait 1,000 steps before starting to adapt</span></span></span>
+<span class="r-in"><span><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu">kernel_adapt</span><span class="op">(</span>freq <span class="op">=</span> <span class="fl">1</span>, warmup <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Two parameters model, the second parameter with a restricted range, i.e.</span></span></span>
+<span class="r-in"><span><span class="co"># a lower bound of 1</span></span></span>
+<span class="r-in"><span><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu">kernel_adapt</span><span class="op">(</span>lb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -205,7 +226,7 @@ Bernoulli, 7(2), 223–242.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

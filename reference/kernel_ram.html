@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">fmcmc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-2</span>
       </span>
     </div>
 
@@ -32,7 +32,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -75,21 +75,21 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">kernel_ram</span><span class="op">(</span>
-  mu <span class="op">=</span> <span class="fl">0</span>,
-  eta <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">i</span>, <span class="va">k</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">i</span><span class="op">^</span><span class="op">(</span><span class="op">-</span><span class="fl">2</span><span class="op">/</span><span class="fl">3</span><span class="op">)</span> <span class="op">*</span> <span class="va">k</span><span class="op">)</span><span class="op">)</span>,
-  qfun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">k</span><span class="op">)</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">rt</a></span><span class="op">(</span><span class="va">k</span>, <span class="va">k</span><span class="op">)</span>,
-  arate <span class="op">=</span> <span class="fl">0.234</span>,
-  freq <span class="op">=</span> <span class="fl">1L</span>,
-  warmup <span class="op">=</span> <span class="fl">0L</span>,
-  Sigma <span class="op">=</span> <span class="cn">NULL</span>,
-  eps <span class="op">=</span> <span class="fl">1e-04</span>,
-  lb <span class="op">=</span> <span class="op">-</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,
-  ub <span class="op">=</span> <span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,
-  fixed <span class="op">=</span> <span class="cn">FALSE</span>,
-  until <span class="op">=</span> <span class="cn">Inf</span>,
-  constr <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">kernel_ram</span><span class="op">(</span></span>
+<span>  mu <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  eta <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">i</span>, <span class="va">k</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">i</span><span class="op">^</span><span class="op">(</span><span class="op">-</span><span class="fl">2</span><span class="op">/</span><span class="fl">3</span><span class="op">)</span> <span class="op">*</span> <span class="va">k</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  qfun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">k</span><span class="op">)</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">rt</a></span><span class="op">(</span><span class="va">k</span>, <span class="va">k</span><span class="op">)</span>,</span>
+<span>  arate <span class="op">=</span> <span class="fl">0.234</span>,</span>
+<span>  freq <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  warmup <span class="op">=</span> <span class="fl">0L</span>,</span>
+<span>  Sigma <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  eps <span class="op">=</span> <span class="fl">1e-04</span>,</span>
+<span>  lb <span class="op">=</span> <span class="op">-</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,</span>
+<span>  ub <span class="op">=</span> <span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,</span>
+<span>  fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  until <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  constr <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -98,44 +98,69 @@
 <dd><p>Either a numeric vector or a scalar. Proposal mean.
 If scalar, values are recycled to match the number of parameters in the
 objective function.</p></dd>
+
+
 <dt>eta</dt>
 <dd><p>A function that receives the MCMC environment. This is to calculate
 the scaling factor for the adaptation.</p></dd>
+
+
 <dt>qfun</dt>
 <dd><p>Function. As described in Vihola (2012)'s, the <code>qfun</code> function is
 a symmetric function used to generate random numbers.</p></dd>
+
+
 <dt>arate</dt>
 <dd><p>Numeric scalar. Objective acceptance rate.</p></dd>
+
+
 <dt>freq</dt>
 <dd><p>Integer scalar. Frequency of updates. How often the
 variance-covariance matrix is updated.</p></dd>
+
+
 <dt>warmup</dt>
 <dd><p>Integer scalar. The number of iterations that the algorithm has
 to wait before starting to do the updates.</p></dd>
+
+
 <dt>Sigma</dt>
 <dd><p>The variance-covariance matrix. By default this will be an
 identity matrix during the warmup period.</p></dd>
+
+
 <dt>eps</dt>
 <dd><p>Double scalar. Default size of the initial step (see details).</p></dd>
+
+
 <dt>lb, ub</dt>
 <dd><p>Either a numeric vector or a scalar. Lower and upper bounds for
 bounded kernels. When of length 1, the values are recycled to match the number
 of parameters in the objective function.</p></dd>
+
+
 <dt>fixed</dt>
 <dd><p>Logical scalar or vector of length <code>k</code>. Indicates which parameters
 will be treated as fixed or not. Single values are recycled.</p></dd>
+
+
 <dt>until</dt>
 <dd><p>Integer scalar. Last step at which adaptation takes place (see
 details).</p></dd>
+
+
 <dt>constr</dt>
 <dd><p>Logical lower-diagonal square matrix of size <code>k</code>. <strong>Not</strong> in the
 original paper, but rather a tweak that imposes a constraint on the <code>S_n</code>
 matrix. If different from <code>NULL</code>, the kernel multiplates <code>S_n</code> by this
 constraint so that zero elements are pre-imposed.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An object of class <a href="kernel_new.html">fmcmc_kernel</a>.</p>
+    
+
+<p>An object of class <a href="kernel_new.html">fmcmc_kernel</a>.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -160,7 +185,7 @@ $$</p>
     <h2>References</h2>
     <p>Vihola, M. (2012). Robust adaptive Metropolis algorithm with coerced acceptance
 rate. Statistics and Computing, 22(5), 997–1008.
-doi: <a href="https://doi.org/10.1007/s11222-011-9269-5" class="external-link">10.1007/s11222-011-9269-5</a></p>
+<a href="https://doi.org/10.1007/s11222-011-9269-5" class="external-link">doi:10.1007/s11222-011-9269-5</a></p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -174,9 +199,9 @@ doi: <a href="https://doi.org/10.1007/s11222-011-9269-5" class="external-link">1
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Setting the acceptance rate to 30 % and deferring the updates until</span></span>
-<span class="r-in"><span class="co"># after 1000 steps</span></span>
-<span class="r-in"><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu">kernel_ram</span><span class="op">(</span>arate <span class="op">=</span> <span class="fl">.3</span>, warmup <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Setting the acceptance rate to 30 % and deferring the updates until</span></span></span>
+<span class="r-in"><span><span class="co"># after 1000 steps</span></span></span>
+<span class="r-in"><span><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu">kernel_ram</span><span class="op">(</span>arate <span class="op">=</span> <span class="fl">.3</span>, warmup <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -191,7 +216,7 @@ doi: <a href="https://doi.org/10.1007/s11222-011-9269-5" class="external-link">1
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -24,7 +24,7 @@ recalculation at every step of the algorithm."><meta property="og:image" content
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">fmcmc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-2</span>
       </span>
     </div>
 
@@ -33,7 +33,7 @@ recalculation at every step of the algorithm."><meta property="og:image" content
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -77,32 +77,41 @@ recalculation at every step of the algorithm.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">cov_recursive</span><span class="op">(</span>
-  <span class="va">X_t</span>,
-  <span class="va">Cov_t</span>,
-  <span class="va">Mean_t_prev</span>,
-  <span class="va">t.</span>,
-  Mean_t <span class="op">=</span> <span class="cn">NULL</span>,
-  eps <span class="op">=</span> <span class="fl">0</span>,
-  Sd <span class="op">=</span> <span class="fl">1</span>,
-  Ik <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">Cov_t</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="fu">mean_recursive</span><span class="op">(</span><span class="va">X_t</span>, <span class="va">Mean_t_prev</span>, <span class="va">t.</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cov_recursive</span><span class="op">(</span></span>
+<span>  <span class="va">X_t</span>,</span>
+<span>  <span class="va">Cov_t</span>,</span>
+<span>  <span class="va">Mean_t_prev</span>,</span>
+<span>  <span class="va">t.</span>,</span>
+<span>  Mean_t <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  eps <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  Sd <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  Ik <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">Cov_t</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">mean_recursive</span><span class="op">(</span><span class="va">X_t</span>, <span class="va">Mean_t_prev</span>, <span class="va">t.</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>X_t</dt>
 <dd><p>Last value of the sample</p></dd>
+
+
 <dt>Cov_t</dt>
 <dd><p>Covariance in t</p></dd>
+
+
 <dt>t.</dt>
 <dd><p>Sample size up to <code>t-1</code>.</p></dd>
+
+
 <dt>Mean_t, Mean_t_prev</dt>
 <dd><p>Vectors of averages in time <code>t</code> and <code>t-1</code> respectively.</p></dd>
+
+
 <dt>Sd, eps, Ik</dt>
 <dd><p>See <code><a href="kernel_adapt.html">kernel_adapt()</a></code>.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -118,64 +127,64 @@ Bernoulli, 7(2), 223–242.
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Generating random data (only four points to see the difference)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1231</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">3</span></span>
-<span class="r-in"><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">*</span><span class="fl">4</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># These two should be equal</span></span>
-<span class="r-in"><span class="fu">mean_recursive</span><span class="op">(</span></span>
-<span class="r-in">  X_t         <span class="op">=</span> <span class="va">X</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>,</span>
-<span class="r-in">  Mean_t_prev <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">X</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span>,</span>
-<span class="r-in">  t.          <span class="op">=</span> <span class="va">n</span> <span class="op">-</span> <span class="fl">1</span></span>
-<span class="r-in"><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Generating random data (only four points to see the difference)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1231</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">3</span></span></span>
+<span class="r-in"><span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">*</span><span class="fl">4</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># These two should be equal</span></span></span>
+<span class="r-in"><span><span class="fu">mean_recursive</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  X_t         <span class="op">=</span> <span class="va">X</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>,</span></span>
+<span class="r-in"><span>  Mean_t_prev <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">X</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  t.          <span class="op">=</span> <span class="va">n</span> <span class="op">-</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.3815965  0.6974209  0.2725030  0.3904914</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.3815965  0.6974209  0.2725030  0.3904914</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># These two should be equal</span></span>
-<span class="r-in"><span class="fu">cov_recursive</span><span class="op">(</span></span>
-<span class="r-in">  X_t         <span class="op">=</span> <span class="va">X</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>, </span>
-<span class="r-in">  Cov_t       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="va">X</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span>, </span>
-<span class="r-in">  Mean_t      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>,</span>
-<span class="r-in">  Mean_t_prev <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">X</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span>,</span>
-<span class="r-in">  t           <span class="op">=</span> <span class="va">n</span><span class="op">-</span><span class="fl">1</span></span>
-<span class="r-in"><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># These two should be equal</span></span></span>
+<span class="r-in"><span><span class="fu">cov_recursive</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  X_t         <span class="op">=</span> <span class="va">X</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>, </span></span>
+<span class="r-in"><span>  Cov_t       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="va">X</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span>, </span></span>
+<span class="r-in"><span>  Mean_t      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  Mean_t_prev <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">X</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  t           <span class="op">=</span> <span class="va">n</span><span class="op">-</span><span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           [,1]      [,2]      [,3]      [,4]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 1.5745595 1.4188822 0.7010067 0.9173480</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 1.4188822 1.5675687 1.0409572 0.8027636</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 0.7010067 1.0409572 0.8917114 0.3745821</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 0.9173480 0.8027636 0.3745821 0.5364269</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           [,1]      [,2]      [,3]      [,4]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 1.5745595 1.4188822 0.7010067 0.9173480</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 1.4188822 1.5675687 1.0409572 0.8027636</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 0.7010067 1.0409572 0.8917114 0.3745821</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 0.9173480 0.8027636 0.3745821 0.5364269</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Speed example -------------------------------------------------------------</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">13155511</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1e3</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">ans0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="va">X</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">t0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
-<span class="r-in">  <span class="va">ans1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">t1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">ans2</span> <span class="op">&lt;-</span> <span class="fu">cov_recursive</span><span class="op">(</span></span>
-<span class="r-in">  <span class="va">X</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>, <span class="va">ans0</span>,</span>
-<span class="r-in">  Mean_t      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>,</span>
-<span class="r-in">  Mean_t_prev <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">X</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span>,</span>
-<span class="r-in">  t. <span class="op">=</span> <span class="fl">1e3</span> <span class="op">-</span> <span class="fl">1</span></span>
-<span class="r-in"><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Comparing accuracy and speed</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">ans1</span> <span class="op">-</span> <span class="va">ans2</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Speed example -------------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">13155511</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1e3</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">ans0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="va">X</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">t0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">ans1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">t1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">ans2</span> <span class="op">&lt;-</span> <span class="fu">cov_recursive</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">X</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>, <span class="va">ans0</span>,</span></span>
+<span class="r-in"><span>  Mean_t      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  Mean_t_prev <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">X</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  t. <span class="op">=</span> <span class="fl">1e3</span> <span class="op">-</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Comparing accuracy and speed</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">ans1</span> <span class="op">-</span> <span class="va">ans2</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -2.220446e-16  2.220446e-16</span>
-<span class="r-in"><span class="va">t0</span><span class="op">/</span><span class="va">t1</span></span>
+<span class="r-in"><span><span class="va">t0</span><span class="op">/</span><span class="va">t1</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       8     NaN       8 </span>
-<span class="r-in"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       7     NaN       7 </span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -190,7 +199,7 @@ Bernoulli, 7(2), 223–242.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

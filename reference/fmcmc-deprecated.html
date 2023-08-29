@@ -24,7 +24,7 @@ use the functions in mcmc-output."><meta property="og:image" content="/logo.svg"
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">fmcmc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-2</span>
       </span>
     </div>
 
@@ -33,7 +33,7 @@ use the functions in mcmc-output."><meta property="og:image" content="/logo.svg"
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -77,19 +77,19 @@ use the functions in <a href="mcmc-output.html">mcmc-output</a>.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">last_elapsed</span><span class="op">(</span><span class="op">)</span>
-
-<span class="va">LAST_MCMC</span>
-
-<span class="fu">last_nsteps</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">last_nchains</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">last_kernel</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">last_conv_checker</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">last_</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">last_elapsed</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">LAST_MCMC</span></span>
+<span></span>
+<span><span class="fu">last_nsteps</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">last_nchains</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">last_kernel</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">last_conv_checker</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">last_</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="format">
@@ -100,10 +100,13 @@ use the functions in <a href="mcmc-output.html">mcmc-output</a>.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>Name of the object to retrieve.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>The function <code>last_elapsed</code> returns the elapsed time of the last call
+    
+
+<p>The function <code>last_elapsed</code> returns the elapsed time of the last call
 to <a href="MCMC.html">MCMC</a>. In particular, the <code>MCMC</code> function records the running time of R
 at the beginning and end of the function using <code><a href="https://rdrr.io/r/base/proc.time.html" class="external-link">proc.time()</a></code>. So this function
 returns the difference between the two (<code>time_end - time_start</code>).</p>
@@ -121,7 +124,7 @@ returns the difference between the two (<code>time_end - time_start</code>).</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

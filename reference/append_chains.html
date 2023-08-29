@@ -25,7 +25,7 @@ it will join chains using the rbind function."><meta property="og:image" content
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">fmcmc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-2</span>
       </span>
     </div>
 
@@ -34,7 +34,7 @@ it will join chains using the rbind function."><meta property="og:image" content
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -79,55 +79,58 @@ it will join chains using the <a href="https://rdrr.io/r/base/cbind.html" class=
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">append_chains</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">append_chains</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>...</dt>
 <dd><p>A list of <code>mcmc</code> or <code>mcmc.list</code> class objects.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>If <code>mcmc.list</code>, an object of class <code>mcmc.list</code>, otherwise,
+    
+
+<p>If <code>mcmc.list</code>, an object of class <code>mcmc.list</code>, otherwise,
 an object of class <code>mcmc</code>.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Appending two chains</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"lifeexpect"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">logpost</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">lifeexpect</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span></span>
-<span class="r-in">    <span class="va">age</span> <span class="op">-</span> <span class="va">p</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">smoke</span> <span class="op">*</span> <span class="va">p</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">-</span> <span class="va">female</span> <span class="op">*</span> <span class="va">p</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>,</span>
-<span class="r-in">    sd <span class="op">=</span> <span class="va">p</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in">  <span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Using the RAM kernel</span></span>
-<span class="r-in"><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu"><a href="kernel_ram.html">kernel_ram</a></span><span class="op">(</span>lb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">100</span>, <span class="op">-</span><span class="fl">100</span>, <span class="op">-</span><span class="fl">100</span>, <span class="fl">.00001</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">init</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span class="r-in">  avg_age <span class="op">=</span> <span class="fl">70</span>,</span>
-<span class="r-in">  smoke   <span class="op">=</span> <span class="fl">0</span>,</span>
-<span class="r-in">  female  <span class="op">=</span> <span class="fl">0</span>,</span>
-<span class="r-in">  sd      <span class="op">=</span> <span class="fl">1</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">ans0</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span>initial <span class="op">=</span> <span class="va">init</span>, fun <span class="op">=</span> <span class="va">logpost</span>, nsteps <span class="op">=</span> <span class="fl">1000</span>, seed <span class="op">=</span> <span class="fl">22</span>, kernel <span class="op">=</span> <span class="va">kern</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">ans1</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span>initial <span class="op">=</span> <span class="va">ans0</span>, fun <span class="op">=</span> <span class="va">logpost</span>, nsteps <span class="op">=</span> <span class="fl">2000</span>, seed <span class="op">=</span> <span class="fl">55</span>, kernel <span class="op">=</span> <span class="va">kern</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">ans2</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span>initial <span class="op">=</span> <span class="va">ans1</span>, fun <span class="op">=</span> <span class="va">logpost</span>, nsteps <span class="op">=</span> <span class="fl">2000</span>, seed <span class="op">=</span> <span class="fl">1155</span>, kernel <span class="op">=</span> <span class="va">kern</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">ans_tot</span> <span class="op">&lt;-</span> <span class="fu">append_chains</span><span class="op">(</span><span class="va">ans0</span>, <span class="va">ans1</span>, <span class="va">ans2</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Looking at the posterior distributions (see ?lifeexpect for info about</span></span>
-<span class="r-in"><span class="co"># the model). Only the trace</span></span>
-<span class="r-in"><span class="va">op</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">coda</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/coda/man/traceplot.html" class="external-link">traceplot</a></span><span class="op">(</span><span class="va">ans_tot</span><span class="op">[</span>, <span class="va">i</span>, drop<span class="op">=</span><span class="cn">FALSE</span><span class="op">]</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Appending two chains</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"lifeexpect"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">logpost</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">lifeexpect</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">age</span> <span class="op">-</span> <span class="va">p</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">smoke</span> <span class="op">*</span> <span class="va">p</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">-</span> <span class="va">female</span> <span class="op">*</span> <span class="va">p</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>    sd <span class="op">=</span> <span class="va">p</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Using the RAM kernel</span></span></span>
+<span class="r-in"><span><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu"><a href="kernel_ram.html">kernel_ram</a></span><span class="op">(</span>lb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">100</span>, <span class="op">-</span><span class="fl">100</span>, <span class="op">-</span><span class="fl">100</span>, <span class="fl">.00001</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">init</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  avg_age <span class="op">=</span> <span class="fl">70</span>,</span></span>
+<span class="r-in"><span>  smoke   <span class="op">=</span> <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>  female  <span class="op">=</span> <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>  sd      <span class="op">=</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">ans0</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span>initial <span class="op">=</span> <span class="va">init</span>, fun <span class="op">=</span> <span class="va">logpost</span>, nsteps <span class="op">=</span> <span class="fl">1000</span>, seed <span class="op">=</span> <span class="fl">22</span>, kernel <span class="op">=</span> <span class="va">kern</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ans1</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span>initial <span class="op">=</span> <span class="va">ans0</span>, fun <span class="op">=</span> <span class="va">logpost</span>, nsteps <span class="op">=</span> <span class="fl">2000</span>, seed <span class="op">=</span> <span class="fl">55</span>, kernel <span class="op">=</span> <span class="va">kern</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ans2</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span>initial <span class="op">=</span> <span class="va">ans1</span>, fun <span class="op">=</span> <span class="va">logpost</span>, nsteps <span class="op">=</span> <span class="fl">2000</span>, seed <span class="op">=</span> <span class="fl">1155</span>, kernel <span class="op">=</span> <span class="va">kern</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ans_tot</span> <span class="op">&lt;-</span> <span class="fu">append_chains</span><span class="op">(</span><span class="va">ans0</span>, <span class="va">ans1</span>, <span class="va">ans2</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Looking at the posterior distributions (see ?lifeexpect for info about</span></span></span>
+<span class="r-in"><span><span class="co"># the model). Only the trace</span></span></span>
+<span class="r-in"><span><span class="va">op</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">coda</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/coda/man/traceplot.html" class="external-link">traceplot</a></span><span class="op">(</span><span class="va">ans_tot</span><span class="op">[</span>, <span class="va">i</span>, drop<span class="op">=</span><span class="cn">FALSE</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="append_chains-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">op</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">op</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -142,7 +145,7 @@ an object of class <code>mcmc</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

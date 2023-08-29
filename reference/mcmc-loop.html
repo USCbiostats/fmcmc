@@ -24,7 +24,7 @@ during the MCMC process."><meta property="og:image" content="/logo.svg"><!-- mat
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">fmcmc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-2</span>
       </span>
     </div>
 
@@ -33,7 +33,7 @@ during the MCMC process."><meta property="og:image" content="/logo.svg"><!-- mat
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -77,11 +77,11 @@ during the MCMC process.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">ith_step</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
-
-<span class="fu">set_userdata</span><span class="op">(</span><span class="va">...</span><span class="op">)</span>
-
-<span class="fu">get_userdata</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ith_step</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">set_userdata</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_userdata</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -89,12 +89,17 @@ during the MCMC process.</p>
     <dl><dt>x</dt>
 <dd><p>Name of the element to retrieve. If missing, it will return the entire
 environment in which the main MCMC loop is running.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Named values to be appended to the user data.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>The function <code>ith_step()</code> provides access to the following elements:</p><ul><li><p><code>i</code>            : (int) Step (iteration) number.</p></li>
+    
+
+<p>The function <code>ith_step()</code> provides access to the following elements:</p><ul><li><p><code>i</code>            : (int) Step (iteration) number.</p></li>
 <li><p><code>nsteps</code>       : (int) Number of steps.</p></li>
 <li><p><code>chain_id</code>     : (int) Id of the chain (goes from 1 to -nchains-)</p></li>
 <li><p><code>theta0</code>       : (double vector) Current state of the chain.</p></li>
@@ -110,9 +115,13 @@ environment in which the main MCMC loop is running.</p></dd>
 <li><p><code>fun</code>          : (function) Passed function to MCMC.</p></li>
 <li><p><code>f</code>            : (function) Wrapper of -fun-.</p></li>
 <li><p><code>initial</code>      : (double vector) Starting point of the chain.</p></li>
-</ul><p>The following objects always have fixed values (see ?ith_step): nchains, cl, multicore
-Other available objects: cnames, funargs, MCMC_OUTPUT, passedargs, progress
-The function <code>set_userdata()</code> returns <code><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible()</a></code>. The only side
+</ul><p>The following objects always have fixed values (see ?ith_step): nchains, cl, multicore</p>
+
+
+<p>Other available objects: cnames, funargs, MCMC_OUTPUT, passedargs, progress</p>
+
+
+<p>The function <code>set_userdata()</code> returns <code><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible()</a></code>. The only side
 effect is appending the information by row.</p>
     </div>
     <div id="advanced-usage">
@@ -127,19 +136,19 @@ either return the value <code>x</code> or, if missing, the entire environment. I
 an error.</p>
 <p>For example, if you wanted to print information if the current value
 of logpost is greater than the previous value of logpost, you could define
-the objective function as follows:</p><div class="sourceCode"><pre><code><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="op">{</span>
-
-  <span class="va">i</span>            <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mcmc-loop.html">ith_step</a></span><span class="op">(</span><span class="st">"i"</span><span class="op">)</span>
-  <span class="va">logpost_prev</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mcmc-loop.html">ith_step</a></span><span class="op">(</span><span class="st">"logpost"</span><span class="op">)</span><span class="op">[</span><span class="va">i</span> <span class="op">-</span> <span class="fl">1L</span><span class="op">]</span>
-  <span class="va">logpost_curr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">-</span> <span class="va">x</span><span class="op">*</span><span class="va">p</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-  
-  <span class="kw">if</span> <span class="op">(</span><span class="va">logpost_prev</span> <span class="op">&lt;</span> <span class="va">logpost_curr</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"At a higher point!\n"</span><span class="op">)</span>
-    
-  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">logpost_curr</span><span class="op">)</span>
-
-<span class="op">}</span></code></pre></div>
-
+the objective function as follows:</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(p) {</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  i            <span class="ot">&lt;-</span> <span class="fu">ith_step</span>(<span class="st">"i"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  logpost_prev <span class="ot">&lt;-</span> <span class="fu">ith_step</span>(<span class="st">"logpost"</span>)[i <span class="sc">-</span> 1L]</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  logpost_curr <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">dnorm</span>(y <span class="sc">-</span> x<span class="sc">*</span>p, <span class="at">log =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  </span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="cf">if</span> (logpost_prev <span class="sc">&lt;</span> logpost_curr)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"At a higher point!</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>    </span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="fu">return</span>(logpost_curr)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>}</span></code></pre><p></p></div>
 <p>In the case of the objects <code>nchains</code>, <code>cl</code>, and <code>multicore</code>, the function will
 always return the default values <code>1</code>, <code>NULL</code>, and <code>FALSE</code>, respectively. Thus, the
 user shouldn't rely on these objects to provide information regarding runs
@@ -148,44 +157,44 @@ using multiple chains. More examples below.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co">#' # Getting the logpost -------------------------------------------------------</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">23133</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">200</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">*</span><span class="fl">2</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">200</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">-</span> <span class="va">x</span><span class="op">*</span><span class="va">p</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">ans</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span>fun <span class="op">=</span> <span class="va">f</span>, initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, nsteps<span class="op">=</span><span class="fl">2000</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="mcmc-output.html">get_logpost</a></span><span class="op">(</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span> <span class="co"># Plotting the logpost from the last run</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#' # Getting the logpost -------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">23133</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">200</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">*</span><span class="fl">2</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">200</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">-</span> <span class="va">x</span><span class="op">*</span><span class="va">p</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">ans</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span>fun <span class="op">=</span> <span class="va">f</span>, initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, nsteps<span class="op">=</span><span class="fl">2000</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="mcmc-output.html">get_logpost</a></span><span class="op">(</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span> <span class="co"># Plotting the logpost from the last run</span></span></span>
 <span class="r-plt img"><img src="mcmc-loop-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Printing information every 500 step ---------------------------------------</span></span>
-<span class="r-in"><span class="co"># for this we use ith_step()</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># Capturing info from within the loop</span></span>
-<span class="r-in">  <span class="va">i</span>      <span class="op">&lt;-</span> <span class="fu">ith_step</span><span class="op">(</span><span class="st">"i"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">nsteps</span> <span class="op">&lt;-</span> <span class="fu">ith_step</span><span class="op">(</span><span class="st">"nsteps"</span><span class="op">)</span></span>
-<span class="r-in">  </span>
-<span class="r-in">  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">i</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">500</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  </span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span></span>
-<span class="r-in">      <span class="st">"////////////////////////////////////////////////////\n"</span>,</span>
-<span class="r-in">      <span class="st">"Step "</span>, <span class="va">i</span>, <span class="st">" of "</span>, <span class="va">nsteps</span>,<span class="st">". Values in the loop:\n"</span>,</span>
-<span class="r-in">      <span class="st">"theta0: "</span>, <span class="fu">ith_step</span><span class="op">(</span><span class="st">"theta0"</span><span class="op">)</span>, <span class="st">"\n"</span>,</span>
-<span class="r-in">      <span class="st">"theta1: "</span>, <span class="fu">ith_step</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">theta1</span>, <span class="st">"\n"</span>,</span>
-<span class="r-in">      sep <span class="op">=</span> <span class="st">""</span></span>
-<span class="r-in">    <span class="op">)</span></span>
-<span class="r-in">  <span class="op">}</span></span>
-<span class="r-in">    </span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">-</span> <span class="va">x</span><span class="op">*</span><span class="va">p</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">ans0</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span>fun <span class="op">=</span> <span class="va">f</span>, initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, nsteps<span class="op">=</span><span class="fl">2000</span>, progress <span class="op">=</span> <span class="cn">FALSE</span>, seed <span class="op">=</span> <span class="fl">22</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Printing information every 500 step ---------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co"># for this we use ith_step()</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Capturing info from within the loop</span></span></span>
+<span class="r-in"><span>  <span class="va">i</span>      <span class="op">&lt;-</span> <span class="fu">ith_step</span><span class="op">(</span><span class="st">"i"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">nsteps</span> <span class="op">&lt;-</span> <span class="fu">ith_step</span><span class="op">(</span><span class="st">"nsteps"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  </span></span>
+<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">i</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">500</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  </span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      <span class="st">"////////////////////////////////////////////////////\n"</span>,</span></span>
+<span class="r-in"><span>      <span class="st">"Step "</span>, <span class="va">i</span>, <span class="st">" of "</span>, <span class="va">nsteps</span>,<span class="st">". Values in the loop:\n"</span>,</span></span>
+<span class="r-in"><span>      <span class="st">"theta0: "</span>, <span class="fu">ith_step</span><span class="op">(</span><span class="st">"theta0"</span><span class="op">)</span>, <span class="st">"\n"</span>,</span></span>
+<span class="r-in"><span>      <span class="st">"theta1: "</span>, <span class="fu">ith_step</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">theta1</span>, <span class="st">"\n"</span>,</span></span>
+<span class="r-in"><span>      sep <span class="op">=</span> <span class="st">""</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span>    </span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">-</span> <span class="va">x</span><span class="op">*</span><span class="va">p</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">ans0</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span>fun <span class="op">=</span> <span class="va">f</span>, initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, nsteps<span class="op">=</span><span class="fl">2000</span>, progress <span class="op">=</span> <span class="cn">FALSE</span>, seed <span class="op">=</span> <span class="fl">22</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ////////////////////////////////////////////////////</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Step 500 of 2000. Values in the loop:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> theta0: 2.025379</span>
@@ -202,39 +211,39 @@ using multiple chains. More examples below.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Step 2000 of 2000. Values in the loop:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> theta0: 1.998789</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> theta1: 1.33034</span>
-<span class="r-in"><span class="co"># ////////////////////////////////////////////////////</span></span>
-<span class="r-in"><span class="co"># Step 500 of 2000. Values in the loop:</span></span>
-<span class="r-in"><span class="co"># theta0: 2.025379</span></span>
-<span class="r-in"><span class="co"># theta1: 1.04524</span></span>
-<span class="r-in"><span class="co"># ////////////////////////////////////////////////////</span></span>
-<span class="r-in"><span class="co"># Step 1000 of 2000. Values in the loop:</span></span>
-<span class="r-in"><span class="co"># theta0: 2.145967</span></span>
-<span class="r-in"><span class="co"># theta1: 0.2054037</span></span>
-<span class="r-in"><span class="co"># ////////////////////////////////////////////////////</span></span>
-<span class="r-in"><span class="co"># Step 1500 of 2000. Values in the loop:</span></span>
-<span class="r-in"><span class="co"># theta0: 2.211691</span></span>
-<span class="r-in"><span class="co"># theta1: 2.515361</span></span>
-<span class="r-in"><span class="co"># ////////////////////////////////////////////////////</span></span>
-<span class="r-in"><span class="co"># Step 2000 of 2000. Values in the loop:</span></span>
-<span class="r-in"><span class="co"># theta0: 1.998789</span></span>
-<span class="r-in"><span class="co"># theta1: 1.33034</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Printing information if the current logpost is greater than max -----------</span></span>
-<span class="r-in"><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="va">i</span>            <span class="op">&lt;-</span> <span class="fu">ith_step</span><span class="op">(</span><span class="st">"i"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">logpost_prev</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu">ith_step</span><span class="op">(</span><span class="st">"logpost"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">i</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">logpost_curr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">-</span> <span class="va">x</span><span class="op">*</span><span class="va">p</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  </span>
-<span class="r-in">  <span class="co"># Only worthwhile after the first step</span></span>
-<span class="r-in">  <span class="kw">if</span> <span class="op">(</span><span class="op">(</span><span class="va">i</span> <span class="op">&gt;</span> <span class="fl">1L</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="va">logpost_prev</span> <span class="op">&lt;</span> <span class="va">logpost_curr</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"At a higher point!:"</span>, <span class="va">logpost_curr</span>, <span class="st">", step:"</span>, <span class="va">i</span>,<span class="st">"\n"</span><span class="op">)</span></span>
-<span class="r-in">    </span>
-<span class="r-in">  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">logpost_curr</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"><span class="va">ans1</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span>fun <span class="op">=</span> <span class="va">f</span>, initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, nsteps<span class="op">=</span><span class="fl">1000</span>, progress <span class="op">=</span> <span class="cn">FALSE</span>, seed <span class="op">=</span> <span class="fl">22</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co"># ////////////////////////////////////////////////////</span></span></span>
+<span class="r-in"><span><span class="co"># Step 500 of 2000. Values in the loop:</span></span></span>
+<span class="r-in"><span><span class="co"># theta0: 2.025379</span></span></span>
+<span class="r-in"><span><span class="co"># theta1: 1.04524</span></span></span>
+<span class="r-in"><span><span class="co"># ////////////////////////////////////////////////////</span></span></span>
+<span class="r-in"><span><span class="co"># Step 1000 of 2000. Values in the loop:</span></span></span>
+<span class="r-in"><span><span class="co"># theta0: 2.145967</span></span></span>
+<span class="r-in"><span><span class="co"># theta1: 0.2054037</span></span></span>
+<span class="r-in"><span><span class="co"># ////////////////////////////////////////////////////</span></span></span>
+<span class="r-in"><span><span class="co"># Step 1500 of 2000. Values in the loop:</span></span></span>
+<span class="r-in"><span><span class="co"># theta0: 2.211691</span></span></span>
+<span class="r-in"><span><span class="co"># theta1: 2.515361</span></span></span>
+<span class="r-in"><span><span class="co"># ////////////////////////////////////////////////////</span></span></span>
+<span class="r-in"><span><span class="co"># Step 2000 of 2000. Values in the loop:</span></span></span>
+<span class="r-in"><span><span class="co"># theta0: 1.998789</span></span></span>
+<span class="r-in"><span><span class="co"># theta1: 1.33034</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Printing information if the current logpost is greater than max -----------</span></span></span>
+<span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">i</span>            <span class="op">&lt;-</span> <span class="fu">ith_step</span><span class="op">(</span><span class="st">"i"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">logpost_prev</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu">ith_step</span><span class="op">(</span><span class="st">"logpost"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">i</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">logpost_curr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">-</span> <span class="va">x</span><span class="op">*</span><span class="va">p</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  </span></span>
+<span class="r-in"><span>  <span class="co"># Only worthwhile after the first step</span></span></span>
+<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="op">(</span><span class="va">i</span> <span class="op">&gt;</span> <span class="fl">1L</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="va">logpost_prev</span> <span class="op">&lt;</span> <span class="va">logpost_curr</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"At a higher point!:"</span>, <span class="va">logpost_curr</span>, <span class="st">", step:"</span>, <span class="va">i</span>,<span class="st">"\n"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    </span></span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">logpost_curr</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">ans1</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span>fun <span class="op">=</span> <span class="va">f</span>, initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, nsteps<span class="op">=</span><span class="fl">1000</span>, progress <span class="op">=</span> <span class="cn">FALSE</span>, seed <span class="op">=</span> <span class="fl">22</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> At a higher point!: -357.3584 , step: 2 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> At a higher point!: -272.6816 , step: 6 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> At a higher point!: -270.9969 , step: 7 </span>
@@ -242,38 +251,38 @@ using multiple chains. More examples below.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> At a higher point!: -269.7435 , step: 46 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> At a higher point!: -269.7422 , step: 543 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> At a higher point!: -269.7421 , step: 788 </span>
-<span class="r-in"><span class="co"># At a higher point!: -357.3584 , step: 2 </span></span>
-<span class="r-in"><span class="co"># At a higher point!: -272.6816 , step: 6 </span></span>
-<span class="r-in"><span class="co"># At a higher point!: -270.9969 , step: 7 </span></span>
-<span class="r-in"><span class="co"># At a higher point!: -269.8128 , step: 24 </span></span>
-<span class="r-in"><span class="co"># At a higher point!: -269.7435 , step: 46 </span></span>
-<span class="r-in"><span class="co"># At a higher point!: -269.7422 , step: 543 </span></span>
-<span class="r-in"><span class="co"># At a higher point!: -269.7421 , step: 788 </span></span>
-<span class="r-in"><span class="co"># Saving extra information --------------------------------------------------</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"lifeexpect"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Defining the logposterior</span></span>
-<span class="r-in"><span class="va">logpost</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># Reconding the sum of the parameters (just because) </span></span>
-<span class="r-in">  <span class="co"># and the number of step.</span></span>
-<span class="r-in">  <span class="fu">set_userdata</span><span class="op">(</span>i <span class="op">=</span> <span class="fu">ith_step</span><span class="op">(</span><span class="st">"i"</span><span class="op">)</span>, sum_of_p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">lifeexpect</span>, <span class="op">{</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">age</span> <span class="op">-</span> <span class="op">(</span><span class="va">p</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">p</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">*</span><span class="va">smoke</span> <span class="op">+</span> <span class="va">p</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">*</span><span class="va">female</span><span class="op">)</span>, sd <span class="op">=</span> <span class="va">p</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="op">}</span><span class="op">)</span></span>
-<span class="r-in">  </span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># A kernel where sd is positive, the first is average age, so we </span></span>
-<span class="r-in"><span class="co"># make it positive too</span></span>
-<span class="r-in"><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu"><a href="kernel_ram.html">kernel_ram</a></span><span class="op">(</span>lb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="op">-</span><span class="fl">20</span>, <span class="op">-</span><span class="fl">20</span>, <span class="fl">.0001</span><span class="op">)</span>, eps <span class="op">=</span> <span class="fl">.01</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">ans</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span></span>
-<span class="r-in">  initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">70</span>, <span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>, fun <span class="op">=</span> <span class="va">logpost</span>, kernel <span class="op">=</span> <span class="va">kern</span>, nsteps <span class="op">=</span> <span class="fl">1000</span>, seed <span class="op">=</span> <span class="fl">1</span></span>
-<span class="r-in">  <span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Retrieving the data</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">get_userdata</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co"># At a higher point!: -357.3584 , step: 2 </span></span></span>
+<span class="r-in"><span><span class="co"># At a higher point!: -272.6816 , step: 6 </span></span></span>
+<span class="r-in"><span><span class="co"># At a higher point!: -270.9969 , step: 7 </span></span></span>
+<span class="r-in"><span><span class="co"># At a higher point!: -269.8128 , step: 24 </span></span></span>
+<span class="r-in"><span><span class="co"># At a higher point!: -269.7435 , step: 46 </span></span></span>
+<span class="r-in"><span><span class="co"># At a higher point!: -269.7422 , step: 543 </span></span></span>
+<span class="r-in"><span><span class="co"># At a higher point!: -269.7421 , step: 788 </span></span></span>
+<span class="r-in"><span><span class="co"># Saving extra information --------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"lifeexpect"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Defining the logposterior</span></span></span>
+<span class="r-in"><span><span class="va">logpost</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Reconding the sum of the parameters (just because) </span></span></span>
+<span class="r-in"><span>  <span class="co"># and the number of step.</span></span></span>
+<span class="r-in"><span>  <span class="fu">set_userdata</span><span class="op">(</span>i <span class="op">=</span> <span class="fu">ith_step</span><span class="op">(</span><span class="st">"i"</span><span class="op">)</span>, sum_of_p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">lifeexpect</span>, <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">age</span> <span class="op">-</span> <span class="op">(</span><span class="va">p</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">p</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">*</span><span class="va">smoke</span> <span class="op">+</span> <span class="va">p</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">*</span><span class="va">female</span><span class="op">)</span>, sd <span class="op">=</span> <span class="va">p</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  </span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># A kernel where sd is positive, the first is average age, so we </span></span></span>
+<span class="r-in"><span><span class="co"># make it positive too</span></span></span>
+<span class="r-in"><span><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu"><a href="kernel_ram.html">kernel_ram</a></span><span class="op">(</span>lb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="op">-</span><span class="fl">20</span>, <span class="op">-</span><span class="fl">20</span>, <span class="fl">.0001</span><span class="op">)</span>, eps <span class="op">=</span> <span class="fl">.01</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ans</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">70</span>, <span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>, fun <span class="op">=</span> <span class="va">logpost</span>, kernel <span class="op">=</span> <span class="va">kern</span>, nsteps <span class="op">=</span> <span class="fl">1000</span>, seed <span class="op">=</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Retrieving the data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">get_userdata</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   i sum_of_p</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 1 71.00000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 2 71.00627</span>
@@ -281,15 +290,15 @@ using multiple chains. More examples below.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4 4 70.97180</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5 5 71.02942</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6 6 70.95732</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># It also works using multiple chains</span></span>
-<span class="r-in"><span class="va">ans_two</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span></span>
-<span class="r-in">  initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">70</span>, <span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>, fun <span class="op">=</span> <span class="va">logpost</span>, kernel <span class="op">=</span> <span class="va">kern</span>, nsteps <span class="op">=</span> <span class="fl">1000</span>, seed <span class="op">=</span> <span class="fl">1</span>, nchains <span class="op">=</span> <span class="fl">2</span></span>
-<span class="r-in">  <span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># It also works using multiple chains</span></span></span>
+<span class="r-in"><span><span class="va">ans_two</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCMC.html">MCMC</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">70</span>, <span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>, fun <span class="op">=</span> <span class="va">logpost</span>, kernel <span class="op">=</span> <span class="va">kern</span>, nsteps <span class="op">=</span> <span class="fl">1000</span>, seed <span class="op">=</span> <span class="fl">1</span>, nchains <span class="op">=</span> <span class="fl">2</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>While using multiple chains, a single initial point has been passed via `initial`: c(70, -2, 2, 1). The values will be recycled. Ideally you would want to start each chain from different locations.</span>
-<span class="r-in">  </span>
-<span class="r-in"><span class="va">user_dat</span> <span class="op">&lt;-</span> <span class="fu">get_userdata</span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">user_dat</span>, <span class="va">head</span><span class="op">)</span></span>
+<span class="r-in"><span>  </span></span>
+<span class="r-in"><span><span class="va">user_dat</span> <span class="op">&lt;-</span> <span class="fu">get_userdata</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">user_dat</span>, <span class="va">head</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   i sum_of_p</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 1 71.00000</span>
@@ -308,7 +317,7 @@ using multiple chains. More examples below.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5 5 70.87700</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6 6 71.01785</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -323,7 +332,7 @@ using multiple chains. More examples below.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

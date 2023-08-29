@@ -24,7 +24,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">fmcmc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-2</span>
       </span>
     </div>
 
@@ -33,7 +33,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -77,29 +77,29 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">kernel_nmirror</span><span class="op">(</span>
-  mu <span class="op">=</span> <span class="fl">0</span>,
-  scale <span class="op">=</span> <span class="fl">1</span>,
-  warmup <span class="op">=</span> <span class="fl">500L</span>,
-  nadapt <span class="op">=</span> <span class="fl">4L</span>,
-  arate <span class="op">=</span> <span class="fl">0.4</span>,
-  lb <span class="op">=</span> <span class="op">-</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,
-  ub <span class="op">=</span> <span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,
-  fixed <span class="op">=</span> <span class="cn">FALSE</span>,
-  scheme <span class="op">=</span> <span class="st">"joint"</span>
-<span class="op">)</span>
-
-<span class="fu">kernel_umirror</span><span class="op">(</span>
-  mu <span class="op">=</span> <span class="fl">0</span>,
-  scale <span class="op">=</span> <span class="fl">1</span>,
-  warmup <span class="op">=</span> <span class="fl">500L</span>,
-  nadapt <span class="op">=</span> <span class="fl">4L</span>,
-  arate <span class="op">=</span> <span class="fl">0.4</span>,
-  lb <span class="op">=</span> <span class="op">-</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,
-  ub <span class="op">=</span> <span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,
-  fixed <span class="op">=</span> <span class="cn">FALSE</span>,
-  scheme <span class="op">=</span> <span class="st">"joint"</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">kernel_nmirror</span><span class="op">(</span></span>
+<span>  mu <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  scale <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  warmup <span class="op">=</span> <span class="fl">500L</span>,</span>
+<span>  nadapt <span class="op">=</span> <span class="fl">4L</span>,</span>
+<span>  arate <span class="op">=</span> <span class="fl">0.4</span>,</span>
+<span>  lb <span class="op">=</span> <span class="op">-</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,</span>
+<span>  ub <span class="op">=</span> <span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,</span>
+<span>  fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  scheme <span class="op">=</span> <span class="st">"joint"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">kernel_umirror</span><span class="op">(</span></span>
+<span>  mu <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  scale <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  warmup <span class="op">=</span> <span class="fl">500L</span>,</span>
+<span>  nadapt <span class="op">=</span> <span class="fl">4L</span>,</span>
+<span>  arate <span class="op">=</span> <span class="fl">0.4</span>,</span>
+<span>  lb <span class="op">=</span> <span class="op">-</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,</span>
+<span>  ub <span class="op">=</span> <span class="va">.Machine</span><span class="op">$</span><span class="va">double.xmax</span>,</span>
+<span>  fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  scheme <span class="op">=</span> <span class="st">"joint"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -108,26 +108,39 @@
 <dd><p>Either a numeric vector or a scalar. Proposal mean and scale.
 If scalar, values are recycled to match the number of parameters in the
 objective function.</p></dd>
+
+
 <dt>warmup</dt>
 <dd><p>Integer. Number of steps required before starting adapting the
 chains.</p></dd>
+
+
 <dt>nadapt</dt>
 <dd><p>Integer. Number of times the scale is adjusted for adaptation
 during the warmup (burn-in) period.</p></dd>
+
+
 <dt>arate</dt>
 <dd><p>Double. Target acceptance rate used as a reference during the
 adaptation process.</p></dd>
+
+
 <dt>lb, ub</dt>
 <dd><p>Either a numeric vector or a scalar. Lower and upper bounds for
 bounded kernels. When of length 1, the values are recycled to match the number
 of parameters in the objective function.</p></dd>
+
+
 <dt>fixed, scheme</dt>
 <dd><p>For multivariate functions, sets the update plan.
 See <code><a href="plan_update_sequence.html">plan_update_sequence()</a></code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An object of class <a href="kernel_new.html">fmcmc_kernel</a>. <code>fmcmc_kernel</code> objects are intended
+    
+
+<p>An object of class <a href="kernel_new.html">fmcmc_kernel</a>. <code>fmcmc_kernel</code> objects are intended
 to be used with the <code><a href="MCMC.html">MCMC()</a></code> function.</p>
     </div>
     <div id="details">
@@ -149,10 +162,10 @@ scale is adapted four times.</p>
     <h2>References</h2>
     <p>Thawornwattana, Y., Dalquen, D., &amp; Yang, Z. (2018). Designing Simple and
 Efficient Markov Chain Monte Carlo Proposal Kernels. Bayesian Analysis, 13(4),
-1037–1063. doi: <a href="https://doi.org/10.1214/17-BA1084" class="external-link">10.1214/17-BA1084</a></p>
+1037–1063. <a href="https://doi.org/10.1214/17-BA1084" class="external-link">doi:10.1214/17-BA1084</a></p>
 <p>Yang, Z., &amp; Rodriguez, C. E. (2013). Searching for efficient Markov chain
 Monte Carlo proposal kernels. Proceedings of the National Academy of Sciences,
-110(48), 19307–19312. doi: <a href="https://doi.org/10.1073/pnas.1311790110" class="external-link">10.1073/pnas.1311790110</a></p>
+110(48), 19307–19312. <a href="https://doi.org/10.1073/pnas.1311790110" class="external-link">doi:10.1073/pnas.1311790110</a></p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -166,12 +179,12 @@ Monte Carlo proposal kernels. Proceedings of the National Academy of Sciences,
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Normal mirror kernel with 5 adaptations and 1000 steps of warmup (burnin)</span></span>
-<span class="r-in"><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu">kernel_nmirror</span><span class="op">(</span>nadapt <span class="op">=</span> <span class="fl">5</span>, warmup <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Same as before but using a uniform mirror and choosing a target acceptance</span></span>
-<span class="r-in"><span class="co"># rate of 24 %</span></span>
-<span class="r-in"><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu">kernel_umirror</span><span class="op">(</span>nadapt <span class="op">=</span> <span class="fl">5</span>, warmup <span class="op">=</span> <span class="fl">1000</span>, arate <span class="op">=</span> <span class="fl">.24</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Normal mirror kernel with 5 adaptations and 1000 steps of warmup (burnin)</span></span></span>
+<span class="r-in"><span><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu">kernel_nmirror</span><span class="op">(</span>nadapt <span class="op">=</span> <span class="fl">5</span>, warmup <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Same as before but using a uniform mirror and choosing a target acceptance</span></span></span>
+<span class="r-in"><span><span class="co"># rate of 24 %</span></span></span>
+<span class="r-in"><span><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu">kernel_umirror</span><span class="op">(</span>nadapt <span class="op">=</span> <span class="fl">5</span>, warmup <span class="op">=</span> <span class="fl">1000</span>, arate <span class="op">=</span> <span class="fl">.24</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -186,7 +199,7 @@ Monte Carlo proposal kernels. Proceedings of the National Academy of Sciences,
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
