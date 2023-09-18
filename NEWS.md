@@ -1,3 +1,9 @@
+# fmcmc 0.5-2.9000
+
+* Added an example using cluster objects.
+
+
+
 # fmcmc 0.5-2
 
 * Adressing [`roxygen2` issue #1491](https://github.com/r-lib/roxygen2/issues/1491)
