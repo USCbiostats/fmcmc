@@ -98,7 +98,7 @@
                         <h4 data-toc-skip class="author">George G. Vega
 Yon</h4>
             
-            <h4 data-toc-skip class="date">2025-06-09</h4>
+            <h4 data-toc-skip class="date">2025-11-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/USCbiostats/fmcmc/blob/HEAD/vignettes/user-defined-kernels.Rmd" class="external-link"><code>vignettes/user-defined-kernels.Rmd</code></a></small>
       <div class="hidden name"><code>user-defined-kernels.Rmd</code></div>
@@ -143,9 +143,6 @@ and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>500</mn></mrow><annotation encoding="application/x-tex">N = 500</annotation></semantics></math>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/fmcmc" class="external-link">fmcmc</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Thank you for using fmcmc! Please consider citing it in your work.</span></span>
-<span><span class="co">#&gt; You can find the citation information by running</span></span>
-<span><span class="co">#&gt;   citation("fmcmc")</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="co"># Always set the seed!!!!</span></span>
 <span></span>
 <span><span class="co"># Population parameters</span></span>
@@ -205,7 +202,7 @@ the <code>coda</code> R package, we can use any available method. Let’s
 start by plotting the chain:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ans</span><span class="op">)</span></span></code></pre></div>
-<p><img src="user-defined-kernels_files/figure-html/plot1-1.png" width="80%"></p>
+<p><img src="user-defined-kernels_files/figure-html/plot1-1.png" class="r-plt" width="80%"></p>
 <p>As you can see, the trace of the parameter started to go up right
 away, and then stayed around 500, the actual population parameter
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>.
@@ -228,7 +225,7 @@ size as well:</p>
 <p>Let’s take a look at the posterior distribution:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ans</span><span class="op">)</span></span></code></pre></div>
-<p><img src="user-defined-kernels_files/figure-html/plot2-1.png" width="80%"></p>
+<p><img src="user-defined-kernels_files/figure-html/plot2-1.png" class="r-plt" width="80%"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ans</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -278,7 +275,7 @@ contains, see the manual page of <code>kernel_new</code>.<a href="#fnref1" class
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>
