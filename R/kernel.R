@@ -16,6 +16,30 @@ check_dimensions <- function(x, k) {
   
 }
 
+#' Process bounds with NA support
+#' 
+#' Converts NA values in bounds to machine limits for unbounded parameters.
+#' @param bounds Numeric vector of bounds, may contain NA for unbounded parameters.
+#' @param is_lower Logical. TRUE for lower bounds, FALSE for upper bounds.
+#' @noRd
+process_bounds <- function(bounds, is_lower = TRUE) {
+  
+  if (is.null(bounds))
+    return(bounds)
+  
+  # Replace NA with appropriate machine limit
+  na_idx <- is.na(bounds)
+  if (any(na_idx)) {
+    if (is_lower) {
+      bounds[na_idx] <- -.Machine$double.xmax
+    } else {
+      bounds[na_idx] <- .Machine$double.xmax
+    }
+  }
+  
+  return(bounds)
+}
+
 #' Parameters' update sequence
 #' @param k Integer. Number of parameters
 #' @param nsteps Integer. Number of steps.
