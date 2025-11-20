@@ -64,12 +64,30 @@ expect_true(all(ans[,2] >= 0))
 expect_true(all(ans[,2] <= 1))
 
 # Test that NA in lb is equivalent to -.Machine$double.xmax
-kern_na <- kernel_normal_reflective(lb = c(NA, 0), ub = c(NA, 1))
-kern_explicit <- kernel_normal_reflective(
-  lb = c(-.Machine$double.xmax, 0), 
-  ub = c(.Machine$double.xmax, 1)
+# Run with same seed and verify IDENTICAL results
+set.seed(123)
+ans_na <- MCMC(
+  initial = c(0, 0.5),
+  fun = fun,
+  nsteps = 100,
+  kernel = kernel_normal_reflective(
+    scale = 0.1,
+    lb = c(NA, 0),
+    ub = c(NA, 1)
+  )
 )
 
-# Both should create valid kernels
-expect_inherits(kern_na, "fmcmc_kernel")
-expect_inherits(kern_explicit, "fmcmc_kernel")
+set.seed(123)
+ans_explicit <- MCMC(
+  initial = c(0, 0.5),
+  fun = fun,
+  nsteps = 100,
+  kernel = kernel_normal_reflective(
+    scale = 0.1,
+    lb = c(-.Machine$double.xmax, 0), 
+    ub = c(.Machine$double.xmax, 1)
+  )
+)
+
+# Results should be IDENTICAL with same seed
+expect_identical(ans_na, ans_explicit)
