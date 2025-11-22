@@ -12,10 +12,16 @@
 #' kern <- kernel_normal(scale = 0.05)
 #' 
 #' # Using boundaries for the second parameter of a two parameter chain
-#' # to have values in [0, 100].
+#' # to have values in [0, 100] (old style with explicit machine limits)
 #' kern <- kernel_normal_reflective(
 #'   ub = c(.Machine$double.xmax, 100),
 #'   lb = c(-.Machine$double.xmax, 0)
+#'   )
+#' 
+#' # Same as above but using NA for unbounded parameters (recommended)
+#' kern <- kernel_normal_reflective(
+#'   lb = c(NA, 0),
+#'   ub = c(NA, 100)
 #'   )
 kernel_normal <- function(
   mu    = 0,
@@ -116,6 +122,11 @@ kernel_normal_reflective <- function(
         # Checking boundaries
         ub    <<- check_dimensions(ub, k)
         lb    <<- check_dimensions(lb, k)
+        
+        # Process bounds to handle NA values
+        lb    <<- process_bounds(lb, is_lower = TRUE)
+        ub    <<- process_bounds(ub, is_lower = FALSE)
+        
         mu    <<- check_dimensions(mu, k)
         scale <<- check_dimensions(scale, k)
         fixed <<- check_dimensions(fixed, k)

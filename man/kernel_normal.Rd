@@ -26,7 +26,9 @@ See \code{\link[=plan_update_sequence]{plan_update_sequence()}}.}
 
 \item{lb, ub}{Either a numeric vector or a scalar. Lower and upper bounds for
 bounded kernels. When of length 1, the values are recycled to match the number
-of parameters in the objective function.}
+of parameters in the objective function. Use \code{NA} to indicate unbounded parameters
+(equivalent to \code{-.Machine$double.xmax} for lower bounds and \code{.Machine$double.xmax}
+for upper bounds). Named vectors are supported for clarity.}
 }
 \value{
 An object of class \link{fmcmc_kernel}. \code{fmcmc_kernel} objects are intended
@@ -54,10 +56,16 @@ kernel).
 kern <- kernel_normal(scale = 0.05)
 
 # Using boundaries for the second parameter of a two parameter chain
-# to have values in [0, 100].
+# to have values in [0, 100] (old style with explicit machine limits)
 kern <- kernel_normal_reflective(
   ub = c(.Machine$double.xmax, 100),
   lb = c(-.Machine$double.xmax, 0)
+  )
+
+# Same as above but using NA for unbounded parameters (recommended)
+kern <- kernel_normal_reflective(
+  lb = c(NA, 0),
+  ub = c(NA, 100)
   )
 }
 \seealso{

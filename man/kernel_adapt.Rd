@@ -43,7 +43,9 @@ include in the computation of the variance-covariance matrix.}
 
 \item{lb, ub}{Either a numeric vector or a scalar. Lower and upper bounds for
 bounded kernels. When of length 1, the values are recycled to match the number
-of parameters in the objective function.}
+of parameters in the objective function. Use \code{NA} to indicate unbounded parameters
+(equivalent to \code{-.Machine$double.xmax} for lower bounds and \code{.Machine$double.xmax}
+for upper bounds). Named vectors are supported for clarity.}
 
 \item{freq}{Integer scalar. Frequency of updates. How often the
 variance-covariance matrix is updated. The implementation is different from that

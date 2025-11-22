@@ -79,6 +79,11 @@ kernel_nmirror <- function(
         k      <<- length(env$theta0)
         ub     <<- check_dimensions(ub, k)
         lb     <<- check_dimensions(lb, k)
+        
+        # Process bounds to handle NA values
+        lb     <<- process_bounds(lb, is_lower = TRUE)
+        ub     <<- process_bounds(ub, is_lower = FALSE)
+        
         fixed  <<- check_dimensions(fixed, k)
         mu     <<- check_dimensions(mu, k)
         scale  <<- check_dimensions(scale, k)
@@ -198,6 +203,11 @@ kernel_umirror <- function(
         k      <<- length(env$theta0)
         ub     <<- check_dimensions(ub, k)
         lb     <<- check_dimensions(lb, k)
+        
+        # Process bounds to handle NA values
+        lb     <<- process_bounds(lb, is_lower = TRUE)
+        ub     <<- process_bounds(ub, is_lower = FALSE)
+        
         fixed  <<- check_dimensions(fixed, k)
         mu     <<- check_dimensions(mu, k)
         scale  <<- check_dimensions(scale, k)

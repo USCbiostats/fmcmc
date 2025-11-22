@@ -55,6 +55,13 @@
 #' # Setting the acceptance rate to 30 % and deferring the updates until
 #' # after 1000 steps
 #' kern <- kernel_ram(arate = .3, warmup = 1000)
+#' 
+#' # Example with mixed bounds using NA for unbounded parameters
+#' # alpha is unbounded, beta is bounded on [0,1], gamma is positive only
+#' kern <- kernel_ram(
+#'   lb = c(alpha = NA, beta = 0, gamma = 0),
+#'   ub = c(alpha = NA, beta = 1, gamma = NA)
+#' )
 kernel_ram <- function(
   mu     = 0,
   eta    = function(i, k) min(c(1.0, i^(-2.0/3.0) * k)),
@@ -90,6 +97,11 @@ kernel_ram <- function(
         # mu     <<- check_dimensions(mu, k)
         ub     <<- check_dimensions(ub, k)
         lb     <<- check_dimensions(lb, k)
+        
+        # Process bounds to handle NA values
+        lb     <<- process_bounds(lb, is_lower = TRUE)
+        ub     <<- process_bounds(ub, is_lower = FALSE)
+        
         fixed  <<- check_dimensions(fixed, k)
         which. <<- which(!fixed)
         
