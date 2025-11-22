@@ -35,7 +35,8 @@ jobs:
 
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
-        extra-packages:
-          any::rcmdcheck
-          any::tinytest
-        needs: check
+        with:
+          extra-packages: |
+            any::rcmdcheck
+            any::tinytest
+          needs: check
