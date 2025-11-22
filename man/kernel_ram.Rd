@@ -98,6 +98,13 @@ S_n S_n^T = S_{n-1} {I + eta_n[alpha_n - alpha_*] U_n U_n^T/norm(U_n)^2} S_{n-1}
 # Setting the acceptance rate to 30 \% and deferring the updates until
 # after 1000 steps
 kern <- kernel_ram(arate = .3, warmup = 1000)
+
+# Example with mixed bounds using NA for unbounded parameters
+# alpha is unbounded, beta is bounded on [0,1], gamma is positive only
+kern <- kernel_ram(
+  lb = c(alpha = NA, beta = 0, gamma = 0),
+  ub = c(alpha = NA, beta = 1, gamma = NA)
+)
 }
 \references{
 Vihola, M. (2012). Robust adaptive Metropolis algorithm with coerced acceptance

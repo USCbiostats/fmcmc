@@ -56,10 +56,16 @@ kernel).
 kern <- kernel_normal(scale = 0.05)
 
 # Using boundaries for the second parameter of a two parameter chain
-# to have values in [0, 100].
+# to have values in [0, 100] (old style with explicit machine limits)
 kern <- kernel_normal_reflective(
   ub = c(.Machine$double.xmax, 100),
   lb = c(-.Machine$double.xmax, 0)
+  )
+
+# Same as above but using NA for unbounded parameters (recommended)
+kern <- kernel_normal_reflective(
+  lb = c(NA, 0),
+  ub = c(NA, 100)
   )
 }
 \seealso{
