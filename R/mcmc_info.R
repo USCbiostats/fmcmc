@@ -747,7 +747,7 @@ add_userdata <- function(x){
     mcpar_x <- coda::mcpar(x)
     mcpar_y <- c(min_iters_y, max_iters_y, 1)
     stopifnot("Iterations are not matching"=
-                all.equal(mcpar_x, mcpar_y))
+                isTRUE(all.equal(mcpar_x, mcpar_y)))
     my <- as.matrix(y, dimnames=list(iters_y,colnames(y)))
     coda::mcmc(cbind(x,my), start = min_iters_y, end = max_iters_y)
   },x=x, y=ud, SIMPLIFY = FALSE)
