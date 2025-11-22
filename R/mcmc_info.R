@@ -738,7 +738,7 @@ get_userdata <- function() {
 #' @examples
 add_userdata <- function(x){
   ud <- fmcmc::get_userdata()
-  stopifnot("Number of chains do not match"=
+  stopifnot("Number of chains does not match"=
               (length(x)==length(ud)))
   res <- mapply(function(x,y){
     iters_y <- as.numeric(rownames(x))
