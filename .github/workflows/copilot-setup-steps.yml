@@ -39,4 +39,6 @@ jobs:
           extra-packages: |
             any::rcmdcheck
             any::tinytest
+            any::roxygen2
+            any::devtools
           needs: check
