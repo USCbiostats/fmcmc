@@ -204,6 +204,13 @@ rate. Statistics and Computing, 22(5), 997–1008.
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Setting the acceptance rate to 30 % and deferring the updates until</span></span></span>
 <span class="r-in"><span><span class="co"># after 1000 steps</span></span></span>
 <span class="r-in"><span><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu">kernel_ram</span><span class="op">(</span>arate <span class="op">=</span> <span class="fl">.3</span>, warmup <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example with mixed bounds using NA for unbounded parameters</span></span></span>
+<span class="r-in"><span><span class="co"># alpha is unbounded, beta is bounded on [0,1], gamma is positive only</span></span></span>
+<span class="r-in"><span><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu">kernel_ram</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  lb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="cn">NA</span>, beta <span class="op">=</span> <span class="fl">0</span>, gamma <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  ub <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="cn">NA</span>, beta <span class="op">=</span> <span class="fl">1</span>, gamma <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>
