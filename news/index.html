@@ -71,11 +71,8 @@
 
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.6-0" id="fmcmc-06-0">fmcmc 0.6-0<a class="anchor" aria-label="anchor" href="#fmcmc-06-0"></a></h2>
-<ul><li>Added support for using <code>NA</code> to specify unbounded parameters in kernel functions (closes <a href="https://github.com/USCbiostats/fmcmc/issues/22" class="external-link">#22</a>, as suggested by <a href="https://github.com/dmi3kno" class="external-link">@dmi3kno</a>). This provides a more intuitive alternative to <code>.Machine$double.xmax</code>. For example: <code>kernel_ram(lb = c(alpha = NA, beta = 0), ub = c(alpha = NA, beta = 1))</code> where <code>alpha</code> is unbounded and <code>beta</code> is bounded on [0, 1].</li>
-</ul></div>
-    <div class="section level2">
-<h2 class="page-header" data-toc-text="0.5-2.9000" id="fmcmc-05-29000">fmcmc 0.5-2.9000<a class="anchor" aria-label="anchor" href="#fmcmc-05-29000"></a></h2>
-<ul><li>Added an example using cluster objects.</li>
+<ul><li><p>Added support for using <code>NA</code> to specify unbounded parameters in kernel functions (closes <a href="https://github.com/USCbiostats/fmcmc/issues/22" class="external-link">#22</a>, as suggested by <a href="https://github.com/dmi3kno" class="external-link">@dmi3kno</a>). This provides a more intuitive alternative to <code>.Machine$double.xmax</code>. For example: <code>kernel_ram(lb = c(alpha = NA, beta = 0), ub = c(alpha = NA, beta = 1))</code> where <code>alpha</code> is unbounded and <code>beta</code> is bounded on [0, 1].</p></li>
+<li><p>Added an example using cluster objects.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5-2" id="fmcmc-05-2">fmcmc 0.5-2<small>2023-08-29</small><a class="anchor" aria-label="anchor" href="#fmcmc-05-2"></a></h2>

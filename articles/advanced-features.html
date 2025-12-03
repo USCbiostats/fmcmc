@@ -117,8 +117,12 @@ life expectancy in the US (see <code><a href="../reference/lifeexpect.html">?lif
 details). Each row corresponds to the observed age of an individual at
 the time of disease.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/fmcmc" class="external-link">fmcmc</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">lifeexpect</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/fmcmc" class="external-link">fmcmc</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Thank you for using fmcmc! Please consider citing it in your work.</span></span>
+<span><span class="co">## You can find the citation information by running</span></span>
+<span><span class="co">##   citation("fmcmc")</span></span></code></pre>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">lifeexpect</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">lifeexpect</span><span class="op">)</span> <span class="co"># Taking a look at the data</span></span></code></pre></div>
 <pre><code><span><span class="co">##   smoke female      age</span></span>
 <span><span class="co">## 1     0      0 78.10840</span></span>
@@ -139,7 +143,7 @@ y_i \sim \mbox{N}\left(\theta_0 + \theta_{smk}smoke_i + \theta_{fem}female_i, \s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mi>i</mi></msub><annotation encoding="application/x-tex">y_i</annotation></semantics></math>
 is the age of the i-th individual. Using R, we could write the
 logposterior as follows:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">logpost</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span>, <span class="va">D</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span></span>
 <span>    <span class="va">D</span><span class="op">$</span><span class="va">age</span> <span class="op">-</span> <span class="op">(</span><span class="va">p</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">p</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">*</span> <span class="va">D</span><span class="op">$</span><span class="va">smoke</span> <span class="op">+</span> <span class="va">p</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">*</span> <span class="va">D</span><span class="op">$</span><span class="va">female</span><span class="op">)</span>,</span>
@@ -162,7 +166,7 @@ these, we have: <code>i</code> (the step number), <code>logpost</code>
 <code>draws</code>, (a matrix storing the kernel’s proposed states),
 etc. The complete list of available objects is available either in the
 manual or when printing the function:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># This will show the available objects</span></span>
 <span><span class="va">ith_step</span></span></code></pre></div>
 <pre><code><span><span class="co">## Available objects via the ith_step() function:</span></span>
@@ -192,7 +196,7 @@ this is printing out the state of the process every n-th step.</p>
 <p>Using the <code>lifeexpect</code> data, let’s rewrite the
 <code>logpost()</code> function using <code><a href="../reference/mcmc-loop.html">ith_step()</a></code>. We will
 print the latest accepted state every 1,000 steps:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">logpost2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span>, <span class="va">D</span><span class="op">)</span> <span class="op">{</span></span>
 <span></span>
 <span>  <span class="co"># Getting the number of step</span></span>
@@ -219,7 +223,7 @@ the Robust Adaptive Metropolis Kernel to fit this model. Since we need
 to estimate the standard error, we can set a lower-bound for the
 variables. For the starting point, let’s use the vector
 <code>[70, 0, 0, sd(age)]</code> (more than a good guess!):</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generating kernel with NA for unbounded parameters</span></span>
 <span><span class="co"># First three parameters unbounded, fourth parameter must be positive</span></span>
 <span><span class="va">kern</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/kernel_ram.html">kernel_ram</a></span><span class="op">(</span>warmup <span class="op">=</span> <span class="fl">1000</span>, lb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="fl">.001</span><span class="op">)</span><span class="op">)</span></span>
@@ -301,7 +305,7 @@ tailor. Now what happens when we deal with multiple chains?</p>
 dealing with multiple chains in a single run. In such a case, we can use
 the variable <code>chain_id</code> that can be found with
 <code><a href="../reference/mcmc-loop.html">ith_step()</a></code>. From the previous example:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">logpost3</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span>, <span class="va">D</span><span class="op">)</span> <span class="op">{</span></span>
 <span></span>
 <span>  <span class="co"># Getting the number of step</span></span>
@@ -377,7 +381,7 @@ algorithm runs. In such cases, you can use the
 store the required data.</p>
 <p>For a simple example, suppose we wanted to store the proposed state,
 we could do it in the following way:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">logpost4</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span>, <span class="va">D</span><span class="op">)</span> <span class="op">{</span></span>
 <span></span>
 <span>  <span class="co"># Timestamp</span></span>
@@ -409,7 +413,7 @@ we could do it in the following way:</p>
 store a list of length two with the user data. To retrieve the generated
 data frame, we can call the function <code><a href="../reference/mcmc-loop.html">get_userdata()</a></code>. We can
 also inspect the <code>MCMC_OUTPUT</code> as follows:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">MCMC_OUTPUT</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Last call to MCMC holds the following elements:</span></span>
 <span><span class="co">## Chain N: 1</span></span>
@@ -438,7 +442,7 @@ also inspect the <code>MCMC_OUTPUT</code> as follows:</p>
 <span><span class="co">## 50 79.90929  -9.502281 5.229895</span></span>
 <span><span class="co">## 60 80.04301  -9.991739 5.558207</span></span>
 <span><span class="co">## ... 94  more...</span></span></code></pre>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="../reference/mcmc-loop.html">get_userdata</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## List of 2</span></span>
 <span><span class="co">##  $ :'data.frame':    100 obs. of  3 variables:</span></span>
