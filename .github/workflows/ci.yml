@@ -8,57 +8,80 @@
 
 name: R CI 
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
 
 env:
-  cntr: uscbiostats/fmcmc:latest
+  GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  build:
-    runs-on: Ubuntu-latest
+
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
+
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
     strategy:
+      fail-fast: false
       matrix:
-        include:
-        - name: release
-          cmd : R
-          
-        - name: dev
-          cmd : RD
+        config:
+          - {os: macOS-latest,   r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: macOS-latest,   r: 'devel', http-user-agent: 'release'}
+          - {os: windows-latest, r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-latest,  r: 'release'}
+          - {os: ubuntu-latest,  r: 'oldrel'}
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Container
-        run: docker pull ${cntr}
+      - uses: r-lib/actions/setup-pandoc@v2
 
-      - name: SessionInfo
-        run: docker run --rm -i -v ${PWD}:/mnt -w /mnt ${cntr} ${{ matrix.cmd }} -q -e 'sessionInfo()'
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+          use-public-rspm: true
 
-      - name: Build
-        run: |
-          docker run --rm -i -v ${PWD}:/mnt -w /mnt ${cntr} ${{ matrix.cmd }} \
-            CMD build --no-build-vignettes --no-manual .
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages:
+            any::rcmdcheck
+            any::tinytest
+          needs: check
 
-      - name: Check
-        run: |
-          docker run --rm -i -v ${PWD}:/mnt -w /mnt -e CI=true ${cntr} \
-            ${{ matrix.cmd }} CMD check --no-vignettes --no-manual fmcmc_*.tar.gz
-        
-      - name: Coverage
-        env:
-          MATNAME: ${{ matrix.name }}
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }} 
-        run: |
-          docker run --rm -i \
-            -e MATNAME=$MATNAME \
-            -e GITHUB_ACTION=$GITHUB_ACTION \
-            -e GITHUB_REPOSITORY=$GITHUB_REPOSITORY \
-            -e GITHUB_REF=$GITHUB_REF \
-            -e GITHUB_HEAD_REF=$GITHUB_HEAD_REF \
-            -e GITHUB_RUN_ID=$GITHUB_RUN_ID \
-            -e GITHUB_SHA=$GITHUB_SHA \
-            -e CODECOV_TOKEN=$CODECOV_TOKEN \
-            -v ${PWD}:/mnt -w /mnt -e CI=true ${cntr} \
-            ${{ matrix.cmd }} -e \
-            '(v <- Sys.getenv("MATNAME"));if (v == "release") covr::codecov(quiet = FALSE)'
+      - uses: r-lib/actions/check-r-package@v2
+        if: ${{ matrix.config.os == 'ubuntu-latest' && matrix.config.r == 'release' }}
+        with:
+          args: 'c("--as-cran", "--no-manual")'
+          upload-snapshots: false
+          upload-results: false
+          check-dir: '"check"'
+          error-on: '"warning"'
 
+      - uses: r-lib/actions/check-r-package@v2
+        if: ${{ matrix.config.os != 'ubuntu-latest' || matrix.config.r != 'release' }}
+        with:
+          upload-snapshots: false
+          upload-results: false
+          check-dir: '"check"'
+          error-on: '"warning"'
+
+      - name: Build the package
+        if: ${{ matrix.config.os == 'ubuntu-latest' && (matrix.config.r == 'release' || matrix.config.r == 'devel') }}
+        run: R CMD build .
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ matrix.config.os == 'ubuntu-latest' && (matrix.config.r == 'release' || matrix.config.r == 'devel') }}
+        with:
+          name: epiworldR-built-package-${{ matrix.config.os }}-${{ matrix.config.r }}
+          path: epiworldR_*.tar.gz
+          retention-days: 7

@@ -1,7 +1,12 @@
-# fmcmc 0.5-2.9000
+# fmcmc 0.6-0
+
+* Added support for using `NA` to specify unbounded parameters in kernel
+  functions (closes [#22](https://github.com/USCbiostats/fmcmc/issues/22), as suggested by [@dmi3kno](https://github.com/dmi3kno)). This provides a more
+  intuitive alternative to `.Machine$double.xmax`. For example:
+  `kernel_ram(lb = c(alpha = NA, beta = 0), ub = c(alpha = NA, beta = 1))`
+  where `alpha` is unbounded and `beta` is bounded on [0, 1].
 
 * Added an example using cluster objects.
-
 
 
 # fmcmc 0.5-2

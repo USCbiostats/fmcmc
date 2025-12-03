@@ -248,6 +248,8 @@
 #' 
 #' # Example using a user-defined cl object -------------------------------------
 #' 
+#' if (FALSE) {
+#' 
 #' # A silly function that gets the first two parameters of the
 #' # vector. Using the default multicore example will cause and error
 #' get_m <- function(pars) {
@@ -263,31 +265,27 @@
 #'   sum(log(mvtnorm::dmvnorm(D, m, s)))
 #' }
 #' 
-#' if (FALSE) {
+#' # This will fail with the error
+#' # Error in checkForRemoteErrors(val) :
+#' #   4 nodes produced errors; first error: could not find function "get_m"
+#' ans <- MCMC(
+#'   initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
+#'   fun,
+#'   kernel  = kernel_normal_reflective(
+#'     lb    = c(-10, -10, .01, -5, .01),
+#'     ub    = 5,
+#'     scale = 0.01
+#'   ),
+#'   nsteps  = 1e3,
+#'   thin    = 10,
+#'   burnin  = 5e2,
+#'   D       = D,
+#'   # Multiple chains using parallel computing
+#'   multicore = TRUE,
+#'   nchains = 4
+#' )
 #' 
-#'   # Thi will fail with the error
-#'   # Error in checkForRemoteErrors(val) :
-#'   #   4 nodes produced errors; first error: could not find function "get_m"
-#'   ans <- MCMC(
-#'     initial = c(mu0=5, mu1=5, s0=5, s01=0, s2=5), 
-#'     fun,
-#'     kernel  = kernel_normal_reflective(
-#'       lb    = c(-10, -10, .01, -5, .01),
-#'       ub    = 5,
-#'       scale = 0.01
-#'     ),
-#'     nsteps  = 1e3,
-#'     thin    = 10,
-#'     burnin  = 5e2,
-#'     D       = D,
-#'     # Multiple chains using parallel computing
-#'     multicore = TRUE,
-#'     nchains = 4
-#'   )
-#'   
-#'   summary(ans)
-#' 
-#' }
+#' summary(ans)
 #' 
 #' # To solve the error, we need to build the cluster object
 #' library(parallel)
@@ -319,6 +317,7 @@
 #' 
 #' summary(ans)
 #' 
+#' }
 #' 
 #' @aliases Metropolis-Hastings
 #' @seealso [get_logpost()], [get_logpost()] ([mcmc-output]) for post execution of `MCMC`, and
