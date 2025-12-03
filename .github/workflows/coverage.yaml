@@ -26,12 +26,8 @@ jobs:
 
       - name: Running coverage
         run: |
-          # Files to exclude
-          # files <- list.files("inst/", full.names = TRUE, recursive = TRUE)
-
           # Run coverage
           covr::codecov(
-            line_exclusions = as.list(files),
             token = Sys.getenv("CODECOV_TOKEN")
             )
         shell: Rscript {0}

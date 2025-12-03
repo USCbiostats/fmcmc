@@ -91,9 +91,10 @@ install.packages("fmcmc")
 
     And the actual R package:
 
-      Vega Yon G, Marjoram P (2024). _fmcmc: A friendly MCMC framework_.
-      doi:10.5281/zenodo.3378987 <https://doi.org/10.5281/zenodo.3378987>,
-      R package version 0.6-0, <https://github.com/USCbiostats/fmcmc>.
+      Vega Yon G, Marjoram P (2025). _fmcmc: A friendly MCMC framework_.
+      doi:10.32614/CRAN.package.fmcmc
+      <https://doi.org/10.32614/CRAN.package.fmcmc>, R package version
+      0.6-0, <https://cran.r-project.org/package=fmcmc>.
 
     To see these entries in BibTeX format, use 'print(<citation>,
     bibtex=TRUE)', 'toBibtex(.)', or set
@@ -146,7 +147,13 @@ same name (first, load the package, of course):
 
 ``` r
 library(fmcmc)
+```
 
+    Thank you for using fmcmc! Please consider citing it in your work.
+    You can find the citation information by running
+      citation("fmcmc")
+
+``` r
 # Running the MCMC (we set the seed first)
 set.seed(1215)
 ans <- MCMC(

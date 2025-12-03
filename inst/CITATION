@@ -32,6 +32,6 @@ bibentry(bibtype = "Manual",
           ),
          year = year,
          note = note,
-         url = "https://github.com/USCbiostats/fmcmc",
-         doi = "10.5281/zenodo.3378987", 
+         url = "https://cran.r-project.org/package=fmcmc",
+         doi = "10.32614/CRAN.package.fmcmc", 
          header = "And the actual R package:")
