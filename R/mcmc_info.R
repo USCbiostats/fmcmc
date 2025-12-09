@@ -727,17 +727,46 @@ get_userdata <- function() {
 #' with mcmc.list() produced by fmcmc::MCMC ensuring that the 
 #' chains and iterations match
 #'
-#' @param x mcmc.list to add userdata to. Note, that userdata 
+#' @param x An mcmc or mcmc.list object to add userdata to. Note, that userdata 
 #' is taken from the environment (whatever fmcmc::get_userdata()
 #' returns)
 #'
-#' @return combined mcmc.list
+#' @return combined mcmc.list (or mcmc if input was a single chain mcmc object)
 #' @rdname mcmc-loop
 #' @export
 #' @importFrom coda mcpar mcmc as.mcmc.list
 #' @examples
+#' \dontrun{
+#' # Simple example with single chain
+#' fun <- function(p) {
+#'   set_userdata(step = ith_step("i"), p_squared = p^2)
+#'   dnorm(p, log = TRUE)
+#' }
+#' 
+#' ans <- MCMC(fun = fun, initial = 0, nsteps = 100, kernel = kernel_normal())
+#' combined <- add_userdata(ans)
+#' head(combined)
+#' 
+#' # Example with multiple chains
+#' ans_multi <- MCMC(fun = fun, initial = 0, nsteps = 100, 
+#'                   nchains = 2, kernel = kernel_normal())
+#' combined_multi <- add_userdata(ans_multi)
+#' lapply(combined_multi, head)
+#' }
 add_userdata <- function(x){
+  # Handle single mcmc objects by converting to mcmc.list
+  single_chain <- inherits(x, "mcmc") && !inherits(x, "mcmc.list")
+  if (single_chain) {
+    x <- coda::as.mcmc.list(x)
+  }
+  
   ud <- fmcmc::get_userdata()
+  
+  # Handle single chain case where get_userdata returns a data.frame
+  if (is.data.frame(ud)) {
+    ud <- list(ud)
+  }
+  
   stopifnot("Number of chains does not match"=
               (length(x)==length(ud)))
   res <- mapply(function(x,y){
@@ -751,5 +780,13 @@ add_userdata <- function(x){
     my <- as.matrix(y, dimnames=list(iters_y,colnames(y)))
     coda::mcmc(cbind(x,my), start = min_iters_y, end = max_iters_y)
   },x=x, y=ud, SIMPLIFY = FALSE)
-  coda::as.mcmc.list(res)
+  
+  result <- coda::as.mcmc.list(res)
+  
+  # If input was a single chain, return single mcmc object
+  if (single_chain) {
+    result <- result[[1]]
+  }
+  
+  result
 }
