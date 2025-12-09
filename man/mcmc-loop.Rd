@@ -5,6 +5,7 @@
 \alias{ith_step}
 \alias{set_userdata}
 \alias{get_userdata}
+\alias{add_userdata}
 \title{Functions to interact with the main loop}
 \usage{
 ith_step(x)
@@ -12,10 +13,14 @@ ith_step(x)
 set_userdata(...)
 
 get_userdata()
+
+add_userdata(x)
 }
 \arguments{
-\item{x}{Name of the element to retrieve. If missing, it will return the entire
-environment in which the main MCMC loop is running.}
+\item{x}{For \code{ith_step()}: Name of the element to retrieve from the MCMC
+environment. If missing, returns the entire environment in which the main
+MCMC loop is running. For \code{add_userdata()}: An mcmc or mcmc.list object to
+add userdata to.}
 
 \item{...}{Named values to be appended to the user data.}
 }
@@ -46,6 +51,14 @@ Other available objects: cnames, funargs, MCMC_OUTPUT, passedargs, progress
 
 The function \code{\link[=set_userdata]{set_userdata()}} returns \code{\link[=invisible]{invisible()}}. The only side
 effect is appending the information by row.
+
+For \code{add_userdata()}: Returns a combined mcmc.list (or mcmc if input
+was a single chain mcmc object) with userdata columns added.
+
+\strong{Important}: \code{add_userdata()} retrieves userdata from the global
+\code{MCMC_OUTPUT} environment, so it relies on the most recent call to \code{MCMC()}.
+If you run multiple MCMC chains sequentially, the userdata will correspond
+to the last MCMC run.
 }
 \description{
 You can use these functions to read variables, store, and retrieve data
@@ -196,4 +209,21 @@ ans_two <- MCMC(
 user_dat <- get_userdata()
 lapply(user_dat, head)
 
+\dontrun{
+# Simple example with single chain
+fun <- function(p) {
+  set_userdata(step = ith_step("i"), p_squared = p^2)
+  dnorm(p, log = TRUE)
+}
+
+ans <- MCMC(fun = fun, initial = 0, nsteps = 100, kernel = kernel_normal())
+combined <- add_userdata(ans)
+head(combined)
+
+# Example with multiple chains
+ans_multi <- MCMC(fun = fun, initial = 0, nsteps = 100, 
+                  nchains = 2, kernel = kernel_normal())
+combined_multi <- add_userdata(ans_multi)
+lapply(combined_multi, head)
+}
 }
