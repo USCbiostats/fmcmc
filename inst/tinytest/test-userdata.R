@@ -189,6 +189,11 @@ expect_equal(actual_double, expected_double)
 # Test 4: Edge case - check error when number of chains mismatch --------------
 # Create a scenario where get_userdata() doesn't match the mcmc.list
 # This tests the validation in add_userdata()
+# 
+# NOTE: This test relies on global state in MCMC_OUTPUT. Since add_userdata()
+# retrieves userdata from the most recent MCMC() call via get_userdata(), 
+# running a second MCMC() overwrites the userdata. This is intentional behavior
+# that users should be aware of.
 
 set.seed(111)
 n_edge1 <- 20
@@ -245,9 +250,9 @@ ans_mcpar <- MCMC(
   seed    = 333
 )
 
-combined_mcpar <- add_userdata(ans_mcpar)
+combined_data <- add_userdata(ans_mcpar)
 
 # Test: mcpar attributes should match
 orig_mcpar <- coda::mcpar(ans_mcpar)
-combined_mcpar_attr <- coda::mcpar(combined_mcpar)
+combined_mcpar_attr <- coda::mcpar(combined_data)
 expect_equal(orig_mcpar, combined_mcpar_attr)

@@ -542,8 +542,10 @@ get_chain_id <- function() get_("chain_id")
 #' # At a higher point!: -269.7422 , step: 543 
 #' # At a higher point!: -269.7421 , step: 788 
 #' @name mcmc-loop
-#' @param x Name of the element to retrieve. If missing, it will return the entire
-#' environment in which the main MCMC loop is running.
+#' @param x For `ith_step()`: Name of the element to retrieve from the MCMC 
+#' environment. If missing, returns the entire environment in which the main 
+#' MCMC loop is running. For `add_userdata()`: An mcmc or mcmc.list object to 
+#' add userdata to.
 #' @return The function `ith_step()` provides access to the following elements:
 #' 
 #'   - `i`            : (int) Step (iteration) number.
@@ -721,20 +723,16 @@ get_userdata <- function() {
   get_("userdata")
 }
 
-#' Add userdata to the fmcmc output
-#' 
-#' Combines list of dataframes produced by fmcmc::get_userdata()
-#' with mcmc.list() produced by fmcmc::MCMC ensuring that the 
-#' chains and iterations match
-#'
-#' @param x An mcmc or mcmc.list object to add userdata to. Note, that userdata 
-#' is taken from the environment (whatever fmcmc::get_userdata()
-#' returns)
-#'
-#' @return combined mcmc.list (or mcmc if input was a single chain mcmc object)
-#' @rdname mcmc-loop
 #' @export
+#' @rdname mcmc-loop
 #' @importFrom coda mcpar mcmc as.mcmc.list
+#' @return For `add_userdata()`: Returns a combined mcmc.list (or mcmc if input 
+#' was a single chain mcmc object) with userdata columns added. 
+#' 
+#' **Important**: `add_userdata()` retrieves userdata from the global 
+#' `MCMC_OUTPUT` environment, so it relies on the most recent call to `MCMC()`. 
+#' If you run multiple MCMC chains sequentially, the userdata will correspond 
+#' to the last MCMC run.
 #' @examples
 #' \dontrun{
 #' # Simple example with single chain

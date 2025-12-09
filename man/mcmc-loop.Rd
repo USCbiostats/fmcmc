@@ -17,9 +17,10 @@ get_userdata()
 add_userdata(x)
 }
 \arguments{
-\item{x}{An mcmc or mcmc.list object to add userdata to. Note, that userdata
-is taken from the environment (whatever fmcmc::get_userdata()
-returns)}
+\item{x}{For \code{ith_step()}: Name of the element to retrieve from the MCMC
+environment. If missing, returns the entire environment in which the main
+MCMC loop is running. For \code{add_userdata()}: An mcmc or mcmc.list object to
+add userdata to.}
 
 \item{...}{Named values to be appended to the user data.}
 }
@@ -51,15 +52,17 @@ Other available objects: cnames, funargs, MCMC_OUTPUT, passedargs, progress
 The function \code{\link[=set_userdata]{set_userdata()}} returns \code{\link[=invisible]{invisible()}}. The only side
 effect is appending the information by row.
 
-combined mcmc.list (or mcmc if input was a single chain mcmc object)
+For \code{add_userdata()}: Returns a combined mcmc.list (or mcmc if input
+was a single chain mcmc object) with userdata columns added.
+
+\strong{Important}: \code{add_userdata()} retrieves userdata from the global
+\code{MCMC_OUTPUT} environment, so it relies on the most recent call to \code{MCMC()}.
+If you run multiple MCMC chains sequentially, the userdata will correspond
+to the last MCMC run.
 }
 \description{
 You can use these functions to read variables, store, and retrieve data
 during the MCMC process.
-
-Combines list of dataframes produced by fmcmc::get_userdata()
-with mcmc.list() produced by fmcmc::MCMC ensuring that the
-chains and iterations match
 }
 \section{Advanced usage}{
 
