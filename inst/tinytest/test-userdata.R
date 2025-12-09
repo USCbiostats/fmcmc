@@ -178,10 +178,11 @@ combined_integrity <- add_userdata(ans_integrity)
 userdata_integrity <- get_userdata()
 expect_equal(userdata_integrity$step_id, 1:n_integrity)
 
-# Test: double_p should be approximately 2 * parameter values
-# (allowing for small numerical differences)
-param_values <- as.numeric(ans_integrity)
-expected_double <- 2 * param_values
+# Test: double_p should be approximately 2 * proposed parameter values
+# Note: set_userdata is called with the proposed value p, not the accepted value
+# So we need to compare against the draws (proposed values) not the accepted chain
+proposed_values <- as.numeric(get_draws())
+expected_double <- 2 * proposed_values
 actual_double <- as.numeric(combined_integrity[, "double_p"])
 expect_equal(actual_double, expected_double)
 
