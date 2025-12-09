@@ -95,6 +95,11 @@ kernel_unif_reflective <- function(
         max.  <<- check_dimensions(max., k)
         ub    <<- check_dimensions(ub, k)
         lb    <<- check_dimensions(lb, k)
+        
+        # Process bounds to handle NA values
+        lb    <<- process_bounds(lb, is_lower = TRUE)
+        ub    <<- process_bounds(ub, is_lower = FALSE)
+        
         fixed <<- check_dimensions(fixed, k)
         
         if (any(ub <= lb))
