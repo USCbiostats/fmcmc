@@ -1,16 +1,33 @@
 name: fmcmc website
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+# Sets permissions of the GITHUB_TOKEN
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  pull-requests: write
+  actions: read
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 env:
   cntr: rocker/tidyverse:latest
 
 jobs:
   build:
-    runs-on: Ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Container
         run: docker pull ${cntr}
@@ -18,9 +35,40 @@ jobs:
       - name: Building website
         run: docker run --rm -i -v ${PWD}:/home/mnt -w /home/mnt ${cntr} Rscript -e 'install.packages(c("mcmc", "coda", "pkgdown"));system("R CMD INSTALL .");pkgdown::build_site(install=FALSE)'
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+      # Upload artifact for GitHub Pages deployment (only for pushes to main/master)
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+          path: docs
+
+      # Upload artifact for PR preview (only for pull requests)
+      - name: Upload PR artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkgdown-site
+          path: docs
+
+      # Post comment with link to artifact on PRs
+      - name: Post artifact link to PR
+        if: github.event_name == 'pull_request'
+        uses: CDCgov/cfa-actions/post-artifact@v1.2.0
+        with:
+          artifact-name: pkgdown-site
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
+          message: 'Thank you for your contribution @${{ github.actor }} :rocket:! The pkgdown site preview is ready for review :point_right: [Download here]({ artifact-url }) :point_left:!'
+
+  # Deployment job - only runs on pushes to main/master
+  deploy:
+    if: github.event_name != 'pull_request'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
