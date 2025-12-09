@@ -720,3 +720,36 @@ set_userdata <- function(...) {
 get_userdata <- function() {
   get_("userdata")
 }
+
+#' Add userdata to the fmcmc output
+#' 
+#' Combines list of dataframes produced by fmcmc::get_userdata()
+#' with mcmc.list() produced by fmcmc::MCMC ensuring that the 
+#' chains and iterations match
+#'
+#' @param x mcmc.list to add userdata to. Note, that userdata 
+#' is taken from the environment (whatever fmcmc::get_userdata()
+#' returns)
+#'
+#' @return combined mcmc.list
+#' @rdname mcmc-loop
+#' @export
+#' @importFrom coda mcpar mcmc as.mcmc.list
+#' @examples
+add_userdata <- function(x){
+  ud <- fmcmc::get_userdata()
+  stopifnot("Number of chains does not match"=
+              (length(x)==length(ud)))
+  res <- mapply(function(x,y){
+    iters_y <- as.numeric(rownames(x))
+    min_iters_y <- min(iters_y)
+    max_iters_y <- max(iters_y)
+    mcpar_x <- coda::mcpar(x)
+    mcpar_y <- c(min_iters_y, max_iters_y, 1)
+    stopifnot("Iterations are not matching"=
+                isTRUE(all.equal(mcpar_x, mcpar_y)))
+    my <- as.matrix(y, dimnames=list(iters_y,colnames(y)))
+    coda::mcmc(cbind(x,my), start = min_iters_y, end = max_iters_y)
+  },x=x, y=ud, SIMPLIFY = FALSE)
+  coda::as.mcmc.list(res)
+}
