@@ -542,8 +542,10 @@ get_chain_id <- function() get_("chain_id")
 #' # At a higher point!: -269.7422 , step: 543 
 #' # At a higher point!: -269.7421 , step: 788 
 #' @name mcmc-loop
-#' @param x Name of the element to retrieve. If missing, it will return the entire
-#' environment in which the main MCMC loop is running.
+#' @param x For `ith_step()`: Name of the element to retrieve from the MCMC 
+#' environment. If missing, returns the entire environment in which the main 
+#' MCMC loop is running. For `add_userdata()`: An mcmc or mcmc.list object to 
+#' add userdata to.
 #' @return The function `ith_step()` provides access to the following elements:
 #' 
 #'   - `i`            : (int) Step (iteration) number.
@@ -721,23 +723,48 @@ get_userdata <- function() {
   get_("userdata")
 }
 
-#' Add userdata to the fmcmc output
-#' 
-#' Combines list of dataframes produced by fmcmc::get_userdata()
-#' with mcmc.list() produced by fmcmc::MCMC ensuring that the 
-#' chains and iterations match
-#'
-#' @param x mcmc.list to add userdata to. Note, that userdata 
-#' is taken from the environment (whatever fmcmc::get_userdata()
-#' returns)
-#'
-#' @return combined mcmc.list
-#' @rdname mcmc-loop
 #' @export
+#' @rdname mcmc-loop
 #' @importFrom coda mcpar mcmc as.mcmc.list
+#' @return For `add_userdata()`: Returns a combined mcmc.list (or mcmc if input 
+#' was a single chain mcmc object) with userdata columns added. 
+#' 
+#' **Important**: `add_userdata()` retrieves userdata from the global 
+#' `MCMC_OUTPUT` environment, so it relies on the most recent call to `MCMC()`. 
+#' If you run multiple MCMC chains sequentially, the userdata will correspond 
+#' to the last MCMC run.
 #' @examples
+#' \dontrun{
+#' # Simple example with single chain
+#' fun <- function(p) {
+#'   set_userdata(step = ith_step("i"), p_squared = p^2)
+#'   dnorm(p, log = TRUE)
+#' }
+#' 
+#' ans <- MCMC(fun = fun, initial = 0, nsteps = 100, kernel = kernel_normal())
+#' combined <- add_userdata(ans)
+#' head(combined)
+#' 
+#' # Example with multiple chains
+#' ans_multi <- MCMC(fun = fun, initial = 0, nsteps = 100, 
+#'                   nchains = 2, kernel = kernel_normal())
+#' combined_multi <- add_userdata(ans_multi)
+#' lapply(combined_multi, head)
+#' }
 add_userdata <- function(x){
+  # Handle single mcmc objects by converting to mcmc.list
+  single_chain <- inherits(x, "mcmc") && !inherits(x, "mcmc.list")
+  if (single_chain) {
+    x <- coda::as.mcmc.list(x)
+  }
+  
   ud <- fmcmc::get_userdata()
+  
+  # Handle single chain case where get_userdata returns a data.frame
+  if (is.data.frame(ud)) {
+    ud <- list(ud)
+  }
+  
   stopifnot("Number of chains does not match"=
               (length(x)==length(ud)))
   res <- mapply(function(x,y){
@@ -751,5 +778,13 @@ add_userdata <- function(x){
     my <- as.matrix(y, dimnames=list(iters_y,colnames(y)))
     coda::mcmc(cbind(x,my), start = min_iters_y, end = max_iters_y)
   },x=x, y=ud, SIMPLIFY = FALSE)
-  coda::as.mcmc.list(res)
+  
+  result <- coda::as.mcmc.list(res)
+  
+  # If input was a single chain, return single mcmc object
+  if (single_chain) {
+    result <- result[[1]]
+  }
+  
+  result
 }
