@@ -248,6 +248,6 @@ ans_mcpar <- MCMC(
 combined_mcpar <- add_userdata(ans_mcpar)
 
 # Test: mcpar attributes should match
-orig_mcpar <- coda::mcpar(ans_mcpar[[1]])
-combined_mcpar_attr <- coda::mcpar(combined_mcpar[[1]])
+orig_mcpar <- coda::mcpar(ans_mcpar)
+combined_mcpar_attr <- coda::mcpar(combined_mcpar)
 expect_equal(orig_mcpar, combined_mcpar_attr)
