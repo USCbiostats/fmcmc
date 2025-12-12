@@ -89,6 +89,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ matrix.config.os == 'ubuntu-latest' && (matrix.config.r == 'release' || matrix.config.r == 'devel') }}
         with:
-          name: epiworldR-built-package-${{ matrix.config.os }}-${{ matrix.config.r }}
-          path: epiworldR_*.tar.gz
+          name: fmcmc-built-package-${{ matrix.config.os }}-${{ matrix.config.r }}
+          path: fmcmc_*.tar.gz
           retention-days: 7
