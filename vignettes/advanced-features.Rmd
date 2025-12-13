@@ -108,8 +108,9 @@ For the starting point, let's use the vector `[70, 0, 0, sd(age)]` (more than a 
 guess!):
 
 ```{r haario-with-ith-step, echo = TRUE}
-# Generating kernel
-kern <- kernel_ram(warmup = 1000, lb = c(-100,-100,-100,.001))
+# Generating kernel with NA for unbounded parameters
+# First three parameters unbounded, fourth parameter must be positive
+kern <- kernel_ram(warmup = 1000, lb = c(NA, NA, NA, .001))
 
 # Running MCMC
 ans0 <- MCMC(
