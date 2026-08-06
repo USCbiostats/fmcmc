@@ -11,6 +11,16 @@
 [![status](https://tinyverse.netlify.app/badge/fmcmc)](https://CRAN.R-project.org/package=fmcmc)
 [![Integrative Methods of Analysis for Genetic Epidemiology](https://raw.githubusercontent.com/USCbiostats/badges/master/tommy-image-badge.svg)](https://image.usc.edu)
 
+
+<!-- how-to-cite -->
+> [!NOTE]
+> **How to cite fmcmc.** If you use **fmcmc** in published work, please cite it:
+>
+> Vega Yon GG, Marjoram P (2019). fmcmc: A friendly MCMC framework. *Journal of Open Source Software*, 4(39), 1427. doi:[10.21105/joss.01427](https://doi.org/10.21105/joss.01427)
+>
+> Run `citation("fmcmc")` in R for the BibTeX entry.
+<!-- how-to-cite -->
+
 ## What
 
 The `fmcmc` R package provides a lightweight general framework for

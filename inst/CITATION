@@ -1,37 +1,48 @@
-year <- sub("-.*", "", meta$Date)
+# Year resolution: CRAN sets Date/Publication on the installed package; fall
+# back to DESCRIPTION's Date, then to the current year, so the package entry
+# never renders as "(????)".
+year <- if (!is.null(meta$`Date/Publication`)) {
+  substr(meta$`Date/Publication`, 1, 4)
+} else if (!is.null(meta$Date)) {
+  substr(meta$Date, 1, 4)
+} else {
+  format(Sys.Date(), "%Y")
+}
 note <- sprintf("R package version %s", meta$Version)
 
 bibentry(
-  header = "To cite fmcmc in publications use:",
   bibtype = "Article",
-  entry  = "Article",
-  title = "fmcmc: A friendly MCMC framework",
-  author = c(
-    person("George", "Vega Yon", email = "g.vegayon@gmail.com", role = c("aut", "cre"), comment  = c(ORCID = "0000-0002-3171-0844")),
-    person("Paul", "Marjoram", email = "pmarjora@usc.edu", role = c("ctb", "ths"), comment = c(ORCID = "0000-0003-0824-7449"))
-    ),
-  journal = "The Journal of Open Source Software",
-  year    = 2019,
+  title   = "fmcmc: A friendly MCMC framework",
+  author  = c(
+    person("George", "Vega Yon", comment = c(ORCID = "0000-0002-3171-0844")),
+    person("Paul", "Marjoram", comment = c(ORCID = "0000-0003-0824-7449"))
+  ),
+  journal = "Journal of Open Source Software",
+  year    = "2019",
   month   = "jul",
-  volume  = 4,
-  number  = 39,
+  volume  = "4",
+  number  = "39",
+  pages   = "1427",
   doi     = "10.21105/joss.01427",
   url     = "https://doi.org/10.21105/joss.01427",
   textVersion = paste(
-    "Vega Yon et al., (2019). fmcmc: A friendly MCMC framework.",
-    "Journal of Open Source Software, 4(39), 1427,",
+    "Vega Yon GG, Marjoram P (2019). fmcmc: A friendly MCMC framework.",
+    "Journal of Open Source Software, 4(39), 1427.",
     "https://doi.org/10.21105/joss.01427"
-  )
+  ),
+  header = "To cite fmcmc in publications use:"
 )
 
-bibentry(bibtype = "Manual",
-         title = "{{fmcmc: A friendly MCMC framework}}",
-         author = c(
-          person("George", "Vega Yon", comment = c(ORCID = "0000-0002-3171-0844")),
-          person("Paul", "Marjoram", comment = c(ORCID = "0000-0003-0824-7449"))
-          ),
-         year = year,
-         note = note,
-         url = "https://cran.r-project.org/package=fmcmc",
-         doi = "10.32614/CRAN.package.fmcmc", 
-         header = "And the actual R package:")
+bibentry(
+  bibtype = "Manual",
+  title   = "{{fmcmc: A friendly MCMC framework}}",
+  author  = c(
+    person("George", "Vega Yon", comment = c(ORCID = "0000-0002-3171-0844")),
+    person("Paul", "Marjoram", comment = c(ORCID = "0000-0003-0824-7449"))
+  ),
+  year    = year,
+  note    = note,
+  url     = "https://github.com/USCbiostats/fmcmc",
+  doi     = "10.32614/CRAN.package.fmcmc",
+  header  = "And the R package itself:"
+)
