@@ -6,6 +6,8 @@
   `kernel_ram(lb = c(alpha = NA, beta = 0), ub = c(alpha = NA, beta = 1))`
   where `alpha` is unbounded and `beta` is bounded on [0, 1].
 
+* New function `add_userdata()` (@dmi3kno via [#23](https://github.com/USCbiostats/fmcmc/pull/23)), which cbinds user data to MCMC output.
+
 * Added an example using cluster objects.
 
 
