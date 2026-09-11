@@ -1,0 +1,63 @@
+cff-version: 1.2.0
+message: 'To cite package "fmcmc" in publications use:'
+type: software
+license: MIT
+title: 'fmcmc: A friendly MCMC framework'
+version: 0.6-0
+doi: 10.32614/CRAN.package.fmcmc
+abstract: 'Provides a friendly (flexible) Markov Chain Monte Carlo (MCMC) framework
+  for implementing Metropolis-Hastings algorithm in a modular way allowing users to
+  specify automatic convergence checker, personalized transition kernels, and out-of-the-box
+  multiple MCMC chains using parallel computing. Most of the methods implemented in
+  this package can be found in Brooks et al. (2011, ISBN 9781420079425). Among the
+  methods included, we have: Haario (2001) <https://doi.org/10.1007/s11222-011-9269-5>
+  Adaptive Metropolis, Vihola (2012) <https://doi.org/10.1007/s11222-011-9269-5> Robust
+  Adaptive Metropolis, and Thawornwattana et al. (2018) <https://doi.org/10.1214/17-BA1084>
+  Mirror transition kernels.'
+authors:
+- family-names: Vega Yon
+  given-names: George
+  email: g.vegayon@gmail.com
+  orcid: https://orcid.org/0000-0002-3171-0844
+preferred-citation:
+  type: article
+  title: 'fmcmc: A friendly MCMC framework'
+  authors:
+  - family-names: Vega Yon
+    given-names: George
+    orcid: https://orcid.org/0000-0002-3171-0844
+    email: g.vegayon@gmail.com
+  - family-names: Marjoram
+    given-names: Paul
+    orcid: https://orcid.org/0000-0003-0824-7449
+  journal: Journal of Open Source Software
+  year: '2019'
+  month: '7'
+  volume: '4'
+  issue: '39'
+  doi: 10.21105/joss.01427
+  url: https://doi.org/10.21105/joss.01427
+  start: '1427'
+repository: https://CRAN.R-project.org/package=fmcmc
+repository-code: https://github.com/USCbiostats/fmcmc
+url: https://uscbiostats.github.io/fmcmc/
+date-released: '2025-12-03'
+contact:
+- family-names: Vega Yon
+  given-names: George
+  email: g.vegayon@gmail.com
+  orcid: https://orcid.org/0000-0002-3171-0844
+references:
+- type: manual
+  title: 'fmcmc: A friendly MCMC framework'
+  authors:
+  - family-names: Vega Yon
+    given-names: George
+    orcid: https://orcid.org/0000-0002-3171-0844
+  - family-names: Marjoram
+    given-names: Paul
+    orcid: https://orcid.org/0000-0003-0824-7449
+  year: '2025'
+  notes: R package version 0.6-0
+  url: https://github.com/USCbiostats/fmcmc
+  doi: 10.32614/CRAN.package.fmcmc
